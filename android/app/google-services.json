@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "615094708551",
+    "project_id": "lums-student-portal",
+    "storage_bucket": "lums-student-portal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615094708551:android:2bed8cf264849ea4dfc462",
+        "android_client_info": {
+          "package_name": "com.lums_student_council.lums_student_portal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "615094708551-d6cnglivoaf0d7rat4bm9tqpj6f2ad0l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeNC4PUOaC8x4jhe2LIk_OwETTnEgn_bE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "615094708551-d6cnglivoaf0d7rat4bm9tqpj6f2ad0l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
