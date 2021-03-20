@@ -26,6 +26,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
     return Scaffold(
       appBar: AppBar(
         title: Center(child: Text("Verify Your Account")),
+        backgroundColor: Colors.redAccent,
       ),
       body: Center(
         child: Column(
