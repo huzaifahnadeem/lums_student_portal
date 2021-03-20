@@ -52,7 +52,8 @@ ElevatedButtonThemeData createElevatedButtonTheme(){
 
 AppBarTheme createAppBarTheme () {
   return AppBarTheme(
-      centerTitle: true,
+    centerTitle: true,
+    elevation: 0 ,
   );
 }
 /*
