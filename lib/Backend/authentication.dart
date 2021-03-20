@@ -11,6 +11,8 @@ class Authentication {
     return _auth.authStateChanges();
   }
 
+
+
   Future<bool> checkVerification () async{
     User temp = _auth.currentUser ;
     await temp.reload() ;
@@ -53,5 +55,15 @@ class Authentication {
     }
   }
 // Reset Password
+  Future<String> resetPassword (String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return "Reset Email Sent";
+    }
+    catch (err) {
+      print(err);
+      return "Error";
+    }
+  }
 
 }
