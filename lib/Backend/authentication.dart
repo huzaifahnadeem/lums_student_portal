@@ -6,15 +6,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 class Authentication {
   // creating an instance of firebase
   FirebaseAuth _auth = FirebaseAuth.instance;
-  // stream of authentication updates
+
+  // stream of asynchronous authentication updates i.e login, sign in, log out
   Stream<User> get user {
     return _auth.authStateChanges();
   }
 
-
-
+  // check if the user has verified his/her Account
   Future<bool> checkVerification () async{
     User temp = _auth.currentUser ;
+    // to get latest updates
     await temp.reload() ;
     if (temp.emailVerified){
       return true;
@@ -38,11 +39,11 @@ class Authentication {
   Future loginWithEmailAndPassword (String email, password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      print("Success");
       print(result);
+      return "";
     }
     catch (err){
-      print(err) ;
+      return "error" ;
     }
   }
   // Sign Out
