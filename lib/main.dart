@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase's cloud fires
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication service
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/signUpOrLogin.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/pages/newsfeed.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
 
@@ -17,6 +18,14 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: LandingPage(),
+        theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: Color(0xFFD04343),
+        textTheme: createTextTheme(),
+        appBarTheme: createAppBarTheme(),
+        inputDecorationTheme: createInputDecorTheme(),
+        elevatedButtonTheme: createElevatedButtonTheme(),
+      )
     );
   }
 }
@@ -56,7 +65,7 @@ class _LandingPageState extends State<LandingPage> {
       builder: (context, snapshot){
         if (snapshot.hasData){
           print("Successful Authentication, Going to Home Screen");
-          print(snapshot.data.uid) ;
+          print(snapshot.data) ;
           if (snapshot.data.emailVerified) {
             return Home();
           }
