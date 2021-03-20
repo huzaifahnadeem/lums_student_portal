@@ -4,9 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase's cloud fires
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication service
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/signUpOrLogin.dart';
-import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/pages/newsfeed.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
+import 'package:lums_student_portal/themes/theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,12 +19,14 @@ class App extends StatelessWidget {
     return MaterialApp(
       home: LandingPage(),
         theme: ThemeData(
-        scaffoldBackgroundColor: Colors.white,
-        primaryColor: Color(0xFFD04343),
-        textTheme: createTextTheme(),
-        appBarTheme: createAppBarTheme(),
-        inputDecorationTheme: createInputDecorTheme(),
-        elevatedButtonTheme: createElevatedButtonTheme(),
+          scaffoldBackgroundColor: Colors.white,
+          primaryColor: primary_color,
+          textTheme: createTextTheme(),
+          appBarTheme: createAppBarTheme(),
+          inputDecorationTheme: createInputDecorTheme(),
+          elevatedButtonTheme: createElevatedButtonTheme(),
+          brightness: Brightness.light,
+          snackBarTheme: createSnackBarTheme(),
       )
     );
   }
