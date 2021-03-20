@@ -30,9 +30,16 @@ class Authentication {
       print("Success") ;
       await _auth.currentUser.sendEmailVerification();
       print("Verified") ;
+      return "";
     }
-    catch (err){
-      print(err);
+    on FirebaseAuthException catch (e){
+      if (e.code == 'email-already-in-use'){
+        return "Email already exists!";
+      }
+      if (e.code == 'weak-password'){
+        return e.message;
+      }
+      return "Error occurred, please try again";
     }
   }
   // login user
@@ -43,6 +50,16 @@ class Authentication {
       return "";
     }
     catch (err){
+      print(err.message);
+      if (err.code == "wrong-password"){
+        return "Incorrect Password";
+      }
+      if (err.code == "invalid-email") {
+        return "Invalid Email";
+      }
+      if (err.code == "user-not-found") {
+        return "Account Does Not Exist";
+      }
       return "error" ;
     }
   }

@@ -21,3 +21,13 @@ String passwordValidator(String password){
   }
   return null ;
 }
+
+String confirmPasswordValidator(String password1, password2){
+  if (password2.isEmpty){
+    return "Field can not be empty!" ;
+  }
+  else if (password1 != password2){
+    return "The passwords do not match!";
+  }
+  return null ;
+}
