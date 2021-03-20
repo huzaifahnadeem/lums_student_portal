@@ -28,7 +28,7 @@ class _LoginState extends State<Login> {
     if (_formKey.currentState.validate()) {
       message =
           await Authentication().loginWithEmailAndPassword(email, password);
-      if (message == "error") {
+      if (message != "") {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Row(children: <Widget>[
           Icon(
@@ -36,8 +36,9 @@ class _LoginState extends State<Login> {
             color: Colors.white,
             semanticLabel: "Error",
           ),
-          Text('  Incorrect Credentials')
+          Text('  $message')
         ])));
+        message = '' ;
       }
     }
   }
@@ -58,11 +59,11 @@ class _LoginState extends State<Login> {
         key: _formKey,
         child: SingleChildScrollView(
           child: SafeArea(
-            minimum: EdgeInsets.all(30),
+            minimum: EdgeInsets.fromLTRB(30,0,30,30),
             child: Column(children: <Widget>[
               SizedBox(
-                  height: 200,
-                  width: 200,
+                  height: 250,
+                  width: 300,
                   child: Image(
                     image: AssetImage("assets/sclogo.png"),
                     color: Theme.of(context).primaryColor,
@@ -92,7 +93,7 @@ class _LoginState extends State<Login> {
                 child: ElevatedButton(
                   onPressed: () => validate(),
                   child: Text('Log In',
-                      style: Theme.of(context).textTheme.bodyText2),
+                      style: Theme.of(context).textTheme.headline5),
                 ),
               ),
               SizedBox(height: 10),

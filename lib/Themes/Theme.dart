@@ -44,11 +44,18 @@ TextTheme createTextTheme (){
       fontWeight: FontWeight.w900,
       letterSpacing: 1.5,
     ),
-    // For buttons
+    // For Normal Text
     bodyText2: initial.bodyText2.copyWith(
+      color: Colors.black,
+      fontSize: 20,
+      fontWeight: FontWeight.w400,
+    ),
+    // For Buttons
+    headline5: initial.headline1.copyWith(
       color: Colors.white,
       fontSize: 20,
       fontWeight: FontWeight.w400,
+      letterSpacing: 1.5,
     ),
   );
 }

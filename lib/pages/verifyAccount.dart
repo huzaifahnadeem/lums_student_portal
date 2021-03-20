@@ -17,29 +17,63 @@ class _VerifyAccountState extends State<VerifyAccount> {
       Authentication().signOut();
     }
     else{
-      setState(() {error = "Unsuccessful" ;});
+      setState(() {
+        error = "We still have not received confirmation" ;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Row(children: <Widget>[
+              Icon(
+                Icons.error,
+                color: Colors.white,
+                semanticLabel: "Error",
+              ),
+              Text('   $error')
+            ])));
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text("Verify Your Account")),
-        backgroundColor: Colors.redAccent,
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            Text ("Click On The Verification Link Emailed to You"),
-            RaisedButton(
-              onPressed: () => redirectToHome()  ,
-              padding: EdgeInsets.all(10),
-              child: Text("Done"),
-            ),
-            SizedBox(height: 10),
-            Text("$error")
-          ],
+      body: SafeArea(
+        minimum: EdgeInsets.fromLTRB(30,30,30,30),
+        child: Container(
+          padding: EdgeInsets.all(2),
+          child: Column(
+            children: [
+              Icon(
+                Icons.verified_user_outlined,
+                size: 200,
+                color: Colors.black87,
+              ),
+              SizedBox(height: 10, width: 0),
+              Flexible(
+                child: Text(
+                  "Please Verify Your Account",
+                  style: Theme.of(context).textTheme.headline6 ,
+                ),
+              ),
+              SizedBox(height: 10, width: 0),
+              Flexible(
+                child: Text(
+                  "We have emailed you a link for your account verification."
+                      " Please press the button below once you have verified and "
+                      "you will be redirected to the login page.",
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              SizedBox(height: 30, width: 0),
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: () => redirectToHome(),
+                  child: Text('Done',
+                      style: Theme.of(context).textTheme.headline5),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
