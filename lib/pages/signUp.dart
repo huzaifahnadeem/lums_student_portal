@@ -7,7 +7,7 @@ import 'package:lums_student_portal/backend/validators.dart';
 class SignUp extends StatefulWidget {
   final Function switchScreen ;
 
-  SignUp({this.switchScreen, Key key}) : super(key: key);
+  SignUp({required this.switchScreen, Key? key}) : super(key: key);
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -16,15 +16,15 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   // member variables
   final _formKey = GlobalKey<FormState>();
-  String email = "";
-  String password = "", confirmPassword = "";
+  String name = "";
+  String email = "" , password = "", confirmPassword = "";
   String message = "";
 
   // Form validation Function
   void validate() async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       message =
-      await Authentication().signUpWithEmailAndPassword(email, password);
+      await Authentication().signUpWithEmailAndPassword(email, password, name);
       if (message != "") {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Row(children: <Widget>[
@@ -58,8 +58,16 @@ class _SignUpState extends State<SignUp> {
             minimum: EdgeInsets.all(30),
             child: Column(children: <Widget>[
               TextFormField(
+                decoration: InputDecoration(labelText: "Name"),
+                validator: (val) => emailValidator(val!, false),
+                onChanged: (val) {
+                  setState(() => name = val);
+                },
+              ),
+              SizedBox(height: 25),
+              TextFormField(
                 decoration: InputDecoration(labelText: "Email"),
-                validator: (val) => emailValidator(val, false),
+                validator: (val) => emailValidator(val!, false),
                 onChanged: (val) {
                   setState(() => email = val);
                 },
@@ -73,7 +81,7 @@ class _SignUpState extends State<SignUp> {
                 onChanged: (val) {
                   setState(() => password = val);
                 },
-                validator: (val) => passwordValidator(val),
+                validator: (val) => passwordValidator(val!),
               ),
               SizedBox(height: 25),
               TextFormField(
@@ -105,14 +113,14 @@ class _SignUpState extends State<SignUp> {
                   ),
                   Text(
                     "Already have an account?",
-                    style: Theme.of(context).textTheme.caption.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
                   TextButton(
                     onPressed: () => widget.switchScreen(),
                     child: Text(
                       'Login',
-                      style: Theme.of(context).textTheme.caption.copyWith(
+                      style: Theme.of(context).textTheme.caption!.copyWith(
                           color: Theme.of(context).primaryColor,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),

@@ -10,7 +10,7 @@ class Login extends StatefulWidget {
 
   final Function switchScreen2;
 
-  Login({this.switchScreen1, this.switchScreen2, Key key}) : super(key: key);
+  Login({required this.switchScreen1, required this.switchScreen2, Key? key}) : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -25,9 +25,11 @@ class _LoginState extends State<Login> {
 
   // Form validation Function
   void validate() async {
-    if (_formKey.currentState.validate()) {
+    print("login");
+    if (_formKey.currentState!.validate()) {
       message =
           await Authentication().loginWithEmailAndPassword(email, password);
+      print("login function called");
       if (message != "") {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Row(children: <Widget>[
@@ -70,7 +72,7 @@ class _LoginState extends State<Login> {
                   )),
               TextFormField(
                 decoration: InputDecoration(labelText: "Email"),
-                validator: (val) => emailValidator(val, false),
+                validator: (val) => emailValidator(val!, false),
                 onChanged: (val) {
                   setState(() => email = val);
                 },
@@ -84,7 +86,7 @@ class _LoginState extends State<Login> {
                 onChanged: (val) {
                   setState(() => password = val);
                 },
-                validator: (val) => passwordValidator(val),
+                validator: (val) => passwordValidator(val!),
               ),
               SizedBox(height: 25),
               SizedBox(
@@ -99,17 +101,13 @@ class _LoginState extends State<Login> {
               SizedBox(height: 10),
               Row(
                 //crossAxisAlignment: CrossAxisAlignment,
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(
-                    height: 0,
-                    width: 85,
-                  ),
                   Text(
                     "Don't have an account?",
                     style: Theme.of(context)
                         .textTheme
-                        .caption
+                        .caption!
                         .copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
@@ -117,7 +115,7 @@ class _LoginState extends State<Login> {
                     onPressed: () => widget.switchScreen1(),
                     child: Text(
                       'Sign Up',
-                      style: Theme.of(context).textTheme.caption.copyWith(
+                      style: Theme.of(context).textTheme.caption!.copyWith(
                           color: Theme.of(context).primaryColor,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
@@ -129,7 +127,7 @@ class _LoginState extends State<Login> {
                 onPressed: () => widget.switchScreen2(),
                 child: Text(
                   'Forgot Your Password?',
-                  style: Theme.of(context).textTheme.caption.copyWith(
+                  style: Theme.of(context).textTheme.caption!.copyWith(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.bold),
                 ),

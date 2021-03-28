@@ -1,33 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart'; // Firebase's core functionality plugin
-import 'package:cloud_firestore/cloud_firestore.dart'; // Firebase's cloud firestore (the DB) plugin
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication service
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/signUpOrLogin.dart';
-import 'package:lums_student_portal/pages/newsfeed.dart';
+import 'package:lums_student_portal/pages/addPost.dart';
+import 'package:lums_student_portal/pages/home.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
 import 'package:lums_student_portal/themes/theme.dart';
 
-void main() {
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize(
+      debug: true // optional: set false to disable printing logs to console
+  );
   runApp(App());
 }
 
 class App extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LandingPage(),
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          primaryColor: primary_color,
-          textTheme: createTextTheme(),
-          appBarTheme: createAppBarTheme(),
-          inputDecorationTheme: createInputDecorTheme(),
-          elevatedButtonTheme: createElevatedButtonTheme(),
-          brightness: Brightness.light,
-          snackBarTheme: createSnackBarTheme(),
-      )
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        primaryColor: primary_color,
+        textTheme: createTextTheme(),
+        appBarTheme: createAppBarTheme(),
+        inputDecorationTheme: createInputDecorTheme(),
+        elevatedButtonTheme: createElevatedButtonTheme(),
+        brightness: Brightness.light,
+        snackBarTheme: createSnackBarTheme(),
+      ),
+      initialRoute: '/',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/': (BuildContext context) => LandingPage(),
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/AddPost': (BuildContext context) => AddPost(),
+      },
     );
   }
 }
@@ -39,8 +51,8 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
 
-  bool _initialized ;
-  Stream<User> _streamOfAuthChanges ;
+  late bool _initialized ;
+  late Stream<User?> _streamOfAuthChanges ;
 
   Future initializeFlutterFire() async {
     try{
@@ -62,13 +74,13 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return (!_initialized) ? Text("Waiting for Initialisation") : StreamBuilder<User>( // splash screen called here
+    return (!_initialized) ? Text("Waiting for Initialisation") : StreamBuilder<User?>( // splash screen called here
       stream: _streamOfAuthChanges,
       builder: (context, snapshot){
         if (snapshot.hasData){
           print("Successful Authentication, Going to Home Screen");
           print(snapshot.data) ;
-          if (snapshot.data.emailVerified) {
+          if (snapshot.data!.emailVerified) {
             return Home();
           }
           else{
