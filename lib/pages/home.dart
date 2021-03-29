@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'newsfeed.dart';
 import 'package:flutter/rendering.dart';
+import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 
 
 class Home extends StatefulWidget {
@@ -45,7 +46,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     ],
      [Text("Complaints")],
      [Text("SC Profiles")],
-     [Text("Profiles")], // views/subscreens of other sections - please replace these
+     [Profile()], // views/subscreens of other sections - please replace these
   ] ;
 
    // list of buttons in the bottom nav bar

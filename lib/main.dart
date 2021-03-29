@@ -38,7 +38,7 @@ class App extends StatelessWidget {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (BuildContext context) => LandingPage(),
         // When navigating to the "/second" route, build the SecondScreen widget.
-        '/AddPost': (BuildContext context) => AddPost(),
+        // '/AddPost': (BuildContext context) => AddPost(),
       },
     );
   }
@@ -74,7 +74,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return (!_initialized) ? Text("Waiting for Initialisation") : StreamBuilder<User?>( // splash screen called here
+    return (!_initialized) ? Scaffold(body: Center(child: CircularProgressIndicator())) : StreamBuilder<User?>( // splash screen called here
       stream: _streamOfAuthChanges,
       builder: (context, snapshot){
         if (snapshot.hasData){
