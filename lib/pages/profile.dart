@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/pages/settings.dart';
 // import 'package:lums_student_portal/Backend/authentication.dart';
 
 // Temp data:
@@ -30,7 +31,12 @@ class Profile extends StatelessWidget {
               color: Colors.white,
             ),
             onPressed: () {
-              // do something
+              Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return Settings();
+              }),
+            );
             },
           )
         ],
