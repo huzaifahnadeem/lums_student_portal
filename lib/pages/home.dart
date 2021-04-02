@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
+import 'package:lums_student_portal/models/post.dart';
 import 'newsfeed.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
+
+
 
 
 class Home extends StatefulWidget {
@@ -12,42 +15,24 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   // creating state variables
+  static String filter = "General";
+  static ScrollController scrollController = new ScrollController();
+  bool _showFloatingActionButton = true;
   late int _selectedIndex ; // current index of the bottom bar button selected
   late int _numTabs ; // number of tabs to display on each screen - for example 3 for Complaints
   late TabController _tabController; // in-built variable which handles shifting of tabs
   late String appBarTitle ;
-  static ScrollController scrollController = new ScrollController();
-  bool _showFloatingActionButton = true;
+
 
   // List of App Bar titles
-  List<String> appBarTitles = ["NewsFeed", "Complaints", "SC Profiles", "Profiles"] ;
+  List<String> appBarTitles = ["NewsFeed", "Complaints", "SC Profiles"] ;
   // Tab headers for each screen
   List<List<Widget>> _tabsEachScreen = [
     [Tab(text: "Main",), Tab(text: "Saved",)], // for newsfeed section
-
-    [Tab(text: "Main",)], // for Complaints section
-    [Tab(text: "Main",)], // for SC Profiles section
-    [Tab(text: "Main",)], // for Profile
+    [Tab(text: "Main",)],
+    [Tab(text: "Main",)],
+    [Tab(text: "Main",)]// for the rest, please replace these as you progress
   ];
-
-  // all the sub-screens/tabs for each screen
-  // 2D array of size = number of buttons in bottom bar X number of tabs on that screen
-   List<List<Widget>> _tabViewsForEachScreen = [
-    [
-      // news feed subscreens
-      Newsfeed(scrollController: scrollController,),
-      RaisedButton(
-        child: Text("Sign Out"),
-        onPressed: () async {
-          await Authentication().signOut();
-        },
-      ),
-
-    ],
-     [Text("Complaints")],
-     [Text("SC Profiles")],
-     [Profile()], // views/subscreens of other sections - please replace these
-  ] ;
 
    // list of buttons in the bottom nav bar
   List<BottomNavigationBarItem> _bottomBarButtons = <BottomNavigationBarItem> [
@@ -69,8 +54,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     ),
   ] ;
 
-   // initialising state of the home screen, will be directed to newsfeed screen
-   void initState(){
+   // member functions
+  void initState(){
      appBarTitle = "NewsFeed" ;
     _selectedIndex = 0 ;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
@@ -78,12 +63,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     handleScroll();
     super.initState();
   }
-
+  void applyFilter(String value){
+     print('apply filter called');
+     setState(() {
+       filter = value ;
+     });
+  }
   void dispose() {
     scrollController.removeListener(() {});
     super.dispose();
   }
-
   void showFloatingButton() {
     setState(() {
       _showFloatingActionButton = true;
@@ -106,7 +95,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       }
     });
   }
-
   // change state when an icon in bottom bar is tapped
   void navigate(int newIndex) {
     if (newIndex != _selectedIndex){
@@ -117,14 +105,53 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       });
     }
   }
+  List<Widget> returnBody (){
+    List<List<Widget>> views = [
+      [
+        // news feed subscreens
+        Newsfeed(scrollController: scrollController, filter: filter),
+        Container(
+          color: Colors.white,
+          child: TextButton(child: Text("Sign Out"),
+            onPressed: () async {
+              await Authentication().signOut();
+            },),
+        ),
+
+      ],
+      [Text("Complaints")],
+      [Text("SC Profiles")],
+      [Profile()],
+    ] ;
+    return views[_selectedIndex];
+  }
+
+  // function to apply filter to home screen
   
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Align( alignment: Alignment.topCenter,child: Text(appBarTitles[_selectedIndex])),
+      appBar: _selectedIndex == 3? null:AppBar(
+        title: Align( alignment: Alignment.topLeft,child: Text(appBarTitles[_selectedIndex])),
         backgroundColor: Theme.of(context).primaryColor,
-        actions: [Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0),child: Icon(Icons.filter_list))],
+        actions: [ _selectedIndex == 0 ? Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton(
+                icon: new Icon(Icons.filter_list, color: Colors.white,),
+                isExpanded: false,
+                value: filter,
+                dropdownColor: Colors.amber,
+                onChanged: (newVal) => applyFilter(newVal.toString()),
+                items: Post.categories1.map((categoryItem) {
+                  return DropdownMenuItem(
+                    value: categoryItem ,
+                    child: Text(categoryItem, style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.white),),
+                  );
+                }).toList(),
+              ),
+            ),
+        ): Container(),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: _tabsEachScreen[_selectedIndex],
@@ -133,7 +160,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: _tabController,
-        children: _tabViewsForEachScreen[_selectedIndex],
+        children: returnBody(),
       ),
       // add a floating action button on the newsfeed screen
       floatingActionButton: _selectedIndex != 0 ? null: Visibility(

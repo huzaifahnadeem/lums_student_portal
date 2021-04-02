@@ -17,7 +17,8 @@ class Post {
   String? filename ;
   String? fileURL ;
   List< Map<String,dynamic> > options = [] ;
-  List categories = ["General", "Disciplinary Committee", "Academic Policy", "Campus Development", "Others"] ;
+  static List categories = ["General", "Disciplinary Committee", "Academic Policy", "Campus Development", "Others"];
+  static List categories1 = ["General", "DC", "Academic", "Campus", "Others"] ;
   List chooseNumOptions = [0,1,2,3,4] ;
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -145,10 +146,11 @@ class Post {
         await deleteFile();
       }
       await posts.doc(postID).delete();
-      return "Done";
+      return "Post Deleted";
     }
     catch (err){
-      return "Error";
+      print(err);
+      return "Error Deleting Post";
     }
   }
 

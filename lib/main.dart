@@ -7,7 +7,7 @@ import 'package:lums_student_portal/Backend/signUpOrLogin.dart';
 import 'package:lums_student_portal/pages/addPost.dart';
 import 'package:lums_student_portal/pages/home.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
-import 'package:lums_student_portal/themes/theme.dart';
+import 'package:lums_student_portal/themes/Theme.dart';
 
 
 void main() async {
@@ -32,6 +32,7 @@ class App extends StatelessWidget {
         elevatedButtonTheme: createElevatedButtonTheme(),
         brightness: Brightness.light,
         snackBarTheme: createSnackBarTheme(),
+        buttonTheme: createButtonTheme(),
       ),
       initialRoute: '/',
       routes: {

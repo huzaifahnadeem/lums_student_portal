@@ -134,7 +134,7 @@ class _AddPostState extends State<AddPost> {
                           newPost.tag = newVal.toString() ;
                         });
                       },
-                      items: newPost.categories.map((categoryItem) {
+                      items: Post.categories.map((categoryItem) {
                         return DropdownMenuItem(
                           value: categoryItem ,
                           child: Text(categoryItem),

@@ -1,15 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:transparent_image/transparent_image.dart';
+import'package:carousel_slider/carousel_slider.dart';
 
 class PostItem extends StatefulWidget {
   final DocumentSnapshot post;
-  PostItem({required this.post, Key? key}): super(key: key);
+  final Function displaySnackBar ;
+  PostItem({required this.post, required this.displaySnackBar,Key? key}): super(key: key);
   @override
   _PostItemState createState() => _PostItemState();
 }
@@ -47,6 +47,7 @@ class _PostItemState extends State<PostItem> {
   // delete a post
   void deletePost() async {
     String result = await postModel.deletePost(widget.post.id);
+    widget.displaySnackBar(result);
   }
 
   @override
@@ -64,26 +65,38 @@ class _PostItemState extends State<PostItem> {
           SizedBox(
             height: 10,
           ),
-          Padding(padding: EdgeInsets.fromLTRB(15, 0, 10, 10),
-            child: Column(
-              children: [
-                // post content
-                Align(
+          Column(
+            children: [
+              // post content
+              Padding(
+                padding: const EdgeInsets.fromLTRB(15,0,15,0),
+                child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text("${widget.post['content']}", style: Theme.of(context).textTheme.bodyText1,)
                 ),
-                // post pictures
-                widget.post['picture_chosen']? Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  child: Image.network(
-                      widget.post['picture_url']
+              ),
+              SizedBox(height: 20,),
+              // post pictures
+              widget.post['picture_chosen']? CarouselSlider(
+                items: [FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: widget.post['picture_url'],
                   ),
-                ): Container(),
-              ]
-            )
+                ],
+                options: CarouselOptions(
+                  initialPage: 0,
+                  enableInfiniteScroll: false,
+                  reverse: true,
+                  enlargeCenterPage: true,
+                  scrollDirection: Axis.horizontal,
+                ),
+              ): Container(),
+            ]
           ),
           ListTile(
-            title: widget.post['file_chosen']? FittedBox(
+            subtitle: widget.post['file_chosen']? FittedBox(
+              alignment: Alignment.topLeft,
+              fit: BoxFit.scaleDown,
               child: Row(
                 children: [
                   Text("${widget.post['filename']}", style: Theme.of(context).textTheme.bodyText1,),
@@ -121,7 +134,8 @@ class _PostItemState extends State<PostItem> {
 
 class Newsfeed extends StatefulWidget {
   late final ScrollController scrollController ;
-  Newsfeed({required this.scrollController, Key? key}): super(key: key);
+  late final String filter ;
+  Newsfeed({required this.scrollController, required this.filter, Key? key}): super(key: key);
   @override
   _NewsfeedState createState() => _NewsfeedState();
 }
@@ -129,10 +143,23 @@ class Newsfeed extends StatefulWidget {
 class _NewsfeedState extends State<Newsfeed> {
   // member variables
   FirebaseFirestore _db = FirebaseFirestore.instance;
+  String? filter2 ;
   late Stream<QuerySnapshot?> _streamOfPostChanges ;
-  String? filter ;
+  var categoryMap = {'DC': 'Disciplinary Committee', 'Academic': 'Academic Policy',
+    'General': 'General','Campus': 'Campus Development','Others':"Others"};
 
-  // build post
+  // display snackbar
+  void displaySnackBar(String message){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(children: <Widget>[
+          Icon(
+            Icons.error,
+            color: Colors.white,
+            semanticLabel: "Error",
+          ),
+          Text('  $message')
+        ])));
+  }
 
 
   // setting initial state
@@ -142,6 +169,8 @@ class _NewsfeedState extends State<Newsfeed> {
   }
   @override
   Widget build(BuildContext context) {
+    filter2 = categoryMap[widget.filter]!;
+    print(filter2);
     return StreamBuilder<QuerySnapshot?>(
         stream: _streamOfPostChanges,
         builder: (context, snapshot) {
@@ -152,11 +181,13 @@ class _NewsfeedState extends State<Newsfeed> {
             return LoadingScreen();
           }
           else if(snapshot.hasData){
+            var result = snapshot.data!.docs.where((element) =>
+            filter2 == "General" ? true: (element['category'] == filter2 ? true:false));
             return ListView.builder(
               controller: widget.scrollController,
-              itemCount: snapshot.data!.docs.length,
+              itemCount: result.length,
               itemBuilder: (BuildContext context, int index) {
-                  return PostItem(post: snapshot.data!.docs[index]);
+                  return PostItem(post: result.toList()[index], displaySnackBar: displaySnackBar,);
               },
             );
           }

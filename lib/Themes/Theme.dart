@@ -8,6 +8,12 @@ const Color inputFill = Color(0xFFEFEAEA);
 const Color accent = Color(0xFFD04343);
 const Color deepOrange = Colors.deepOrange ;
 
+ButtonThemeData createButtonTheme(){
+  return ButtonThemeData(
+    alignedDropdown: true,
+  );
+}
+
 SnackBarThemeData createSnackBarTheme () {
   return SnackBarThemeData(
     backgroundColor: accent,
