@@ -1,11 +1,18 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 const Color primary_color = Color(0xFFEA5757);
 const Color inputFill = Color(0xFFEFEAEA);
 const Color accent = Color(0xFFD04343);
 const Color deepOrange = Colors.deepOrange ;
+
+ButtonThemeData createButtonTheme(){
+  return ButtonThemeData(
+    alignedDropdown: true,
+  );
+}
 
 SnackBarThemeData createSnackBarTheme () {
   return SnackBarThemeData(
@@ -18,6 +25,10 @@ InputDecorationTheme createInputDecorTheme(){
   return initial.copyWith(
     fillColor: inputFill,
     filled: true,
+    focusedErrorBorder: OutlineInputBorder(
+      borderSide: BorderSide.none,
+      borderRadius: const BorderRadius.all( Radius.circular(5.0)),
+    ),
     labelStyle: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
     border: OutlineInputBorder(
       borderSide: BorderSide.none,
@@ -38,20 +49,20 @@ TextTheme createTextTheme (){
   TextTheme initial = ThemeData.light().textTheme ;
   return initial.copyWith(
     // for App Bar Titles
-    headline6: initial.headline1.copyWith(
+    headline6: initial.headline1!.copyWith(
       color: Colors.black,
       fontSize: 30,
-      fontWeight: FontWeight.w900,
+      fontWeight: FontWeight.w700,
       letterSpacing: 1.5,
     ),
     // For Normal Text
-    bodyText2: initial.bodyText2.copyWith(
+    bodyText2: initial.bodyText2!.copyWith(
       color: Colors.black,
       fontSize: 20,
       fontWeight: FontWeight.w400,
     ),
     // For Buttons
-    headline5: initial.headline1.copyWith(
+    headline5: initial.headline5!.copyWith(
       color: Colors.white,
       fontSize: 20,
       fontWeight: FontWeight.w400,
