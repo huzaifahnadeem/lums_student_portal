@@ -25,9 +25,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   List<List<Widget>> _tabsEachScreen = [
     [Tab(text: "Main",), Tab(text: "Saved",)], // for newsfeed section
 
-    [Tab(text: "Main",)],
-    [Tab(text: "Main",)],
-    [Tab(text: "Main",)], // for the rest, please replace these as you progress
+    [Tab(text: "Main",)], // for Complaints section
+    [Tab(text: "Main",)], // for SC Profiles section
+    [Tab(text: "Main",)], // for Profile
   ];
 
   // all the sub-screens/tabs for each screen
