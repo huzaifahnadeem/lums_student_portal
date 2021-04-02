@@ -228,17 +228,74 @@ class EditProfile extends StatelessWidget {
 class UpdateAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text(
+    //       'Update Account', // header
+    //       style: GoogleFonts.robotoSlab(
+    //           color: Colors.white,
+    //           textStyle: Theme.of(context).textTheme.headline6),
+    //     ),
+    //   ),
+    //   body: Text('TODO: Update Account Screen'),
+    // );
+    
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+        ),
         title: Text(
           'Update Account', // header
           style: GoogleFonts.robotoSlab(
-              color: Colors.white,
               textStyle: Theme.of(context).textTheme.headline6),
         ),
+        backgroundColor: Colors.white,
       ),
-      body: Text('TODO: Update Account Screen'),
+      body: Form( // TODO: Backend part not done
+        child: SingleChildScrollView(
+          child: SafeArea(
+            minimum: EdgeInsets.all(30),
+            child: Column(children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: "Username"), //TODO: validation check
+              ),
+              SizedBox(height: 25),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Role"), //TODO: Drop down menu?
+              ),
+              SizedBox(height: 25),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Category"), //TODO: Drop down menu?
+              ),
+              SizedBox(height: 25),
+              SizedBox(
+                // Confirm Button
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton(
+                  // onPressed: () => validate(),
+                  onPressed: () => {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Row(children: <Widget>[
+                      Icon(
+                        Icons.error,
+                        color: Colors.white,
+                        semanticLabel: "Error",
+                      ),
+                      Text('TODO: Backend part not done')
+                    ])))
+                  },
+                  child: Text('Confirm',
+                      style: Theme.of(context).textTheme.headline5),
+                ),
+              ),
+            ]),
+          ),
+        ),
+      ),
     );
+    
   }
 }
 
@@ -254,7 +311,7 @@ class AddAccount extends StatelessWidget {
               textStyle: Theme.of(context).textTheme.headline6),
         ),
       ),
-      body: Text('TODO: Add Account Screen'),
+      body: Text('TODO: Add Account Screen. Also, is this screen really needed?'),
     );
   }
 }

@@ -8,28 +8,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // TODO: make variables such as avatar radius, text sizes, colors etc to make them easily changeable from one location
 
 // Temp data:
-String name = "Huzaifah Nadeem";
+String name = "Name Placeholder";
 final rollno = "22100079";
 final year = "Junior";
 final dept = "Campus Dev.";
 final residenceStatus = "Homstel";
 final schoolMajor = "SSE: CS";
 final manifesto =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    "Note: Only Name is fetched from DB. Rest of the things are not fetched and placed yet or are placeholders .Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-// works OK but commented out temporarily to work on other things first:
-// void fetchUserInfo() async { 
-//   User? thisUser = FirebaseAuth.instance.currentUser;
-//   FirebaseFirestore _db = FirebaseFirestore.instance;
-//   var document = await _db.collection('Profiles').doc(thisUser!.uid).get();
-//   name = document.data()!["name"];
-// }
+// TODO: works OK but only name is fetched. Rest of the things are not fetched and placed yet or are placeholders
+void fetchUserInfo() async { 
+  User? thisUser = FirebaseAuth.instance.currentUser;
+  FirebaseFirestore _db = FirebaseFirestore.instance;
+  var document = await _db.collection('Profiles').doc(thisUser!.uid).get();
+  name = document.data()!["name"];
+}
 
 class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double circleRadius = 75;
-    // fetchUserInfo();
+    fetchUserInfo();
     
     return Scaffold(
       appBar: AppBar(
