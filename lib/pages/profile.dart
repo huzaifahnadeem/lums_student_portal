@@ -5,6 +5,8 @@ import 'package:lums_student_portal/pages/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// TODO: make variables such as avatar radius, text sizes, colors etc to make them easily changeable from one location
+
 // Temp data:
 String name = "Huzaifah Nadeem";
 final rollno = "22100079";
@@ -80,7 +82,7 @@ class Profile extends StatelessWidget {
                         boxShadow: [BoxShadow(blurRadius: 10, color: Colors.black38, spreadRadius: 5)],
                         ),
                         child: CircleAvatar(
-                          radius: circleRadius+5,
+                          radius: circleRadius+5, // the profile avatar border
                           backgroundColor: Colors.white,
                           child: CircleAvatar(
                           // backgroundImage: NetworkImage(
