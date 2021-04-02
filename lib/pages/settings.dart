@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 
-class AppSettings extends StatelessWidget {
+class AppSettings extends StatelessWidget { // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
+  // TODO: check role from the DB and change accordingly: might want to make a initShowLevel() function and call before the build widget
+  bool showSC = true, showIT = true;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,17 +22,18 @@ class AppSettings extends StatelessWidget {
         children: <Widget>[
           Card(
             child: ListTile(
-              title: Text('Change password'),
+              title: Text('Change password'), 
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return ChangePassword();
+                    return ChangePassword(); // Use Reset password screen?
                   }),
                 );
               },
             ),
           ),
+
           Card(
             child: ListTile(
               title: Text('Edit profile'),
@@ -36,13 +41,14 @@ class AppSettings extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return EditProfile();
+                    return EditProfile(showSC);
                   }),
                 );
               },
             ),
           ),
-          Card(
+                    
+          if (showIT) Card(
             child: ListTile(
               title: Text('Update account'),
               onTap: () {
@@ -55,7 +61,8 @@ class AppSettings extends StatelessWidget {
               },
             ),
           ),
-          Card(
+        
+          if (showIT) Card(
             child: ListTile(
               title: Text('Add account'),
               onTap: () {
@@ -81,7 +88,7 @@ class AppSettings extends StatelessWidget {
               },
             ),
           ),
-          Card(
+          if (showIT) Card( 
             child: ListTile(
               title: Text('Initiate election process'),
               onTap: () {
@@ -94,7 +101,7 @@ class AppSettings extends StatelessWidget {
               },
             ),
           ),
-          Card(
+          if (showIT) Card( 
             child: ListTile(
               title: Text('End election process'),
               onTap: () {
@@ -121,7 +128,7 @@ class AppSettings extends StatelessWidget {
   }
 }
 
-class ChangePassword extends StatelessWidget {
+class ChangePassword extends StatelessWidget { // TODO:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -139,18 +146,81 @@ class ChangePassword extends StatelessWidget {
 }
 
 class EditProfile extends StatelessWidget {
+  final bool showSC;
+  EditProfile(this.showSC);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+        ),
         title: Text(
-          'Edit Profile', // header
+          'Edit Profile',
           style: GoogleFonts.robotoSlab(
-              color: Colors.white,
               textStyle: Theme.of(context).textTheme.headline6),
         ),
+        backgroundColor: Colors.white,
       ),
-      body: Text('TODO: Edit Profile Screen'),
+      body: Form( // TODO: Backend part not done
+        child: SingleChildScrollView(
+          child: SafeArea(
+            minimum: EdgeInsets.all(30),
+            child: Column(children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: "Level"), //TODO: Drop down menu?
+              ),
+              SizedBox(height: 25),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Hostel Status"), //TODO: Drop down menu?
+              ),
+              SizedBox(height: 25),
+              TextFormField(
+                decoration: InputDecoration(labelText: "School"), //TODO: Drop down menu?
+              ),
+              SizedBox(height: 25),
+
+              if (showSC) TextFormField(
+                decoration: InputDecoration(labelText: "Office hours days"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
+              ),
+              if (showSC) SizedBox(height: 25),
+              
+              if (showSC) TextFormField(
+                decoration: InputDecoration(labelText: "Office hours time slot"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
+              ),
+              if (showSC) SizedBox(height: 25),
+
+              if (showSC) TextFormField(
+                decoration: InputDecoration(labelText: "Manifesto"),
+                 maxLines: null,
+              ),
+              if (showSC) SizedBox(height: 25),
+              SizedBox(
+                // Confirm Button
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton(
+                  // onPressed: () => validate(),
+                  onPressed: () => {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Row(children: <Widget>[
+                      Icon(
+                        Icons.error,
+                        color: Colors.white,
+                        semanticLabel: "Error",
+                      ),
+                      Text('TODO: Backend part not done')
+                    ])))
+                  },
+                  child: Text('Confirm',
+                      style: Theme.of(context).textTheme.headline5),
+                ),
+              ),
+            ]),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -239,3 +309,4 @@ class EndElection extends StatelessWidget {
     );
   }
 }
+
