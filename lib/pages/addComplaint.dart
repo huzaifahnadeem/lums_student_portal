@@ -1,0 +1,120 @@
+import 'dart:ui';
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
+
+import 'package:lums_student_portal/models/complaint.dart';
+import 'package:lums_student_portal/pages/settings.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/themes/progessIndicator.dart';
+
+class AddComplaint extends StatefulWidget {
+  @override
+  _AddComplaintState createState() => _AddComplaintState();
+}
+
+class _AddComplaintState extends State<AddComplaint> {
+  Complaint newComplaint = Complaint(subject: '', complaint: '');
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool loading = false;
+
+  // function to call when user pressed "Add Post" button
+  void validate() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        loading = true;
+      });
+      await newComplaint.addComplaintToDB();
+      setState(() {
+        loading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.done_all,
+          color: Colors.white,
+          semanticLabel: "Done",
+        ),
+        Text('Done')
+      ])));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: loading
+            ? LoadingScreen()
+            : SafeArea(
+                minimum: EdgeInsets.fromLTRB(30, 50, 30, 30),
+                child: SingleChildScrollView(
+                    child: Form(
+                  key: _formKey,
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Container(
+                      width: double.infinity,
+                      child: DropdownButton(
+                        hint: Text("Category"),
+                        isExpanded: true,
+                        value: newComplaint.tag,
+                        focusColor: Colors.red[400],
+                        dropdownColor: Colors.red[400],
+                        onChanged: (newVal) {
+                          setState(() {
+                            newComplaint.tag = newVal.toString();
+                          });
+                        },
+                        items: Complaint.categories.map((categoryItem) {
+                          return DropdownMenuItem(
+                            value: categoryItem,
+                            child: Text(categoryItem),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+
+                    // heading input field
+                    TextFormField(
+                      decoration: InputDecoration(
+                          labelText: "Add Subject", fillColor: Colors.white),
+                      validator: (val) => headingValidator(
+                          newComplaint.subject), // check subjet lenght
+                      onChanged: (val) {
+                        setState(() => newComplaint.subject = val);
+                      },
+                    ),
+
+                    SizedBox(height: 20),
+                    // content input field
+                    TextFormField(
+                      decoration: InputDecoration(
+                          labelText: "Write Complaint",
+                          fillColor: Colors.white,
+                          contentPadding: new EdgeInsets.symmetric(
+                              vertical: 80.0, horizontal: 10.0)),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      validator: (val) =>
+                          complaintValidator(newComplaint.complaint),
+                      onChanged: (val) {
+                        setState(() => newComplaint.complaint = val);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () => validate(),
+                        child: Text('Lodge Complaint',
+                            style: Theme.of(context).textTheme.headline5),
+                      ),
+                    ),
+                  ]),
+                ))));
+  }
+}
