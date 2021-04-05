@@ -33,7 +33,7 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double circleRadius = 75;
+    final double circleRadius = 80;
     fetchUserInfo();
 
     return Scaffold(
@@ -95,7 +95,7 @@ class Profile extends StatelessWidget {
                         ),
                         child: CircleAvatar(
                             radius:
-                                circleRadius + 5, // the profile avatar border
+                                circleRadius + 4, // the profile avatar border
                             backgroundColor: Colors.white,
                             child: CircleAvatar(
                               // backgroundImage: NetworkImage(

@@ -18,6 +18,7 @@ class StudentCouncil extends StatelessWidget {
                 )),
             centerTitle: true,
             bottom: TabBar(
+              indicatorColor: Colors.white,
               tabs: [
                 Tab(
                   text: "Profiles",
