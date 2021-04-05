@@ -3,26 +3,40 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 
-class AppSettings extends StatelessWidget { // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
+class AppSettings extends StatelessWidget {
+  // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
   // TODO: check role from the DB and change accordingly: might want to make a initShowLevel() function and call before the build widget
   bool showSC = true, showIT = true;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Settings',
-          style: GoogleFonts.robotoSlab(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline6),
+        iconTheme: IconThemeData(
+          color: Color(
+              0xFFEA5757), //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
         ),
+        title: Text(
+          'Settings', // TODO: looks off as compared to other screens (newsfeed etc) because it's centered and due to its font size/typeface. Need to discuss with others
+          style: GoogleFonts.robotoSlab(
+            color: Colors.black,
+            fontSize: 40.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.white,
       ),
       body: ListView(
         children: <Widget>[
+          const Divider(
+            height: 70,
+            thickness: 2,
+            indent: 20,
+            endIndent: 20,
+          ),
           Card(
             child: ListTile(
-              title: Text('Change password'), 
+              title: Text('Change password'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -33,7 +47,6 @@ class AppSettings extends StatelessWidget { // TODO: adjust theme as per screens
               },
             ),
           ),
-
           Card(
             child: ListTile(
               title: Text('Edit profile'),
@@ -47,34 +60,34 @@ class AppSettings extends StatelessWidget { // TODO: adjust theme as per screens
               },
             ),
           ),
-                    
-          if (showIT) Card(
-            child: ListTile(
-              title: Text('Update account'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return UpdateAccount();
-                  }),
-                );
-              },
+          if (showIT)
+            Card(
+              child: ListTile(
+                title: Text('Update account'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return UpdateAccount();
+                    }),
+                  );
+                },
+              ),
             ),
-          ),
-        
-          if (showIT) Card(
-            child: ListTile(
-              title: Text('Add account'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return AddAccount();
-                  }),
-                );
-              },
+          if (showIT)
+            Card(
+              child: ListTile(
+                title: Text('Add account'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return AddAccount();
+                    }),
+                  );
+                },
+              ),
             ),
-          ),
           Card(
             child: ListTile(
               title: Text('About'),
@@ -88,32 +101,34 @@ class AppSettings extends StatelessWidget { // TODO: adjust theme as per screens
               },
             ),
           ),
-          if (showIT) Card( 
-            child: ListTile(
-              title: Text('Initiate election process'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return InitiateElection();
-                  }),
-                );
-              },
+          if (showIT)
+            Card(
+              child: ListTile(
+                title: Text('Initiate election process'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return InitiateElection();
+                    }),
+                  );
+                },
+              ),
             ),
-          ),
-          if (showIT) Card( 
-            child: ListTile(
-              title: Text('End election process'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return EndElection();
-                  }),
-                );
-              },
+          if (showIT)
+            Card(
+              child: ListTile(
+                title: Text('End election process'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return EndElection();
+                    }),
+                  );
+                },
+              ),
             ),
-          ),
           Card(
             child: ListTile(
                 title: Text('Log out'),
@@ -128,7 +143,8 @@ class AppSettings extends StatelessWidget { // TODO: adjust theme as per screens
   }
 }
 
-class ChangePassword extends StatelessWidget { // TODO:
+class ChangePassword extends StatelessWidget {
+  // TODO:
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,7 +170,8 @@ class EditProfile extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+          color: Colors
+              .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
         ),
         title: Text(
           'Edit Profile',
@@ -163,38 +180,46 @@ class EditProfile extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
       ),
-      body: Form( // TODO: Backend part not done
+      body: Form(
+        // TODO: Backend part not done
         child: SingleChildScrollView(
           child: SafeArea(
             minimum: EdgeInsets.all(30),
             child: Column(children: <Widget>[
               TextFormField(
-                decoration: InputDecoration(labelText: "Level"), //TODO: Drop down menu?
+                decoration:
+                    InputDecoration(labelText: "Level"), //TODO: Drop down menu?
               ),
               SizedBox(height: 25),
               TextFormField(
-                decoration: InputDecoration(labelText: "Hostel Status"), //TODO: Drop down menu?
+                decoration: InputDecoration(
+                    labelText: "Hostel Status"), //TODO: Drop down menu?
               ),
               SizedBox(height: 25),
               TextFormField(
-                decoration: InputDecoration(labelText: "School"), //TODO: Drop down menu?
+                decoration: InputDecoration(
+                    labelText: "School"), //TODO: Drop down menu?
               ),
               SizedBox(height: 25),
-
-              if (showSC) TextFormField(
-                decoration: InputDecoration(labelText: "Office hours days"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
-              ),
+              if (showSC)
+                TextFormField(
+                  decoration: InputDecoration(
+                      labelText:
+                          "Office hours days"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
+                ),
               if (showSC) SizedBox(height: 25),
-              
-              if (showSC) TextFormField(
-                decoration: InputDecoration(labelText: "Office hours time slot"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
-              ),
+              if (showSC)
+                TextFormField(
+                  decoration: InputDecoration(
+                      labelText:
+                          "Office hours time slot"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
+                ),
               if (showSC) SizedBox(height: 25),
-
-              if (showSC) TextFormField(
-                decoration: InputDecoration(labelText: "Manifesto"),
-                 maxLines: null,
-              ),
+              if (showSC)
+                TextFormField(
+                  decoration: InputDecoration(labelText: "Manifesto"),
+                  maxLines: null,
+                ),
               if (showSC) SizedBox(height: 25),
               SizedBox(
                 // Confirm Button
@@ -228,22 +253,11 @@ class EditProfile extends StatelessWidget {
 class UpdateAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     title: Text(
-    //       'Update Account', // header
-    //       style: GoogleFonts.robotoSlab(
-    //           color: Colors.white,
-    //           textStyle: Theme.of(context).textTheme.headline6),
-    //     ),
-    //   ),
-    //   body: Text('TODO: Update Account Screen'),
-    // );
-    
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+          color: Colors
+              .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
         ),
         title: Text(
           'Update Account', // header
@@ -252,21 +266,31 @@ class UpdateAccount extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
       ),
-      body: Form( // TODO: Backend part not done
+      body: Form(
+        // TODO: Backend part not done
         child: SingleChildScrollView(
           child: SafeArea(
             minimum: EdgeInsets.all(30),
             child: Column(children: <Widget>[
+              const Divider(
+                height: 40,
+                thickness: 2,
+                indent: 20,
+                endIndent: 20,
+              ),
               TextFormField(
-                decoration: InputDecoration(labelText: "Username"), //TODO: validation check
+                decoration: InputDecoration(
+                    labelText: "Username"), //TODO: validation check
               ),
               SizedBox(height: 25),
               TextFormField(
-                decoration: InputDecoration(labelText: "Role"), //TODO: Drop down menu?
+                decoration:
+                    InputDecoration(labelText: "Role"), //TODO: Drop down menu?
               ),
               SizedBox(height: 25),
               TextFormField(
-                decoration: InputDecoration(labelText: "Category"), //TODO: Drop down menu?
+                decoration: InputDecoration(
+                    labelText: "Category"), //TODO: Drop down menu?
               ),
               SizedBox(height: 25),
               SizedBox(
@@ -295,7 +319,6 @@ class UpdateAccount extends StatelessWidget {
         ),
       ),
     );
-    
   }
 }
 
@@ -311,7 +334,8 @@ class AddAccount extends StatelessWidget {
               textStyle: Theme.of(context).textTheme.headline6),
         ),
       ),
-      body: Text('TODO: Add Account Screen. Also, is this screen really needed?'),
+      body:
+          Text('TODO: Add Account Screen. Also, is this screen really needed?'),
     );
   }
 }
@@ -328,7 +352,8 @@ class About extends StatelessWidget {
               textStyle: Theme.of(context).textTheme.headline6),
         ),
       ),
-      body: Text('TODO: About Sceen'),
+      body: Text(
+          " TODO: About Sceen's styling etc.\n CS 360 Project: LUMS Student Portal\n By: Group 04\n For: LUMS Student Council\n App Version: v0.1.0"),
     );
   }
 }
@@ -366,4 +391,3 @@ class EndElection extends StatelessWidget {
     );
   }
 }
-

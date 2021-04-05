@@ -4,9 +4,7 @@ import 'package:lums_student_portal/models/post.dart';
 import 'newsfeed.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
-
-
-
+import 'package:lums_student_portal/pages/studentCouncil.dart'; // for Student Council screen
 
 class Home extends StatefulWidget {
   @override
@@ -120,7 +118,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
       ],
       [Text("Complaints")],
-      [Text("SC Profiles")],
+      [StudentCouncil()],
       [Profile()],
     ] ;
     return views[_selectedIndex];
@@ -131,7 +129,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _selectedIndex == 3? null:AppBar(
+      appBar: _selectedIndex >= 2? null:AppBar(
         title: Align( alignment: Alignment.topLeft,child: Text(appBarTitles[_selectedIndex])),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [ _selectedIndex == 0 ? Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
