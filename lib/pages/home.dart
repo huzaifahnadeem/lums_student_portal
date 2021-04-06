@@ -119,7 +119,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       ],
       [Text("Complaints")],
       [StudentCouncil()],
-      [Profile()],
+      [Profile(who: "self")], // who is used to specify whose profile you want to see. "self" keyword is used for own profile. For SC members pass their UID in who field as string
     ] ;
     return views[_selectedIndex];
   }

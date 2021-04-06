@@ -4,19 +4,21 @@ import 'package:lums_student_portal/Backend/authentication.dart';
 
 class AppSettings extends StatelessWidget {
   // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
-  String role = "Student";
-  bool showSC = false, showIT = false;
+  late final String role;
+  late final bool showSC, showIT;
   
   AppSettings({required this.role});
 
   @override
   Widget build(BuildContext context) {
     if (role == "SC") {
-      showSC = true;
+      showSC = true; showIT = false;
     }
     else if (role == "IT") {
-      showSC = true;
-      showIT = true;
+      showSC = true; showIT = true;
+    } 
+    else { // role == "Student"
+      showSC = false; showIT = false;
     }
 
     return Scaffold(

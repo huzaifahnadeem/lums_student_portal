@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 
 class StudentCouncil extends StatelessWidget {
   @override
@@ -50,7 +51,7 @@ class StudentCouncil extends StatelessWidget {
                       //   Navigator.push(
                       //     context,
                       //     MaterialPageRoute(builder: (context) {
-                      //       return ChangePassword(); // Use Reset password screen?
+                      //       return functionName(); // function returns a widget
                       //     }),
                       //   );
                       // },
@@ -70,10 +71,30 @@ class StudentCouncil extends StatelessWidget {
                       //   Navigator.push(
                       //     context,
                       //     MaterialPageRoute(builder: (context) {
-                      //       return ChangePassword(); // Use Reset password screen?
+                      //       return functionName(); // function returns a widget
                       //     }),
                       //   );
                       // },
+                    ),
+                  ),
+                  Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage:
+                            AssetImage("assets/default-avatar.png"),
+                        backgroundColor: Colors.grey,
+                        radius: 30,
+                      ),
+                      title: Text('Suleman Khan'),
+                      subtitle: Text('Here is a second line'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return Profile(who: "BdRsMNRDAWSdKCno0xsVzoLf3Ur1",); // Hard-coded Suleman's UID for testing purposes
+                          }),
+                        );
+                      },
                     ),
                   ),
                 ],

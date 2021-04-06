@@ -6,14 +6,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Profile extends StatefulWidget {
+  late final String who;
+  Profile({required this.who});
+
   @override
-  _ProfileState createState() => _ProfileState();
+  _ProfileState createState() => _ProfileState(who: who);
 }
 
 class _ProfileState extends State<Profile> {
+  late final String who;
+  _ProfileState({required this.who});
+
   // member variables
   FirebaseFirestore _db = FirebaseFirestore.instance;
-  User? thisUser = FirebaseAuth.instance.currentUser;
+  late final User? thisUser = FirebaseAuth.instance.currentUser;
   late Stream<DocumentSnapshot?> _streamOfProfileData;
 
   String name = "none";
@@ -27,12 +33,12 @@ class _ProfileState extends State<Profile> {
   String pictureURL = "default";
   String role = "Student";
 
-  bool showSettings =
-      true; // false when using this page to display profiles of SC. True when visiting own profile
-
   void initState() {
-    _streamOfProfileData =
-        _db.collection("Profiles").doc(thisUser!.uid).snapshots();
+    who == "self"
+    ? _streamOfProfileData =
+        _db.collection("Profiles").doc(thisUser!.uid).snapshots()
+    : _streamOfProfileData =
+        _db.collection("Profiles").doc(who).snapshots();
     super.initState();
   }
 
@@ -41,7 +47,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Profile', // TODO: looks off as compared to other screens (newsfeed etc) because it's centered and due to its font size/typeface. Need to discuss with others
+          'Profile', 
           style: GoogleFonts.robotoSlab(
             color: Colors.white,
             fontSize: 40.0,
@@ -50,7 +56,7 @@ class _ProfileState extends State<Profile> {
         ),
         backgroundColor: Color(0xFFEA5757),
         actions: <Widget>[
-          if (showSettings)
+          if (who == "self")
             IconButton(
               icon: Icon(
                 Icons.settings,
