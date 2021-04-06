@@ -4,11 +4,21 @@ import 'package:lums_student_portal/Backend/authentication.dart';
 
 class AppSettings extends StatelessWidget {
   // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
-  // TODO: check role from the DB and change accordingly: might want to make a initShowLevel() function and call before the build widget
-  bool showSC = true, showIT = true;
+  String role = "Student";
+  bool showSC = false, showIT = false;
+  
+  AppSettings({required this.role});
 
   @override
   Widget build(BuildContext context) {
+    if (role == "SC") {
+      showSC = true;
+    }
+    else if (role == "IT") {
+      showSC = true;
+      showIT = true;
+    }
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
@@ -68,20 +78,6 @@ class AppSettings extends StatelessWidget {
                     context,
                     MaterialPageRoute(builder: (context) {
                       return UpdateAccount();
-                    }),
-                  );
-                },
-              ),
-            ),
-          if (showIT)
-            Card(
-              child: ListTile(
-                title: Text('Add account'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return AddAccount();
                     }),
                   );
                 },
@@ -317,24 +313,6 @@ class UpdateAccount extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class AddAccount extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Add Account', // header
-          style: GoogleFonts.robotoSlab(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline6),
-        ),
-      ),
-      body:
-          Text('TODO: Add Account Screen. Also, is this screen really needed?'),
     );
   }
 }

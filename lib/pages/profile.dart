@@ -25,7 +25,7 @@ class _ProfileState extends State<Profile> {
   String officeHours = "none";
   String manifesto = "none";
   String pictureURL = "default";
-  // role
+  String role = "Student";
 
   bool showSettings =
       true; // false when using this page to display profiles of SC. True when visiting own profile
@@ -60,7 +60,7 @@ class _ProfileState extends State<Profile> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return AppSettings();
+                    return AppSettings(role: role);
                   }),
                 );
               },
@@ -224,6 +224,8 @@ class _ProfileState extends State<Profile> {
           } else if (snapshot.hasData) {
             
             name = snapshot.data!["name"];
+
+            role = snapshot.data!["role"];
             
             rollno = snapshot.data!["email"];
             rollno = rollno.substring(0, 8); // extracting roll no from email
@@ -256,7 +258,6 @@ class _ProfileState extends State<Profile> {
             try {
               pictureURL = snapshot.data!["picture"];
             } catch (e) {}
-            // role
 
             return ProfileBody();
           } else {
