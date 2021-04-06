@@ -5,37 +5,39 @@ import 'package:lums_student_portal/pages/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// TODO: make variables such as avatar radius, text sizes, colors etc to make them easily changeable from one location
-
-// Temp data:
-String name =
-    "Name Placeholder"; // TODO: for placeholder, maybe do that box placeholder animation thing such as the one in fb. screenshotted
-final rollno = "22100079";
-final year = "Junior";
-final dept = "Campus Dev.";
-final residenceStatus = "Hostel";
-final schoolMajor = "SSE: CS";
-final officeHours = "day and time";
-final manifesto =
-    "Note: Only Name is fetched from DB. Rest of the things are not fetched and placed yet or are placeholders .Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-
-// TODO: works OK but only name is fetched. Rest of the things are not fetched and placed yet or are placeholders
-void fetchUserInfo() async {
-  User? thisUser = FirebaseAuth.instance.currentUser;
-  FirebaseFirestore _db = FirebaseFirestore.instance;
-  var document = await _db.collection('Profiles').doc(thisUser!.uid).get();
-  name = document.data()!["name"];
+class Profile extends StatefulWidget {
+  @override
+  _ProfileState createState() => _ProfileState();
 }
 
-class Profile extends StatelessWidget {
+class _ProfileState extends State<Profile> {
+  // member variables
+  FirebaseFirestore _db = FirebaseFirestore.instance;
+  User? thisUser = FirebaseAuth.instance.currentUser;
+  late Stream<DocumentSnapshot?> _streamOfProfileData;
+
+  String name = "none";
+  String rollno = "none";
+  String year = "none";
+  String dept = "none";
+  String residenceStatus = "none";
+  String schoolMajor = "none";
+  String officeHours = "none";
+  String manifesto = "none";
+  String pictureURL = "default";
+  // role
+
   bool showSettings =
       true; // false when using this page to display profiles of SC. True when visiting own profile
 
-  @override
-  Widget build(BuildContext context) {
-    final double circleRadius = 80;
-    fetchUserInfo();
+  void initState() {
+    _streamOfProfileData =
+        _db.collection("Profiles").doc(thisUser!.uid).snapshots();
+    super.initState();
+  }
 
+  Widget ProfileBody() {
+    final double circleRadius = 80;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -65,7 +67,7 @@ class Profile extends StatelessWidget {
             )
         ],
       ),
-      body: ListView( // TODO: add If not null dept etc checks
+      body: ListView(
         children: [
           Stack(
             children: <Widget>[
@@ -97,15 +99,17 @@ class Profile extends StatelessWidget {
                             radius:
                                 circleRadius + 4, // the profile avatar border
                             backgroundColor: Colors.white,
-                            child: CircleAvatar(
-                              // backgroundImage: NetworkImage(
-                              //   "https://image.flaticon.com/icons/png/512/147/147144.png"
-                              // ),
-                              backgroundImage:
-                                  AssetImage("assets/default-avatar.png"),
-                              backgroundColor: Colors.grey,
-                              radius: circleRadius,
-                            )),
+                            child: pictureURL == "default"
+                                ? CircleAvatar(
+                                    backgroundImage:
+                                        AssetImage("assets/default-avatar.png"),
+                                    backgroundColor: Colors.grey,
+                                    radius: circleRadius,
+                                  )
+                                : CircleAvatar(
+                                    backgroundImage: NetworkImage(pictureURL),
+                                    radius: circleRadius,
+                                  )),
                       ),
                       SizedBox(
                         height: 10.0,
@@ -142,36 +146,36 @@ class Profile extends StatelessWidget {
                       fontSize: 18.0,
                     ),
                   ),
-                  Text(
+                  if (year != "none") Text(
                     year,
                     style: GoogleFonts.robotoSlab(
                       color: Color(0xFF808080),
                       fontSize: 18.0,
                     ),
                   ),
-                  Text(
+                  if (dept != "none") Text(
                     dept,
                     style: GoogleFonts.robotoSlab(
                       color: Color(0xFF808080),
                       fontSize: 18.0,
                     ),
                   ),
-                  Text(
+                  if (residenceStatus != "none") Text(
                     residenceStatus,
                     style: GoogleFonts.robotoSlab(
                       color: Color(0xFF808080),
                       fontSize: 18.0,
                     ),
                   ),
-                  Text(
+                  if (schoolMajor != "none") Text(
                     schoolMajor,
                     style: GoogleFonts.robotoSlab(
                       color: Color(0xFF808080),
                       fontSize: 18.0,
                     ),
                   ),
-                  SizedBox( height: 15.0 ),
-                  Text(
+                  if (officeHours != "none") SizedBox(height: 15.0),
+                  if (officeHours != "none") Text(
                     "Office Hours: " + officeHours,
                     style: GoogleFonts.robotoSlab(
                       color: Colors.black,
@@ -186,16 +190,9 @@ class Profile extends StatelessWidget {
                   //       fontStyle: FontStyle.normal,
                   //       fontSize: 28.0),
                   // ),
-                  SizedBox( height: 15.0 ),
-                  Text(
-                    "Manifesto:",
-                    style: GoogleFonts.robotoSlab(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                    ),
-                  ),
-                  Text(
-                    manifesto,
+                  SizedBox(height: 15.0),
+                  if (manifesto != "none") Text(
+                    "Manifesto:\n" + manifesto,
                     style: GoogleFonts.robotoSlab(
                       color: Colors.black,
                       fontSize: 18.0,
@@ -212,4 +209,63 @@ class Profile extends StatelessWidget {
       ),
     );
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot?>(
+        stream: _streamOfProfileData,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("An Error Occured"),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          } else if (snapshot.hasData) {
+            
+            name = snapshot.data!["name"];
+            
+            rollno = snapshot.data!["email"];
+            rollno = rollno.substring(0, 8); // extracting roll no from email
+            
+            try {
+              year = snapshot.data!["year"];
+            } catch (e) {}
+            
+            try {
+              dept = snapshot.data!["dept"];
+            } catch (e) {}
+            
+            try {
+              residenceStatus = snapshot.data!["residence_status"];
+            } catch (e) {}
+            
+            try {
+              schoolMajor = snapshot.data!["school"];
+              schoolMajor = schoolMajor + ": " + snapshot.data!["major"];
+            } catch (e) {}
+            
+            try {
+              officeHours = snapshot.data!["office_hours"];
+            } catch (e) {}
+
+            try {
+              manifesto = snapshot.data!["manifesto"];
+            } catch (e) {}
+            
+            try {
+              pictureURL = snapshot.data!["picture"];
+            } catch (e) {}
+            // role
+
+            return ProfileBody();
+          } else {
+            return Center(
+              child: Text("Please try later"),
+            );
+          }
+        });
+  }
 }
+
+// TOOO: I think we should add an update profile button at the end that links to the settings -> update profile page
