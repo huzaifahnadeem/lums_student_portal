@@ -31,10 +31,9 @@ class AppSettings extends StatelessWidget {
         title: Text(
           'Settings', // TODO: looks off as compared to other screens (newsfeed etc) because it's centered and due to its font size/typeface. Need to discuss with others
           style: GoogleFonts.robotoSlab(
-            color: Colors.black,
-            fontSize: 40.0,
-            fontWeight: FontWeight.bold,
-          ),
+              color: Colors.black,
+              textStyle: Theme.of(context).textTheme.headline6
+              ),
         ),
         backgroundColor: Colors.white,
       ),

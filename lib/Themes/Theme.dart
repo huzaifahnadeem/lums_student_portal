@@ -51,8 +51,8 @@ TextTheme createTextTheme (){
     // for App Bar Titles
     headline6: initial.headline1!.copyWith(
       color: Colors.black,
-      fontSize: 30,
-      fontWeight: FontWeight.w700,
+      fontSize: 40,
+      fontWeight: FontWeight.bold,
       letterSpacing: 1.5,
     ),
     // For Normal Text

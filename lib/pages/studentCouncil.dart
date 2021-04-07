@@ -13,10 +13,10 @@ class StudentCouncil extends StatelessWidget {
             backgroundColor: Color(0xFFEA5757),
             title: Text('Student Council', // header
                 style: GoogleFonts.robotoSlab(
-                  color: Colors.white,
-                  fontSize: 40.0,
-                  fontWeight: FontWeight.bold,
-                )),
+              color: Colors.white,
+              textStyle: Theme.of(context).textTheme.headline6
+              ),
+                ),
             centerTitle: true,
             bottom: TabBar(
               indicatorColor: Colors.white,
