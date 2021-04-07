@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart'; // Firebase's core functionality plugin
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication service
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/signUpOrLogin.dart';
+import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/addPost.dart';
 import 'package:lums_student_portal/pages/home.dart';
+import 'package:lums_student_portal/pages/poll.dart';
+import 'package:lums_student_portal/pages/updatePost.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
 import 'package:lums_student_portal/themes/Theme.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FlutterDownloader.initialize(
-      debug: true // optional: set false to disable printing logs to console
-  );
   runApp(App());
 }
 
 class App extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,13 +31,34 @@ class App extends StatelessWidget {
         brightness: Brightness.light,
         snackBarTheme: createSnackBarTheme(),
         buttonTheme: createButtonTheme(),
+        accentColor: Colors.red
       ),
       initialRoute: '/',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (BuildContext context) => LandingPage(),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        // '/AddPost': (BuildContext context) => AddPost(),
+      onGenerateRoute: (settings) {
+        // If you push the PassArguments route
+        if (settings.name == '/') {
+          return MaterialPageRoute(
+            builder: (context) { return LandingPage();},
+          );
+        }
+        else if (settings.name == '/AddPost') {
+          return MaterialPageRoute(
+            builder: (context) { return AddPost();},
+          );
+        }
+        else if (settings.name == '/UpdatePost') {
+          final Post post = settings.arguments as Post;
+          return MaterialPageRoute(
+            builder: (context) { return UpdatePost(post: post);},
+          );
+        }
+        else if (settings.name == '/poll') {
+          final String id = settings.arguments as String;
+          return MaterialPageRoute(
+            builder: (context) { return Poll(id: id);},
+          );
+        }
+
       },
     );
   }
