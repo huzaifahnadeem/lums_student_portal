@@ -8,6 +8,7 @@ import 'package:lums_student_portal/pages/addPost.dart';
 import 'package:lums_student_portal/pages/home.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
 import 'package:lums_student_portal/themes/Theme.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
 
 void main() async {
@@ -75,7 +76,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return (!_initialized) ? Scaffold(body: Center(child: CircularProgressIndicator())) : StreamBuilder<User?>( // splash screen called here
+    return (!_initialized) ? LoadingScreen() : StreamBuilder<User?>( // splash screen called here
       stream: _streamOfAuthChanges,
       builder: (context, snapshot){
         if (snapshot.hasData){

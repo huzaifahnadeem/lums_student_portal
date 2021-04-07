@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/pages/settings.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
+
+// TODO: I think we should add an update profile button at the end that links to the settings -> update profile page
 
 class Profile extends StatefulWidget {
   late final String who;
@@ -35,10 +37,10 @@ class _ProfileState extends State<Profile> {
 
   void initState() {
     who == "self"
-    ? _streamOfProfileData =
-        _db.collection("Profiles").doc(thisUser!.uid).snapshots()
-    : _streamOfProfileData =
-        _db.collection("Profiles").doc(who).snapshots();
+        ? _streamOfProfileData =
+            _db.collection("Profiles").doc(thisUser!.uid).snapshots()
+        : _streamOfProfileData =
+            _db.collection("Profiles").doc(who).snapshots();
     super.initState();
   }
 
@@ -47,14 +49,14 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Profile', 
+          'Profile',
           style: GoogleFonts.robotoSlab(
             color: Colors.white,
             fontSize: 40.0,
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Color(0xFFEA5757),
+        backgroundColor: Theme.of(context).primaryColor, // Theme.of(context).primaryColor = Color(0xFFEA5757)
         actions: <Widget>[
           if (who == "self")
             IconButton(
@@ -78,7 +80,7 @@ class _ProfileState extends State<Profile> {
           Stack(
             children: <Widget>[
               Container(
-                color: Color(0xFFEA5757),
+                color: Theme.of(context).primaryColor,
                 height: 120.0,
               ),
               Container(
@@ -152,42 +154,47 @@ class _ProfileState extends State<Profile> {
                       fontSize: 18.0,
                     ),
                   ),
-                  if (year != "none") Text(
-                    year,
-                    style: GoogleFonts.robotoSlab(
-                      color: Color(0xFF808080),
-                      fontSize: 18.0,
+                  if (year != "none")
+                    Text(
+                      year,
+                      style: GoogleFonts.robotoSlab(
+                        color: Color(0xFF808080),
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
-                  if (dept != "none") Text(
-                    dept,
-                    style: GoogleFonts.robotoSlab(
-                      color: Color(0xFF808080),
-                      fontSize: 18.0,
+                  if (dept != "none")
+                    Text(
+                      dept,
+                      style: GoogleFonts.robotoSlab(
+                        color: Color(0xFF808080),
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
-                  if (residenceStatus != "none") Text(
-                    residenceStatus,
-                    style: GoogleFonts.robotoSlab(
-                      color: Color(0xFF808080),
-                      fontSize: 18.0,
+                  if (residenceStatus != "none")
+                    Text(
+                      residenceStatus,
+                      style: GoogleFonts.robotoSlab(
+                        color: Color(0xFF808080),
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
-                  if (schoolMajor != "none") Text(
-                    schoolMajor,
-                    style: GoogleFonts.robotoSlab(
-                      color: Color(0xFF808080),
-                      fontSize: 18.0,
+                  if (schoolMajor != "none")
+                    Text(
+                      schoolMajor,
+                      style: GoogleFonts.robotoSlab(
+                        color: Color(0xFF808080),
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
                   if (officeHours != "none") SizedBox(height: 15.0),
-                  if (officeHours != "none") Text(
-                    "Office Hours: " + officeHours,
-                    style: GoogleFonts.robotoSlab(
-                      color: Colors.black,
-                      fontSize: 18.0,
+                  if (officeHours != "none")
+                    Text(
+                      "Office Hours: " + officeHours,
+                      style: GoogleFonts.robotoSlab(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
                   // I think headings like this look nice but not using it currently to make it consistent with the figma screens
                   // Text(
                   //   "Manifesto:",
@@ -197,13 +204,14 @@ class _ProfileState extends State<Profile> {
                   //       fontSize: 28.0),
                   // ),
                   SizedBox(height: 15.0),
-                  if (manifesto != "none") Text(
-                    "Manifesto:\n" + manifesto,
-                    style: GoogleFonts.robotoSlab(
-                      color: Colors.black,
-                      fontSize: 18.0,
+                  if (manifesto != "none")
+                    Text(
+                      "Manifesto:\n" + manifesto,
+                      style: GoogleFonts.robotoSlab(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -226,33 +234,32 @@ class _ProfileState extends State<Profile> {
               child: Text("An Error Occured"),
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(body: Center(child: CircularProgressIndicator()));
+            return LoadingScreen();
           } else if (snapshot.hasData) {
-            
             name = snapshot.data!["name"];
 
             role = snapshot.data!["role"];
-            
+
             rollno = snapshot.data!["email"];
             rollno = rollno.substring(0, 8); // extracting roll no from email
-            
+
             try {
               year = snapshot.data!["year"];
             } catch (e) {}
-            
+
             try {
               dept = snapshot.data!["dept"];
             } catch (e) {}
-            
+
             try {
               residenceStatus = snapshot.data!["residence_status"];
             } catch (e) {}
-            
+
             try {
               schoolMajor = snapshot.data!["school"];
               schoolMajor = schoolMajor + ": " + snapshot.data!["major"];
             } catch (e) {}
-            
+
             try {
               officeHours = snapshot.data!["office_hours"];
             } catch (e) {}
@@ -260,7 +267,7 @@ class _ProfileState extends State<Profile> {
             try {
               manifesto = snapshot.data!["manifesto"];
             } catch (e) {}
-            
+
             try {
               pictureURL = snapshot.data!["picture"];
             } catch (e) {}
@@ -274,5 +281,3 @@ class _ProfileState extends State<Profile> {
         });
   }
 }
-
-// TOOO: I think we should add an update profile button at the end that links to the settings -> update profile page

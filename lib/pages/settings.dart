@@ -6,26 +6,27 @@ class AppSettings extends StatelessWidget {
   // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
   late final String role;
   late final bool showSC, showIT;
-  
+
   AppSettings({required this.role});
 
   @override
   Widget build(BuildContext context) {
     if (role == "SC") {
-      showSC = true; showIT = false;
-    }
-    else if (role == "IT") {
-      showSC = true; showIT = true;
-    } 
-    else { // role == "Student"
-      showSC = false; showIT = false;
+      showSC = true;
+      showIT = false;
+    } else if (role == "IT") {
+      showSC = true;
+      showIT = true;
+    } else {
+      // role == "Student"
+      showSC = false;
+      showIT = false;
     }
 
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: Color(
-              0xFFEA5757), //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+          color: Theme.of(context).primaryColor, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
         ),
         title: Text(
           'Settings', // TODO: looks off as compared to other screens (newsfeed etc) because it's centered and due to its font size/typeface. Need to discuss with others
@@ -158,9 +159,21 @@ class ChangePassword extends StatelessWidget {
   }
 }
 
-class EditProfile extends StatelessWidget {
+/// This is the stateful widget that the main application instantiates.
+class EditProfile extends StatefulWidget {
   final bool showSC;
   EditProfile(this.showSC);
+  @override
+  _EditProfileState createState() => _EditProfileState(showSC);
+}
+
+/// This is the private State class that goes with MyStatefulWidget.
+class _EditProfileState extends State<EditProfile> {
+  final bool showSC;
+  String residenceSelection = 'Select Residence Status';
+  String yearSelection = 'Select Your Year';
+  String schoolSelection = 'Select Your School';
+  _EditProfileState(this.showSC);
 
   @override
   Widget build(BuildContext context) {
@@ -183,19 +196,58 @@ class EditProfile extends StatelessWidget {
           child: SafeArea(
             minimum: EdgeInsets.all(30),
             child: Column(children: <Widget>[
-              TextFormField(
-                decoration:
-                    InputDecoration(labelText: "Level"), //TODO: Drop down menu?
+              DropdownButtonFormField<String>(
+                value: yearSelection,
+                icon: const Icon(Icons.arrow_drop_down), 
+                style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
+                onChanged: (String? newValue) {
+                  setState(() {
+                    yearSelection = newValue!;
+                  });
+                },
+                items: <String>['Select Your Year','First-Year', 'Sophomore', 'Junior', 'Senior', 'Fifth-Year']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               SizedBox(height: 25),
-              TextFormField(
-                decoration: InputDecoration(
-                    labelText: "Hostel Status"), //TODO: Drop down menu?
+              DropdownButtonFormField<String>(
+                value: residenceSelection,
+                icon: const Icon(Icons.arrow_drop_down), 
+                style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
+                onChanged: (String? newValue) {
+                  setState(() {
+                    residenceSelection = newValue!;
+                  });
+                },
+                items: <String>['Select Residence Status','Hostelite', 'Day Scholar']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               SizedBox(height: 25),
-              TextFormField(
-                decoration: InputDecoration(
-                    labelText: "School"), //TODO: Drop down menu?
+              DropdownButtonFormField<String>(
+                value: schoolSelection,
+                icon: const Icon(Icons.arrow_drop_down), 
+                style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
+                onChanged: (String? newValue) {
+                  setState(() {
+                    schoolSelection = newValue!;
+                  });
+                },
+                items: <String>['Select Your School', 'MGSHSS', 'SAHSOL', 'SBASSE', 'SDSB', 'SOE']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
               SizedBox(height: 25),
               if (showSC)
