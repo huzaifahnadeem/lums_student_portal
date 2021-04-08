@@ -11,21 +11,30 @@ import 'package:lums_student_portal/themes/progessIndicator.dart';
 // check android ios file and image picker configs
 
 
-class AddPost extends StatefulWidget {
+class UpdatePost extends StatefulWidget {
+  final Post post ;
+  UpdatePost({required this.post, Key? key}): super(key: key);
   @override
-  _AddPostState createState() => _AddPostState();
+  _UpdatePostState createState() => _UpdatePostState();
 }
 
-class _AddPostState extends State<AddPost> {
+class _UpdatePostState extends State<UpdatePost> {
 
   // declaring state variables
-  Post newPost = Post(subject: '', content: '');
   GlobalKey<FormState> _formKey = GlobalKey<FormState>() ;
   final filePicker = FilePicker.platform;
   bool loading =  false ;
+  bool imageReset = false;
+  bool fileReset = false;
 
   // prompt user to select a picture from gallery
   void selectPicture() async{
+    if (imageReset == false){
+      imageReset = true ;
+      print("About to delete pictures");
+      bool result = await widget.post.deletePicture();
+      widget.post.pictureURL = [] ;
+    }
     FilePickerResult? result = await filePicker.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
@@ -33,34 +42,40 @@ class _AddPostState extends State<AddPost> {
     );
     // ignore: unnecessary_null_comparison
     if(result != null) {
-      newPost.images = result.paths.map((path) => File(path!)).toList();
+      widget.post.images = result.paths.map((path) => File(path!)).toList();
       setState(() {
-        newPost.pictureChosen = true;
+        widget.post.pictureChosen = true;
       });
     } else {
       setState(() {
-        newPost.pictureChosen = false ;
-        newPost.images = [];
+        widget.post.pictureChosen = false ;
+        widget.post.images = [];
       });
     }
   }
 
   // prompt the user to pick file from device
   void selectFile() async{
+    if (fileReset == false){
+      fileReset = true;
+      bool result = await widget.post.deleteFile();
+      widget.post.filename = null ;
+      widget.post.fileURL = null ;
+    }
     FilePickerResult? result = await filePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'pdf', 'doc']
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'pdf', 'doc']
     );
-    // ignore: unnecessary_null_comparison
+
     if(result != null) {
-       newPost.filename = (result.names[0]);
-       newPost.file = File(result.paths[0]!);
-       setState(() {
-         newPost.fileChosen = true;
-       });
+      widget.post.filename = (result.names[0]);
+      widget.post.file = File(result.paths[0]!);
+      setState(() {
+        widget.post.fileChosen = true;
+      });
     } else {
       setState(() {
-        newPost.fileChosen = false ;
+        widget.post.fileChosen = false ;
       });
     }
   }
@@ -72,7 +87,7 @@ class _AddPostState extends State<AddPost> {
       setState(() {
         loading = true;
       });
-      String result = await newPost.addObjectToDb();
+      String result = await widget.post.updateObjectToDb(fileReset,imageReset);
       setState(() {
         loading = false;
       });
@@ -92,7 +107,7 @@ class _AddPostState extends State<AddPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Post"),
+        title: Text("Update Post"),
       ),
       body: loading? LoadingScreen(): SafeArea(
         minimum: EdgeInsets.fromLTRB(30,10,30,30),
@@ -104,21 +119,23 @@ class _AddPostState extends State<AddPost> {
                 children: [
                   // heading input field
                   TextFormField(
+                    initialValue: widget.post.subject,
                     decoration: InputDecoration(labelText: "Heading...", fillColor: Colors.white),
-                    validator: (val) => headingValidator(newPost.subject),
+                    validator: (val) => headingValidator(widget.post.subject),
                     onChanged: (val) {
-                      setState(() => newPost.subject = val);
+                      setState(() => widget.post.subject = val);
                     },
                   ),
                   SizedBox(height: 20),
                   // content input field
                   TextFormField(
+                    initialValue: widget.post.content,
                     decoration: InputDecoration(labelText: "Write your post here...", fillColor: Colors.white),
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
-                    validator: (val) => postValidator(newPost.content),
+                    validator: (val) => postValidator(widget.post.content),
                     onChanged: (val) {
-                      setState(() => newPost.content = val);
+                      setState(() => widget.post.content = val);
                     },
                   ),
                   SizedBox(height: 20),
@@ -129,12 +146,12 @@ class _AddPostState extends State<AddPost> {
                       //decoration:  InputDecoration(hintText: "Select Category"),
                       hint: Text("Category"),
                       isExpanded: false,
-                      value: newPost.tag,
+                      value: widget.post.tag,
                       focusColor: Colors.red,
                       dropdownColor: Colors.red,
                       onChanged: (newVal) {
                         setState(() {
-                          newPost.tag = newVal.toString() ;
+                          widget.post.tag = newVal.toString() ;
                         });
                       },
                       items: Post.categories.map((categoryItem) {
@@ -147,21 +164,21 @@ class _AddPostState extends State<AddPost> {
                   ),
                   SizedBox(height: 20),
                   // number of poll options input drop down
-                  newPost.isPoll? Column(
+                  widget.post.isPoll? Column(
                     children: [
                       Align(alignment: Alignment.centerLeft, child: Text("Poll",)),
                       SizedBox(height: 10),
                       DropdownButtonFormField(
                         decoration:  InputDecoration(hintText: "Select number of options for your poll"),
                         isExpanded: true,
-                        value: newPost.numOptions,
+                        value: widget.post.numOptions,
                         onChanged: (newVal) {
                           setState(() {
-                            newPost.numOptions = int.parse(newVal.toString()) ;
-                            newPost.addOptions();
+                            widget.post.numOptions = int.parse(newVal.toString()) ;
+                            widget.post.addOptions();
                           });
                         },
-                        items: newPost.chooseNumOptions.map((num) {
+                        items: widget.post.chooseNumOptions.map((num) {
                           return DropdownMenuItem(
                             value: num ,
                             child: Text(num.toString() + " Options"),
@@ -171,12 +188,13 @@ class _AddPostState extends State<AddPost> {
                     ],
                   ) : Container() ,
                   // fill in poll options input fields
-                  (newPost.isPoll && newPost.numOptions > 1 && newPost.options != null) ? Column(
+                  (widget.post.isPoll && widget.post.numOptions > 1 && widget.post.options != null)? Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: newPost.options!.map((e) {
+                    children: widget.post.options!.map((e) {
                       return Padding(
                         padding: EdgeInsets.fromLTRB(0,10,0,10),
                         child: TextFormField(
+                          initialValue: e['option'],
                           decoration: InputDecoration(),
                           validator: (val) => headingValidator(e['option']),
                           onChanged: (val) {
@@ -190,7 +208,7 @@ class _AddPostState extends State<AddPost> {
                   ): Container(),
                   SizedBox(height: 20),
                   // display picture if chosen
-                  newPost.pictureChosen? Column(
+                  (widget.post.pictureChosen && imageReset) ? Column(
                       children:[
                         Align(alignment: Alignment.centerLeft,child: Text("Pictures",  style: Theme.of(context).textTheme.bodyText2,)),
                         SizedBox(height: 10,),
@@ -199,8 +217,25 @@ class _AddPostState extends State<AddPost> {
                             crossAxisSpacing: 10,
                             shrinkWrap: true,
                             crossAxisCount: 3,
-                            children: newPost.images.map((image) {
+                            children: widget.post.images.map((image) {
                               return Image.file(image,
+                                fit: BoxFit.cover,
+                              );
+                            }).toList()
+                        )
+                      ]
+                  ) : Container(),
+                  (widget.post.pictureChosen && imageReset == false) ? Column(
+                      children:[
+                        Align(alignment: Alignment.centerLeft,child: Text("Pictures",  style: Theme.of(context).textTheme.bodyText2,)),
+                        SizedBox(height: 10,),
+                        GridView.count(
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            shrinkWrap: true,
+                            crossAxisCount: 3,
+                            children: widget.post.pictureURL.map((url) {
+                              return Image.network(url,
                                 fit: BoxFit.cover,
                               );
                             }).toList()
@@ -209,11 +244,11 @@ class _AddPostState extends State<AddPost> {
                   ) : Container(),
                   SizedBox(height: 20),
                   // display file if chosen
-                  newPost.fileChosen? Column(
+                  (widget.post.fileChosen && fileReset) ? Column(
                     children: [
                       Align(alignment: Alignment.centerLeft ,child: Text("Files",  style: Theme.of(context).textTheme.bodyText2,)),
                       SizedBox(height: 10),
-                      Text(" ${newPost.filename}"),
+                      Text(" ${widget.post.filename}"),
                     ],
                   )  : Container(),
                   SizedBox(height: 20),
@@ -237,12 +272,12 @@ class _AddPostState extends State<AddPost> {
                         icon: new Icon(Icons.poll_outlined),
                         onPressed: () {
                           setState(() {
-                            newPost.isPoll = !newPost.isPoll ;
-                            newPost.numOptions = 2 ;
-                            if(newPost.isPoll == false){
-                              newPost.options = null;
-                              newPost.numOptions = 1 ;
-                              newPost.alreadyVoted = [];
+                            widget.post.isPoll = !widget.post.isPoll ;
+                            widget.post.numOptions = 2 ;
+                            if(widget.post.isPoll == false){
+                              widget.post.options = null;
+                              widget.post.numOptions = 1 ;
+                              widget.post.alreadyVoted = [];
                             }
                           });
                         } ,
@@ -257,7 +292,7 @@ class _AddPostState extends State<AddPost> {
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () => validate(),
-                      child: Text('Add Post',
+                      child: Text('Update Post',
                           style: Theme.of(context).textTheme.headline5),
                     ),
                   ),

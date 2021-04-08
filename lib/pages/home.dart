@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/models/post.dart';
+import 'package:lums_student_portal/pages/saved.dart';
 import 'newsfeed.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
@@ -14,7 +15,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   // creating state variables
   static String filter = "General";
-  static ScrollController scrollController = new ScrollController();
+  //late ScrollController scrollController ;
   bool _showFloatingActionButton = true;
   late int _selectedIndex ; // current index of the bottom bar button selected
   late int _numTabs ; // number of tabs to display on each screen - for example 3 for Complaints
@@ -54,12 +55,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
    // member functions
   void initState(){
+    super.initState();
+    //scrollController = new ScrollController();
      appBarTitle = "NewsFeed" ;
     _selectedIndex = 0 ;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
     _tabController = TabController(length: _numTabs, vsync: this);
-    handleScroll();
-    super.initState();
+    //handleScroll();
   }
   void applyFilter(String value){
      print('apply filter called');
@@ -68,18 +70,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
      });
   }
   void dispose() {
-    scrollController.removeListener(() {});
+    //scrollController.removeListener(() {});
+    //scrollController.dispose();
     super.dispose();
   }
-  void showFloatingButton() {
-    setState(() {
+  /*void showFloatingButton() {
+    if(mounted){setState(() {
       _showFloatingActionButton = true;
-    });
+    });}
   }
   void hideFloatingButton() {
-    setState(() {
+    if (mounted){setState(() {
       _showFloatingActionButton = false;
-    });
+    });}
   }
   void handleScroll() async {
     scrollController.addListener(() {
@@ -92,7 +95,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         showFloatingButton();
       }
     });
-  }
+  }*/
   // change state when an icon in bottom bar is tapped
   void navigate(int newIndex) {
     if (newIndex != _selectedIndex){
@@ -107,14 +110,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     List<List<Widget>> views = [
       [
         // news feed subscreens
-        Newsfeed(scrollController: scrollController, filter: filter),
-        Container(
-          color: Colors.white,
-          child: TextButton(child: Text("Sign Out"),
-            onPressed: () async {
-              await Authentication().signOut();
-            },),
-        ),
+        Newsfeed(filter: filter),
+        Saved( filter: filter)
 
       ],
       [Text("Complaints")],

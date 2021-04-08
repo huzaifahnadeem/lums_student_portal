@@ -4,13 +4,12 @@ import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
 import 'package:transparent_image/transparent_image.dart';
 import'package:carousel_slider/carousel_slider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class PostItem extends StatefulWidget {
   final DocumentSnapshot post;
-  final Function displaySnackBar ;
-  PostItem({required this.post, required this.displaySnackBar,Key? key}): super(key: key);
+  final String userID ;
+  PostItem({required this.post, required this.userID, Key? key}): super(key: key);
   @override
   _PostItemState createState() => _PostItemState();
 }
@@ -20,21 +19,17 @@ class _PostItemState extends State<PostItem> {
   late Post postModel ;
   String timeDaysAgo = '';
   late bool isSaved ;
-  String userID = FirebaseAuth.instance.currentUser!.uid;
 
   void initialize(){
     postModel = Post(subject: widget.post['subject'], content:widget.post['content']);
     postModel.id = widget.post.id ;
     postModel.convertToObject(widget.post);
-    if(postModel.savedPosts.contains(userID)){
+    if(postModel.savedPosts.contains(widget.userID)){
       isSaved = true ;
     }
     else{
       isSaved = false ;
     }
-  }
-  void updatePost() {
-    Navigator.pushNamed(context, '/UpdatePost', arguments: postModel);
   }
   // calculate days ago
   void calcDaysAgo(){
@@ -49,25 +44,12 @@ class _PostItemState extends State<PostItem> {
     }
   }
 
-  // delete a post
-  void deletePost() async {
-    String result = await postModel.deletePost(widget.post.id);
-    widget.displaySnackBar(result);
-  }
   void updateSaveStatus() async {
-    await postModel.addSavedPosts(widget.post.id, userID);
+    await postModel.addSavedPosts(widget.post.id, widget.userID);
     setState(() {
       isSaved = !isSaved ;
     });
   }
-  void openPoll(){
-    Navigator.pushNamed(context, '/poll', arguments: widget.post.id);
-  }
-
-  void downloadFile() async {
-    await canLaunch(postModel.fileURL!) ? await launch(postModel.fileURL!) : throw 'Could not launch ${postModel.fileURL}!';
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +59,7 @@ class _PostItemState extends State<PostItem> {
       child: Column(
         children: [
           ListTile(
-            title: Text("${widget.post['subject']}", style: Theme.of(context).textTheme.headline4,),
+            title: Text("${widget.post['subject']}", style: Theme.of(context).textTheme.headline6,),
             trailing: Text("$timeDaysAgo", style: Theme.of(context).textTheme.caption,),
             subtitle: Text("${widget.post['category']}", style: Theme.of(context).textTheme.caption,),
           ),
@@ -85,41 +67,40 @@ class _PostItemState extends State<PostItem> {
             height: 10,
           ),
           Column(
-            children: [
-              // post content
-              Padding(
-                padding: const EdgeInsets.fromLTRB(15,0,15,0),
-                child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text("${widget.post['content']}", style: Theme.of(context).textTheme.bodyText1,)
+              children: [
+                // post content
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(15,0,15,0),
+                  child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("${widget.post['content']}", style: Theme.of(context).textTheme.bodyText1,)
+                  ),
                 ),
-              ),
-              SizedBox(height: 20,),
-              // post pictures
-              widget.post['picture_chosen']? CarouselSlider(
-                options: CarouselOptions(
-                  height: 400.0,
-                  initialPage: 0,
-                  enlargeCenterPage: true,
-                  reverse: true,
-                  enableInfiniteScroll: false,
-                ) ,
-                items: postModel.pictureURL.map((imgUrl) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: FadeInImage.memoryNetwork(
-                          fit: BoxFit.fill,
-                          placeholder: kTransparentImage,
-                          image: imgUrl,
-                        ),
+                SizedBox(height: 20,),
+                // post pictures
+                widget.post['picture_chosen']? CarouselSlider(
+                    options: CarouselOptions(
+                      height: 400.0,
+                      initialPage: 0,
+                      enlargeCenterPage: true,
+                      enableInfiniteScroll: false,
+                    ) ,
+                    items: postModel.pictureURL.map((imgUrl) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return Container(
+                            width: MediaQuery.of(context).size.width,
+                            child: FadeInImage.memoryNetwork(
+                              fit: BoxFit.fill,
+                              placeholder: kTransparentImage,
+                              image: imgUrl,
+                            ),
+                          );
+                        },
                       );
-                    },
-                  );
-                }).toList()
-              ): Container(),
-            ]
+                    }).toList()
+                ): Container(),
+              ]
           ),
           ListTile(
             subtitle: widget.post['file_chosen']? FittedBox(
@@ -130,30 +111,17 @@ class _PostItemState extends State<PostItem> {
                   Text("${widget.post['filename']}", style: Theme.of(context).textTheme.bodyText1,),
                   IconButton(
                       icon: new Icon(Icons.download_outlined),
-                      onPressed: () => downloadFile()
-                  )
+                      onPressed: () => {} )
                 ],
               ),
             ): Container(),
             trailing: FittedBox(
               child: ButtonBar(
                 children: [
-                  postModel.isPoll? IconButton(
-                    icon: new Icon(Icons.poll_outlined),
-                    onPressed: () => openPoll(),
-                  ): Container(),
                   IconButton(
-                      icon: isSaved? new Icon(Icons.favorite, color: Colors.red,):new Icon(Icons.favorite_outline_sharp),
-                      onPressed: () => updateSaveStatus(),
-                      ),
-                  IconButton(
-                      icon: new Icon(Icons.delete),
-                      onPressed: () => deletePost(),
+                    icon: isSaved? new Icon(Icons.favorite, color: Colors.red,):new Icon(Icons.favorite_outline_sharp),
+                    onPressed: () => updateSaveStatus(),
                   ),
-                  IconButton(
-                      icon: new Icon(Icons.edit),
-                      onPressed: () => updatePost(),
-                  )
                 ],
               ),
             ),
@@ -165,46 +133,34 @@ class _PostItemState extends State<PostItem> {
 }
 
 
-class Newsfeed extends StatefulWidget {
+class Saved extends StatefulWidget {
   //late final ScrollController scrollController ;
   late final String filter ;
-  Newsfeed({required this.filter, Key? key}): super(key: key);
+  Saved({required this.filter, Key? key}): super(key: key);
   @override
-  _NewsfeedState createState() => _NewsfeedState();
+  _SavedState createState() => _SavedState();
 }
 
-class _NewsfeedState extends State<Newsfeed> {
+class _SavedState extends State<Saved> {
   // member variables
+  String userID = FirebaseAuth.instance.currentUser!.uid;
   FirebaseFirestore _db = FirebaseFirestore.instance;
   String? filter2 ;
-  late Stream<QuerySnapshot?> _streamOfPostChanges ;
+  late Stream<QuerySnapshot?> _streamOfSavedPostChanges ;
   var categoryMap = {'DC': 'Disciplinary Committee', 'Academic': 'Academic Policy',
     'General': 'General','Campus': 'Campus Development','Others':"Others"};
 
-  // display snackbar
-  void displaySnackBar(String message){
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: <Widget>[
-          Icon(
-            Icons.error,
-            color: Colors.white,
-            semanticLabel: "Error",
-          ),
-          Text('  $message')
-        ])));
-  }
-
-
   // setting initial state
   void initState()  {
-    _streamOfPostChanges = _db.collection("Posts").snapshots();
+    _streamOfSavedPostChanges = _db.collection("Posts").where("saved_posts", arrayContains: userID).snapshots();
     super.initState();
   }
   @override
   Widget build(BuildContext context) {
     filter2 = categoryMap[widget.filter]!;
+    print(filter2);
     return StreamBuilder<QuerySnapshot?>(
-        stream: _streamOfPostChanges,
+        stream: _streamOfSavedPostChanges,
         builder: (context, snapshot) {
           if(snapshot.hasError){
             return Center(child: Text("An Error Occured"),);
@@ -219,7 +175,7 @@ class _NewsfeedState extends State<Newsfeed> {
               //controller: widget.scrollController,
               itemCount: result.length,
               itemBuilder: (BuildContext context, int index) {
-                  return PostItem(post: result.toList()[index], displaySnackBar: displaySnackBar,);
+                return PostItem(post: result.toList()[index], userID: userID,);
               },
             );
           }
