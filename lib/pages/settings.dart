@@ -172,6 +172,8 @@ class _EditProfileState extends State<EditProfile> {
   String residenceSelection = 'Select Residence Status';
   String yearSelection = 'Select Your Year';
   String schoolSelection = 'Select Your School';
+  String schoolOfficeHoursDay = 'Select Office Hours Day';
+  TimeOfDay? selectedTime;
   _EditProfileState(this.showSC);
 
   @override
@@ -250,18 +252,46 @@ class _EditProfileState extends State<EditProfile> {
               ),
               SizedBox(height: 25),
               if (showSC)
-                TextFormField(
-                  decoration: InputDecoration(
-                      labelText:
-                          "Office hours days"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
-                ),
+                DropdownButtonFormField<String>(
+                value: schoolOfficeHoursDay,
+                icon: const Icon(Icons.arrow_drop_down), 
+                style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
+                onChanged: (String? newValue) {
+                  setState(() {
+                    yearSelection = newValue!;
+                  });
+                },
+                items: <String>['Select Office Hours Day','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
               if (showSC) SizedBox(height: 25),
               if (showSC)
-                TextFormField(
-                  decoration: InputDecoration(
-                      labelText:
-                          "Office hours time slot"), //TODO: Drop down menu? or Chip class? //TODO: SC only check
-                ),
+                SizedBox(
+                // Confirm Button
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton (
+                child: Text("Office hours timeslot"),
+                onPressed: () async {
+                    selectedTime = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                    builder: (BuildContext? context, Widget? child) {
+                      return MediaQuery(
+                        data: MediaQuery.of(context!)
+                            .copyWith(alwaysUse24HourFormat: false),
+                        child: child!,
+                      );
+                    },
+                  );
+                },
+              ),
+              ),
               if (showSC) SizedBox(height: 25),
               if (showSC)
                 TextFormField(

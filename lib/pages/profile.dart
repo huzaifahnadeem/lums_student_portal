@@ -55,7 +55,7 @@ class _ProfileState extends State<Profile> {
               textStyle: Theme.of(context).textTheme.headline6
               ),
         ),
-        backgroundColor: Theme.of(context).primaryColor, // Theme.of(context).primaryColor = Color(0xFFEA5757)
+        backgroundColor: Color(0xFFEA5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
         actions: <Widget>[
           if (who == "self")
             IconButton(
@@ -79,7 +79,7 @@ class _ProfileState extends State<Profile> {
           Stack(
             children: <Widget>[
               Container(
-                color: Theme.of(context).primaryColor,
+                color: Color(0xFFEA5757),
                 height: 120.0,
               ),
               Container(
@@ -260,7 +260,8 @@ class _ProfileState extends State<Profile> {
             } catch (e) {}
 
             try {
-              officeHours = snapshot.data!["office_hours"];
+              Map officeHoursMap = snapshot.data!["office_hours"];
+              officeHours = officeHoursMap["day"]! + " " + officeHoursMap["time"]!;
             } catch (e) {}
 
             try {
