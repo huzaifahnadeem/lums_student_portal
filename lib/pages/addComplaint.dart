@@ -9,15 +9,24 @@ import 'package:lums_student_portal/pages/settings.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AddComplaint extends StatefulWidget {
   @override
   _AddComplaintState createState() => _AddComplaintState();
 }
 
 class _AddComplaintState extends State<AddComplaint> {
-  Complaint newComplaint = Complaint(subject: '', complaint: '');
+  Complaint newComplaint = Complaint(subject: '', complaint: '', email: '');
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool loading = false;
+  String? email;
+
+  void fetchUserInfo() async {
+    User? thisUser = FirebaseAuth.instance.currentUser;
+    email = thisUser!.email;
+  }
 
   // function to call when user pressed "Add Post" button
   void validate() async {
@@ -39,6 +48,44 @@ class _AddComplaintState extends State<AddComplaint> {
         Text('Done')
       ])));
     }
+  }
+
+  Future<void> showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Would you like to lodge this complaint')
+                // Text('Would you like to approve of this message?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(primary: Colors.redAccent),
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // setState(() {});
+              },
+            ),
+            TextButton(
+                style: TextButton.styleFrom(primary: Colors.redAccent),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  fetchUserInfo();
+                  validate();
+                },
+                child: Text('Yes'))
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -89,27 +136,27 @@ class _AddComplaintState extends State<AddComplaint> {
                     ),
 
                     SizedBox(height: 20),
-                    // content input field
+                    // complaint input field
                     TextFormField(
                       decoration: InputDecoration(
-                          labelText: "Write Complaint",
-                          fillColor: Colors.white,
-                          contentPadding: new EdgeInsets.symmetric(
-                              vertical: 80.0, horizontal: 10.0)),
-                      maxLines: null,
+                        labelText: "Write Complaint",
+                        fillColor: Colors.white,
+                      ),
+                      maxLines: 10,
                       keyboardType: TextInputType.multiline,
                       validator: (val) =>
                           complaintValidator(newComplaint.complaint),
                       onChanged: (val) {
                         setState(() => newComplaint.complaint = val);
+                        setState(() => newComplaint.email = email);
                       },
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
                       height: 40,
                       child: ElevatedButton(
-                        onPressed: () => validate(),
+                        onPressed: () => showMyDialog(),
                         child: Text('Lodge Complaint',
                             style: Theme.of(context).textTheme.headline5),
                       ),

@@ -11,6 +11,7 @@ class Complaint {
   String subject;
   String complaint;
   String? tag;
+  String? email;
   static List categories = [
     "General",
     "Disciplinary Committee",
@@ -22,7 +23,8 @@ class Complaint {
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
   //class constructor
-  Complaint({required this.subject, required this.complaint});
+  Complaint(
+      {required this.subject, required this.complaint, required this.email});
 
   // create json object to add to database
   Map<String, dynamic> toMap() {
@@ -30,6 +32,7 @@ class Complaint {
       "category": this.tag,
       "subject": this.subject,
       "complaint": this.complaint,
+      "email": this.email,
       "time": Timestamp.now()
     };
   }
