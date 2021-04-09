@@ -6,6 +6,7 @@ import 'newsfeed.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 import 'package:lums_student_portal/pages/studentCouncil.dart'; // for Student Council screen
+import 'package:lums_student_portal/pages/addComplaint.dart'; // for Student Council screen
 
 class Home extends StatefulWidget {
   @override
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   // Tab headers for each screen
   List<List<Widget>> _tabsEachScreen = [
     [Tab(text: "Main",), Tab(text: "Saved",)], // for newsfeed section
-    [Tab(text: "Main",)],
+    [Tab(text: "Add Complaint",), Tab(text: "History",)],
     [Tab(text: "Main",)],
     [Tab(text: "Main",)]// for the rest, please replace these as you progress
   ];
@@ -114,7 +115,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         Saved( filter: filter)
 
       ],
-      [Text("Complaints")],
+      [AddComplaint(), Text("History")],
       [StudentCouncil()],
       [Profile(who: "self")], // who is used to specify whose profile you want to see. "self" keyword is used for own profile. For SC members pass their UID in who field as string
     ] ;
