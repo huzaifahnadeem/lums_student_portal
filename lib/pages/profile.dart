@@ -52,9 +52,12 @@ class _ProfileState extends State<Profile> {
           'Profile',
           style: GoogleFonts.robotoSlab(
               color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline6
+              fontSize: 40.0,
+              fontWeight: FontWeight.bold,
               ),
         ),
+          centerTitle: true,
+          elevation: 0,
         backgroundColor: Color(0xFFEA5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
         actions: <Widget>[
           if (who == "self")
