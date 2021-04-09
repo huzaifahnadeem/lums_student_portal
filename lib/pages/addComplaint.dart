@@ -26,6 +26,7 @@ class _AddComplaintState extends State<AddComplaint> {
   void fetchUserInfo() async {
     User? thisUser = FirebaseAuth.instance.currentUser;
     email = thisUser!.email;
+    setState(() => newComplaint.email = email);
   }
 
   // function to call when user pressed "Add Post" button
@@ -56,11 +57,13 @@ class _AddComplaintState extends State<AddComplaint> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirmation'),
+          // titleTextStyle: ,
+          title: Text('Confirmation', textAlign: TextAlign.center),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Would you like to lodge this complaint')
+                Text('Would you like to lodge this complaint?',
+                    textAlign: TextAlign.center)
                 // Text('Would you like to approve of this message?'),
               ],
             ),
@@ -148,7 +151,6 @@ class _AddComplaintState extends State<AddComplaint> {
                           complaintValidator(newComplaint.complaint),
                       onChanged: (val) {
                         setState(() => newComplaint.complaint = val);
-                        setState(() => newComplaint.email = email);
                       },
                     ),
                     SizedBox(height: 30),
