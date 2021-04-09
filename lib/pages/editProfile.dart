@@ -68,11 +68,13 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void selectPicture() async {
+    print("select picture called");
     FilePickerResult? result = await filePicker
         .pickFiles(type: FileType.custom, allowedExtensions: ['jpg', 'png']);
     // ignore: unnecessary_null_comparison
     if (result != null) {
       _profile.image = File(result.paths[0]!);
+      print(_profile.image);
       setState(() {
         _profile.pictureChanged = true;
       });
@@ -176,7 +178,26 @@ class _EditProfileState extends State<EditProfile> {
                                 child: CircleAvatar(
                                     radius: 80 + 4, // the profile avatar border
                                     backgroundColor: Colors.white,
-                                    child: _profile.pictureURL == null
+                                    child: _profile.pictureChanged? CircleAvatar(
+                                      backgroundImage: FileImage(_profile.image!),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                                blurRadius: 15,
+                                                color: Colors.black87,
+                                                spreadRadius: 5)
+                                          ],
+                                        ),
+                                        child: new Icon(
+                                          Icons.edit,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      backgroundColor: Colors.grey,
+                                      radius: 80,
+                                    ) : _profile.pictureURL == null
                                         ? CircleAvatar(
                                             backgroundImage: AssetImage(
                                                 "assets/default-avatar.png"),
