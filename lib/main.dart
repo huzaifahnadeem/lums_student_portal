@@ -5,8 +5,11 @@ import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/signUpOrLogin.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/addPost.dart';
+import 'package:lums_student_portal/pages/changePassword.dart';
+import 'package:lums_student_portal/pages/editProfile.dart';
 import 'package:lums_student_portal/pages/home.dart';
 import 'package:lums_student_portal/pages/poll.dart';
+import 'package:lums_student_portal/pages/settings.dart';
 import 'package:lums_student_portal/pages/updatePost.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
 import 'package:lums_student_portal/themes/Theme.dart';
@@ -59,7 +62,17 @@ class App extends StatelessWidget {
             builder: (context) { return Poll(id: id);},
           );
         }
-
+        else if (settings.name == '/changePassword') {
+          return MaterialPageRoute(
+            builder: (context) { return ChangePassword();},
+          );
+        }
+        else if (settings.name == '/editProfile') {
+          final EditProfileArgs args = settings.arguments as EditProfileArgs;
+          return MaterialPageRoute(
+            builder: (context) { return EditProfile(showSC: args.sc, userId: args.uID);},
+          );
+        }
       },
     );
   }
@@ -110,7 +123,6 @@ class _LandingPageState extends State<LandingPage> {
         }
         else {
           print ("Error During Authentication, Going to Authentication Section");
-          print (snapshot.data);
           return SignUpOrLogin();
         }
       },
