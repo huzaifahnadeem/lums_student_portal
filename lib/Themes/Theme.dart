@@ -49,9 +49,9 @@ TextTheme createTextTheme (){
   TextTheme initial = ThemeData.light().textTheme ;
   return initial.copyWith(
     // for App Bar Titles
-    headline6: initial.headline1!.copyWith(
+    headline6: initial.headline6!.copyWith(
       color: Colors.black,
-      fontSize: 40,
+      fontSize: 30,
       fontWeight: FontWeight.bold,
       letterSpacing: 1.5,
     ),
@@ -88,29 +88,9 @@ AppBarTheme createAppBarTheme () {
   return AppBarTheme(
     centerTitle: true,
     elevation: 0 ,
+    iconTheme: IconThemeData(
+      color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+  ),
   );
 }
-/*
-ThemeData theme () {
 
-  AppBarTheme mainAppBarTheme (AppBarTheme base){
-    return base.copyWith(
-      centerTitle: true,
-      foregroundColor: Colors.blue ,
-    );
-  }
-  TextTheme mainTextTheme (TextTheme base){
-    return base.copyWith(
-      bodyText1: base.bodyText1.copyWith(
-        fontSize: 15,
-        color: Colors.black,
-      )
-    );
-  }
-  final ThemeData base = ThemeData.light();
-  return base.copyWith(
-    primaryColor: Colors.redAccent,
-    textTheme: mainTextTheme(base.textTheme),
-    appBarTheme: mainAppBarTheme(base.appBarTheme),
-  ) ;
-}*/
