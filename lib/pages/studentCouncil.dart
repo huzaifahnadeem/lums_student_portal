@@ -4,6 +4,7 @@ import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lums_student_portal/pages/scDocuments.dart'; // for profile screen
 
 class StudentCouncil extends StatefulWidget {
   @override
@@ -15,11 +16,12 @@ class _StudentCouncilState extends State<StudentCouncil> {
 
   FirebaseFirestore _db = FirebaseFirestore.instance;
   late Stream<QuerySnapshot?> _councilMembersIDsSnapshot;
-
+    
   void initState() {
     _councilMembersIDsSnapshot = _db
         .collection("Profiles")
         .where('role', whereIn: ['SC', 'IT']).snapshots();
+
     super.initState();
   }
 
@@ -59,7 +61,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
           ),
           body: TabBarView(
             children: [
-              ListView.builder(
+              ListView.builder( // Profiles tab
                 itemCount: documentSnaps.length,
                 itemBuilder: (BuildContext context, int index) {
                   return (Card(
@@ -86,21 +88,10 @@ class _StudentCouncilState extends State<StudentCouncil> {
                   ));
                 },
               ),
-              Text("TODO: Office Hours screen"),
-              ListView(
-                children: <Widget>[
-                  Card(
-                    child: ListTile(
-                      leading: Icon(Icons.description),
-                      title: Text('A Sample Policy File'),
-                      trailing: Icon(Icons.file_download),
-                      onTap: () {
-                        downloadFile("http://www.africau.edu/images/default/sample.pdf");
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              
+              Text("TODO: Office Hours screen"), // Office Hours Tab
+              
+              SCDocs(),
             ],
           ),
         ),

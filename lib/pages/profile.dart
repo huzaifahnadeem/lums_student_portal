@@ -5,8 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
-// TODO: I think we should add an update profile button at the end that links to the settings -> update profile page
-
 class Profile extends StatefulWidget {
   late final String who;
   Profile({required this.who});
