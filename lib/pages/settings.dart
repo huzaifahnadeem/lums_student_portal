@@ -87,12 +87,12 @@ class AppSettings extends StatelessWidget {
             ),
             showIT? ListTile(
               leading: Icon(Icons.update),
-              title: Text('Update account'),
+              title: Text('Update Role'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return UpdateAccount();
+                    return UpdateRole();
                   }),
                 );
               },
@@ -141,7 +141,7 @@ class AppSettings extends StatelessWidget {
 }
 
 
-class UpdateAccount extends StatelessWidget {
+class UpdateRole extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,7 +151,7 @@ class UpdateAccount extends StatelessWidget {
               .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
         ),
         title: Text(
-          'Update Account', // header
+          'Update Role', // header
           style: GoogleFonts.robotoSlab(
               textStyle: Theme.of(context).textTheme.headline6),
         ),
