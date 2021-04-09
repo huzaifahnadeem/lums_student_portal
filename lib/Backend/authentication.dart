@@ -34,6 +34,26 @@ class Authentication {
     }
     return false;
   }
+  // changePassword
+  Future<String> changePassword(String newPassword, String oldPassword) async{
+    User? temp = _auth.currentUser ;
+    EmailAuthCredential credential = EmailAuthProvider.credential(email: temp!.email!, password: oldPassword) as EmailAuthCredential;
+    try {
+      await temp.reauthenticateWithCredential(credential);
+    } on Exception catch (e) {
+      print(e);
+      return  "Failed to re-authenticate";
+    }
+    try {
+      await temp.updatePassword(newPassword);
+      return "Password updated";
+    } on FirebaseAuthException catch (e) {
+      if(e.code == 'weak-password'){
+        return e.message.toString();
+      }
+      return  "Updating process failed! please try later";
+    }
+  }
   // Sign up with email and password
   Future<String> signUpWithEmailAndPassword (String email, String password, String name) async {
     try {
