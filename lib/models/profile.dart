@@ -94,7 +94,7 @@ class Profile{
       this.major = doc['major'];
       this.manifesto = doc['manifesto'];
       this.pictureURL = doc['picture'];
-      this.hostel = doc['residence_status'];
+      this.hostel = doc['hostel'];
       this.school = doc['school'];
       this.year = doc['year'];
       this.officeHours = doc['office_hours'];

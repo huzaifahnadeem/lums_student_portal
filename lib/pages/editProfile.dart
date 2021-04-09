@@ -19,15 +19,19 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
 
   late Profile _profile ;
+  late bool objectInitialized ;
+  late Future<DocumentSnapshot?> _future;
   FirebaseFirestore _db = FirebaseFirestore.instance;
   final filePicker = FilePicker.platform;
   final _formKey = GlobalKey<FormState>();
 
   TimeOfDay? selectedTime;
 
-  void initialize(DocumentSnapshot doc){
+  void initState(){
+    _future = _db.collection("Profiles").doc(widget.userId).get();
     _profile = Profile(name: '', role: 'student', email: '');
-    _profile.convertToObject(doc);
+    objectInitialized = false;
+    super.initState();
   }
 
   void deleteProfilePicture(String docID) async {
@@ -49,16 +53,19 @@ class _EditProfileState extends State<EditProfile> {
         ])));
   }
   void update(String docID) async{
-    String result = await _profile.updateDb(docID);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: <Widget>[
-          Icon(
-            Icons.notification_important,
-            color: Colors.white,
-            semanticLabel: "Done",
-          ),
-          Text('  $result')
-        ])));
+    if (_formKey.currentState!.validate()) {
+      print(_profile.name);
+      String result = await _profile.updateDb(docID);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Row(children: <Widget>[
+            Icon(
+              Icons.notification_important,
+              color: Colors.white,
+              semanticLabel: "Done",
+            ),
+            Text('  $result')
+          ])));
+    }
   }
 
 
@@ -94,13 +101,16 @@ class _EditProfileState extends State<EditProfile> {
         ),
         backgroundColor: Colors.white,
       ),
-      body: FutureBuilder<DocumentSnapshot>(
-        future: _db.collection("Profiles").doc(widget.userId).get(),
-        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+      body: FutureBuilder<DocumentSnapshot?>(
+        future: _future,
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot?> snapshot) {
           if(snapshot.hasData){
             //print(snapshot.data!['residence_status']);
             //return (Text("Done"));
-            initialize(snapshot.data!);
+            if(!objectInitialized){
+              _profile.convertToObject(snapshot.data!);
+              objectInitialized = true;
+            }
             return SafeArea(
               minimum: EdgeInsets.fromLTRB(30,10,30,30),
               child: SingleChildScrollView(
