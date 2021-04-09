@@ -5,8 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
-// TODO: I think we should add an update profile button at the end that links to the settings -> update profile page
-
 class Profile extends StatefulWidget {
   late final String who;
   Profile({required this.who});
@@ -52,9 +50,12 @@ class _ProfileState extends State<Profile> {
           'Profile',
           style: GoogleFonts.robotoSlab(
               color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline6
+              fontSize: 40.0,
+              fontWeight: FontWeight.bold,
               ),
         ),
+          centerTitle: true,
+          elevation: 0,
         backgroundColor: Color(0xFFEA5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
         actions: <Widget>[
           if (who == "self")
