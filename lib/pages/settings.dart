@@ -216,36 +216,5 @@ class UpdateAccount extends StatelessWidget {
 
 
 
-class InitiateElection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Initiate Election Process', // header
-          style: GoogleFonts.robotoSlab(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline6),
-        ),
-      ),
-      body: Text('TODO: Initiate Election Process Sceen'),
-    );
-  }
-}
 
-class EndElection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'End Election', // header
-          style: GoogleFonts.robotoSlab(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline6),
-        ),
-      ),
-      body: Text('TODO: End Election Sceen'),
-    );
-  }
-}
+

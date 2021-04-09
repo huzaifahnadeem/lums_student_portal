@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lums_student_portal/backend/validators.dart';
 import 'package:lums_student_portal/models/profile.dart';
@@ -17,17 +20,66 @@ class _EditProfileState extends State<EditProfile> {
 
   late Profile _profile ;
   FirebaseFirestore _db = FirebaseFirestore.instance;
+  final filePicker = FilePicker.platform;
   final _formKey = GlobalKey<FormState>();
-  String residenceSelection = 'Select Residence Status';
-  String yearSelection = 'Select Your Year';
-  String schoolSelection = 'Select Your School';
-  String schoolOfficeHoursDay = 'Select Office Hours Day';
+
   TimeOfDay? selectedTime;
 
   void initialize(DocumentSnapshot doc){
     _profile = Profile(name: '', role: 'student', email: '');
     _profile.convertToObject(doc);
   }
+
+  void deleteProfilePicture(String docID) async {
+    String result = '';
+    if (_profile.pictureURL != null){
+      result = await _profile.deletePicture(docID);
+    }
+    else{
+      result ="You currently don't have a profile picture!";
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(children: <Widget>[
+          Icon(
+            Icons.notification_important,
+            color: Colors.white,
+            semanticLabel: "Done",
+          ),
+          Text('  $result')
+        ])));
+  }
+  void update(String docID) async{
+    String result = await _profile.updateDb(docID);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(children: <Widget>[
+          Icon(
+            Icons.notification_important,
+            color: Colors.white,
+            semanticLabel: "Done",
+          ),
+          Text('  $result')
+        ])));
+  }
+
+
+  void selectPicture() async{
+    FilePickerResult? result = await filePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'png']
+    );
+    // ignore: unnecessary_null_comparison
+    if(result != null) {
+      _profile.image = File(result.paths[0]!);
+      setState(() {
+        _profile.pictureChanged = true;
+      });
+    } else {
+      setState(() {
+        _profile.pictureChanged = false ;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -131,7 +183,26 @@ class _EditProfileState extends State<EditProfile> {
                             }).toList(),
                           ),
                         ),
+                        IconButton(
+                          tooltip: "Photo",
+                          icon: new Icon(Icons.add_photo_alternate_outlined),
+                          onPressed: () => selectPicture(),
+                        ),
+                        IconButton(
+                          tooltip: "Photo",
+                          icon: new Icon(Icons.highlight_remove_sharp),
+                          onPressed: () => deleteProfilePicture(snapshot.data!.id),
+                        ),
                         //// INSERT TIME AND DAY PICKER HERE, extract day and time as a string
+                        SizedBox(
+                          width: double.infinity,
+                          height: 40,
+                          child: ElevatedButton(
+                            onPressed: () => update(snapshot.data!.id),
+                            child: Text('Update Profile',
+                                style: Theme.of(context).textTheme.headline5),
+                          ),
+                        ),
                       ],
                     )
                   ),
@@ -148,7 +219,13 @@ class _EditProfileState extends State<EditProfile> {
       )
     );
   }
+
 }
+
+/*String residenceSelection = 'Select Residence Status';
+  String yearSelection = 'Select Your Year';
+  String schoolSelection = 'Select Your School';
+  String schoolOfficeHoursDay = 'Select Office Hours Day';*/
 /*
 Form(
 // TODO: Backend part not done
