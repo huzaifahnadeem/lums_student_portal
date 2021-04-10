@@ -85,6 +85,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
                             ),
                       title: Text(documentSnaps[index]!["name"]),
                       // subtitle: Text('Dept etc'),
+                      subtitle: Text(' '),
                       onTap: () {
                         Navigator.push(
                           context,
