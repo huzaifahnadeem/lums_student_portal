@@ -47,4 +47,16 @@ String? postValidator(String post){
   return null ;
 }
 
+String? dropDownValidator(Object? choice){
+   if(choice==null){
+     return "Please choose an option";
+   }
+   else if(choice.toString().isEmpty){
+     return "Please choose an option";
+   }
+   else{
+     return null;
+   }
+}
+
 

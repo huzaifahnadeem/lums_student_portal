@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
+import 'package:lums_student_portal/backend/validators.dart';
+import 'package:lums_student_portal/models/post.dart';
+import 'package:lums_student_portal/models/profile.dart';
 
 class About extends StatelessWidget {
   @override
@@ -89,12 +92,7 @@ class AppSettings extends StatelessWidget {
               leading: Icon(Icons.update),
               title: Text('Update account'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return UpdateAccount();
-                  }),
-                );
+                Navigator.pushNamed(context,"/updateAccount");
               },
             ): Container(),
             ListTile(
@@ -142,15 +140,85 @@ class AppSettings extends StatelessWidget {
 
 
 
-class UpdateAccount extends StatelessWidget {
+class UpdateAccount extends StatefulWidget {
+  @override
+  _UpdateAccountState createState() => _UpdateAccountState();
+}
+
+class _UpdateAccountState extends State<UpdateAccount> {
+  final _formKey = GlobalKey<FormState>();
+  String emailRoleUpdate = '' ;
+  String emailToMakeChair = '';
+  Profile profileObject = Profile(email: "", name: "", role: "");
+  String? category ;
+  String? role ;
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  // update chair - error handling left
+  void updateChair() async {
+    bool noerror = true;
+    String progress = "Please select category";
+    if (_formKey.currentState!.validate() && category!= null) {
+      try {
+        QuerySnapshot newChair = await db.collection("Profiles").where("email", isEqualTo: emailRoleUpdate).get();
+        String idOfNewChair = "";
+        if (newChair.docs.length == 0){
+          progress = "Email does not exist!";
+        }
+        else{
+          idOfNewChair = newChair.docs[0].id;
+          DocumentReference chairDocRef = db.collection("Chairs").doc(category);
+          await chairDocRef.update({"uid": idOfNewChair});
+          progress = "Chair Updated";
+        }
+      } on Exception catch (e) {
+        progress = "Update Failed!";
+      }
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(children: <Widget>[
+          Icon(
+            Icons.notification_important,
+            color: Colors.white,
+            semanticLabel: "Error",
+          ),
+          Text('  $progress')
+        ])));
+  }
+  void updateRole() async {
+    String progress = "Please select Role";
+    if (_formKey.currentState!.validate() && role != null) {
+      try {
+        QuerySnapshot newChair = await db.collection("Profiles").where("email", isEqualTo: emailRoleUpdate).get();
+        if (newChair.docs.length == 0){
+          progress = "Email does not exist!";
+        }
+        else{
+          String idOfRoleToUpdate = newChair.docs[0].id ;
+          DocumentReference profileDocRef = db.collection("Profiles").doc(idOfRoleToUpdate);
+          await profileDocRef.update({"role":role});
+          progress = "Role Updated";
+        }
+
+      } on Exception catch (e) {
+        progress = "Update Failed! The email may not exist";
+      }
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Row(children: <Widget>[
+          Icon(
+            Icons.notification_important,
+            color: Colors.white,
+            semanticLabel: "Error",
+          ),
+          Text('  $progress')
+        ])));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors
-              .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
-        ),
         title: Text(
           'Update Account', // header
           style: GoogleFonts.robotoSlab(
@@ -159,52 +227,84 @@ class UpdateAccount extends StatelessWidget {
         backgroundColor: Colors.white,
       ),
       body: Form(
+        key: _formKey,
         // TODO: Backend part not done
         child: SingleChildScrollView(
           child: SafeArea(
             minimum: EdgeInsets.all(30),
             child: Column(children: <Widget>[
-              const Divider(
-                height: 40,
-                thickness: 2,
-                indent: 20,
-                endIndent: 20,
-              ),
               TextFormField(
-                decoration: InputDecoration(
-                    labelText: "Username"), //TODO: validation check
+                decoration: InputDecoration(labelText: "Username (email)"),
+                validator: (val) => headingValidator(val!),
+                onChanged: (val) {
+                  setState(() => emailRoleUpdate = val);
+                },
               ),
               SizedBox(height: 25),
-              TextFormField(
-                decoration:
-                    InputDecoration(labelText: "Role"), //TODO: Drop down menu?
-              ),
-              SizedBox(height: 25),
-              TextFormField(
-                decoration: InputDecoration(
-                    labelText: "Category"), //TODO: Drop down menu?
-              ),
-              SizedBox(height: 25),
-              SizedBox(
-                // Confirm Button
-                width: double.infinity,
-                height: 40,
-                child: ElevatedButton(
-                  // onPressed: () => validate(),
-                  onPressed: () => {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Row(children: <Widget>[
-                      Icon(
-                        Icons.error,
-                        color: Colors.white,
-                        semanticLabel: "Error",
-                      ),
-                      Text('TODO: Backend part not done')
-                    ])))
+              Align(
+                alignment: Alignment.centerLeft,
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(hintText: "Select role"),
+                  value: role,
+                  icon: const Icon(Icons.arrow_drop_down),
+                  onChanged: (newVal) {
+                    setState(() {
+                      role = newVal.toString();
+                    });
                   },
-                  child: Text('Confirm',
-                      style: Theme.of(context).textTheme.headline5),
+                  items: profileObject.roles.map<DropdownMenuItem<String>>((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
+              ),
+              SizedBox(height: 25),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: DropdownButtonFormField<String>(
+                  decoration: InputDecoration(hintText: "Select Category"),
+                  value: category,
+                  icon: const Icon(Icons.arrow_drop_down),
+                  onChanged: (newVal) {
+                    setState(() {
+                      category = newVal.toString();
+                    });
+                  },
+                  items: Post.categories.map<DropdownMenuItem<String>>((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+              SizedBox(height: 25),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    // Confirm Button
+                    height: 40,
+                    child: ElevatedButton(
+                      // onPressed: () => validate(),
+                      onPressed: () => updateRole(),
+                      child: Text('Update Role',
+                          style: Theme.of(context).textTheme.headline5),
+                    ),
+                  ),
+                  SizedBox(
+                    // Confirm Button
+                    height: 40,
+                    child: ElevatedButton(
+                      // onPressed: () => validate(),
+                      onPressed: () => updateChair(),
+                      child: Text('Update Chair',
+                          style: Theme.of(context).textTheme.headline5),
+                    ),
+                  ),
+                ],
               ),
             ]),
           ),
