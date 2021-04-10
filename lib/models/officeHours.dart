@@ -6,20 +6,6 @@ class OfficeHoursModel {
   late BuildContext context;
   List<DocumentSnapshot?> snapshots = [];
   List<List<Widget>> tiles = [
-    // [ // For Monday
-    //   ListTile(
-    //     title: Text(
-    //       "Mon1",
-    //       style: TextStyle(fontWeight: FontWeight.w700),
-    //     ),
-    //   ),
-    //   ListTile(
-    //     title: Text(
-    //       "Mond2",
-    //       style: TextStyle(fontWeight: FontWeight.w700),
-    //     ),
-    //   ),
-    // ],
     [], // For Monday
     [], // For Tuesday
     [], // For Wednesday
@@ -28,24 +14,23 @@ class OfficeHoursModel {
   ];
 
   OfficeHoursModel(List<DocumentSnapshot?> snapshots, BuildContext context) {
+    // Constructor
     this.snapshots = snapshots;
     this.context = context;
 
     snapshots.forEach((thisSCmember) {
       List<int> daysIndices = [];
       try {
-        if (thisSCmember!['office_hours']['days'] == 'Mondays and Wednesdays') {
+        if (thisSCmember!['office_hours']['days'] == 'Mondays and Wednesdays')
           daysIndices = [0, 2];
-        } else if (thisSCmember!['office_hours']['days'] ==
-            'Tuesdays and Thursdays') {
+        else if (thisSCmember!['office_hours']['days'] ==
+            'Tuesdays and Thursdays')
           daysIndices = [1, 3];
-        } else if (thisSCmember!['office_hours']['days'] ==
-            'Wednesdays and Fridays') {
-          daysIndices = [2, 4];
-        }
+        else if (thisSCmember!['office_hours']['days'] ==
+            'Wednesdays and Fridays') daysIndices = [2, 4];
+
         for (final day in daysIndices) {
-          tiles[day].add(// For Monday
-              Card(
+          tiles[day].add(Card(
             child: ListTile(
               leading: thisSCmember!["picture"] != null
                   ? CircleAvatar(
@@ -81,6 +66,6 @@ class OfficeHoursModel {
     "Tuesday",
     "Wednesday",
     "Thursday",
-    "Friday"
+    "Friday",
   ];
 }
