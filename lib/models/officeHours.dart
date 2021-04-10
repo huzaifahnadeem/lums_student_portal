@@ -23,18 +23,18 @@ class OfficeHoursModel {
       try {
         if (thisSCmember!['office_hours']['days'] == 'Mondays and Wednesdays')
           daysIndices = [0, 2];
-        else if (thisSCmember!['office_hours']['days'] ==
+        else if (thisSCmember['office_hours']['days'] ==
             'Tuesdays and Thursdays')
           daysIndices = [1, 3];
-        else if (thisSCmember!['office_hours']['days'] ==
+        else if (thisSCmember['office_hours']['days'] ==
             'Wednesdays and Fridays') daysIndices = [2, 4];
 
         for (final day in daysIndices) {
           tiles[day].add(Card(
             child: ListTile(
-              leading: thisSCmember!["picture"] != null
+              leading: thisSCmember["picture"] != null
                   ? CircleAvatar(
-                      backgroundImage: NetworkImage(thisSCmember!["picture"]),
+                      backgroundImage: NetworkImage(thisSCmember["picture"]),
                       backgroundColor: Colors.grey,
                       radius: 30,
                     )
@@ -44,13 +44,13 @@ class OfficeHoursModel {
                       radius: 30,
                     ),
               title: Text(thisSCmember["name"]),
-              subtitle: Text(thisSCmember!['office_hours']['time']),
+              subtitle: Text(thisSCmember['office_hours']['time']),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
                     return Profile(
-                        who: (thisSCmember!.id)); // function returns a widget
+                        who: (thisSCmember.id)); // function returns a widget
                   }),
                 );
               },

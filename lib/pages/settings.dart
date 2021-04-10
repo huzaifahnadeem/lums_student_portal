@@ -6,6 +6,7 @@ import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/backend/validators.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/profile.dart';
+import 'package:lums_student_portal/pages/profile.dart';
 
 class About extends StatelessWidget {
   @override
@@ -149,7 +150,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
   final _formKey = GlobalKey<FormState>();
   String emailRoleUpdate = '' ;
   String emailToMakeChair = '';
-  Profile profileObject = Profile(email: "", name: "", role: "");
+  ProfileModel profileObject = ProfileModel(email: "", name: "", role: "");
   String? category ;
   String? role ;
   FirebaseFirestore db = FirebaseFirestore.instance;
