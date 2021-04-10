@@ -13,8 +13,8 @@ class OfficeHoursModel {
     [], // For Fri
   ];
 
+  // Constructor:
   OfficeHoursModel(List<DocumentSnapshot?> snapshots, BuildContext context) {
-    // Constructor
     this.snapshots = snapshots;
     this.context = context;
 
