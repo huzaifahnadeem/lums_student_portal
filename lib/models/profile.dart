@@ -5,7 +5,7 @@ import 'package:path/path.dart' as Path;
 import 'package:firebase_storage/firebase_storage.dart';
 
 
-class Profile{
+class ProfileModel{
   late String email ;
   late String name ;
   late String role ;
@@ -17,13 +17,13 @@ class Profile{
   String? year;
   Map<String, dynamic>? officeHours ;
   FirebaseFirestore _db = FirebaseFirestore.instance;
-  List roles = ["Student", "SC member", "IT"];
+  List roles = ["Student", "SC", "IT"];
   List residenceTypes = ['Hostel', 'Day Scholar'];
-  List schools = ["SSE", "HSS", "SDSB", "SAHSOL", "EDU"];
-  List years = ["Freshman", "Sophomore", "Junior", "Senior"];
+  List schools = ["SSE", "HSS", "SDSB", "SAHSOL", "SOE"];
+  List years = ["First-Year", "Sophomore", "Junior", "Senior", "Fifth-Year"];
   File? image;
   bool pictureChanged = false;
-  Profile({required this.email, required this.name, required this.role});
+  ProfileModel({required this.email, required this.name, required this.role});
   // delete picture
   Future deletePicture(String docID) async{
     try {
@@ -36,6 +36,7 @@ class Profile{
       return "Profile picture deleted";
     }
     catch(err){
+      print(err);
       return ("Error deleting profile picture");
     }
   }

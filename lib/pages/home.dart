@@ -129,7 +129,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _selectedIndex >= 2? null:AppBar(
-        title: Align( alignment: Alignment.topLeft,child: Text(appBarTitles[_selectedIndex])),
+        title: Align( alignment: Alignment.topLeft,
+            child: Text(appBarTitles[_selectedIndex], style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white ),)),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [ _selectedIndex == 0 ? Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
             child: DropdownButtonHideUnderline(

@@ -6,7 +6,7 @@
     
     <queries>
         <intent> 
-            <!-- Declaring our intent to open urls in browser apps  -->
+            <!-- Declaring our intent to open urls in browser apps. Required for support in Android 11 (API 30)  -->
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
         </intent>

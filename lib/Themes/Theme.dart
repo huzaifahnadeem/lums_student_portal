@@ -12,11 +12,6 @@ const Color text2 = Colors.white10;
 const Color text1 = Colors.black;
 const Color tertiary_color = Color(0xFF56BF54);
 
-
-
-
-
-
 //App bar title
 //App bar subtitle
 //Post Subject
@@ -29,45 +24,45 @@ const Color tertiary_color = Color(0xFF56BF54);
 //Snackbar
 //Settings menu tiles
 
-ButtonThemeData createButtonTheme(){
+ButtonThemeData createButtonTheme() {
   return ButtonThemeData(
     alignedDropdown: true,
   );
 }
 
-SnackBarThemeData createSnackBarTheme () {
+SnackBarThemeData createSnackBarTheme() {
   return SnackBarThemeData(
     backgroundColor: primary_accent,
   );
 }
 
-InputDecorationTheme createInputDecorTheme(){
-  InputDecorationTheme initial = ThemeData.light().inputDecorationTheme ;
+InputDecorationTheme createInputDecorTheme() {
+  InputDecorationTheme initial = ThemeData.light().inputDecorationTheme;
   return initial.copyWith(
-    fillColor: secondary_color,
-    filled: true,
-    focusedErrorBorder: OutlineInputBorder(
-      borderSide: BorderSide.none,
-      borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-    ),
-    labelStyle: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
-    border: OutlineInputBorder(
-      borderSide: BorderSide.none,
-      borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: secondary_color, width: 0),
-      borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-    ),
-    // errorBorder: OutlineInputBorder(
-    //   borderSide: BorderSide(color: inputError, width: 2),
-    //   borderRadius: const BorderRadius.all(Radius.circular(5.0)),
-    // )
-  );
+      fillColor: secondary_color,
+      filled: true,
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+      ),
+      labelStyle: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+      hintStyle: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+      border: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: secondary_color, width: 0),
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: const BorderRadius.all(Radius.circular(5.0)),
+      ));
 }
 
-TextTheme createTextTheme (){
-  TextTheme initial = ThemeData.light().textTheme ;
+TextTheme createTextTheme() {
+  TextTheme initial = ThemeData.light().textTheme;
   return initial.copyWith(
     // for App Bar Titles
     headline6: initial.headline6!.copyWith(
@@ -92,27 +87,26 @@ TextTheme createTextTheme (){
   );
 }
 
-ElevatedButtonThemeData createElevatedButtonTheme(){
-  ElevatedButtonThemeData initial = ThemeData().elevatedButtonTheme ;
+ElevatedButtonThemeData createElevatedButtonTheme() {
+  ElevatedButtonThemeData initial = ThemeData().elevatedButtonTheme;
   return ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        primary: primary_color,
-        shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30.0)
-        ),
-        //elevation: 10,
-      ),
+    style: ElevatedButton.styleFrom(
+      primary: primary_color,
+      shape: new RoundedRectangleBorder(
+          borderRadius: new BorderRadius.circular(30.0)),
+      //elevation: 10,
+    ),
   );
 }
 
-
-AppBarTheme createAppBarTheme () {
+AppBarTheme createAppBarTheme() {
   return AppBarTheme(
     centerTitle: true,
-    elevation: 0 ,
+    backgroundColor: Colors.white,
+    elevation: 0,
     iconTheme: IconThemeData(
-      color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
-  ),
+      color: Colors
+          .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+    ),
   );
 }
-
