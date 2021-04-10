@@ -35,7 +35,7 @@ class App extends StatelessWidget {
         brightness: Brightness.light,
         snackBarTheme: createSnackBarTheme(),
         buttonTheme: createButtonTheme(),
-        accentColor: Colors.red
+        accentColor: Colors.red,
       ),
       initialRoute: '/',
       onGenerateRoute: (settings) {
@@ -71,6 +71,11 @@ class App extends StatelessWidget {
           final EditProfileArgs args = settings.arguments as EditProfileArgs;
           return MaterialPageRoute(
             builder: (context) { return EditProfile(showSC: args.sc, userId: args.uID);},
+          );
+        }
+        else if (settings.name == '/updateAccount') {
+          return MaterialPageRoute(
+            builder: (context) { return UpdateAccount();},
           );
         }
       },

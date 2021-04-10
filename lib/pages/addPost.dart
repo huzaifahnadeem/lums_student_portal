@@ -8,6 +8,7 @@ import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
 
 
+
 // check android ios file and image picker configs
 
 
@@ -92,7 +93,7 @@ class _AddPostState extends State<AddPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Post"),
+        title: Text("Add Post",style: Theme.of(context).textTheme.headline6,),
       ),
       body: loading? LoadingScreen(): SafeArea(
         minimum: EdgeInsets.fromLTRB(30,10,30,30),
@@ -104,7 +105,8 @@ class _AddPostState extends State<AddPost> {
                 children: [
                   // heading input field
                   TextFormField(
-                    decoration: InputDecoration(labelText: "Heading...", fillColor: Colors.white),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: InputDecoration(hintText: "Heading...", fillColor: Colors.white),
                     validator: (val) => headingValidator(newPost.subject),
                     onChanged: (val) {
                       setState(() => newPost.subject = val);
@@ -113,7 +115,8 @@ class _AddPostState extends State<AddPost> {
                   SizedBox(height: 20),
                   // content input field
                   TextFormField(
-                    decoration: InputDecoration(labelText: "Write your post here...", fillColor: Colors.white),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    decoration: InputDecoration(hintText: "Write your post here...", fillColor: Colors.white),
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     validator: (val) => postValidator(newPost.content),
@@ -125,18 +128,13 @@ class _AddPostState extends State<AddPost> {
                   // category input dropdown
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: DropdownButton(
-                      //decoration:  InputDecoration(hintText: "Select Category"),
-                      hint: Text("Category"),
+                    child: DropdownButtonFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration:  InputDecoration(hintText: "Select Category", fillColor: Colors.white),
+                      validator: (val) => dropDownValidator(val),
                       isExpanded: false,
                       value: newPost.tag,
-                      focusColor: Colors.red,
-                      dropdownColor: Colors.red,
-                      onChanged: (newVal) {
-                        setState(() {
-                          newPost.tag = newVal.toString() ;
-                        });
-                      },
+                      onChanged: (newVal) {setState(() {newPost.tag = newVal.toString() ;});},
                       items: Post.categories.map((categoryItem) {
                         return DropdownMenuItem(
                           value: categoryItem ,
@@ -146,50 +144,47 @@ class _AddPostState extends State<AddPost> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  // number of poll options input drop down
-                  newPost.isPoll? Column(
+                  // fill in poll options input fields
+                  (newPost.isPoll && newPost.numOptions > 1 && newPost.options != null) ? Column(
                     children: [
-                      Align(alignment: Alignment.centerLeft, child: Text("Poll",)),
-                      SizedBox(height: 10),
-                      DropdownButtonFormField(
-                        decoration:  InputDecoration(hintText: "Select number of options for your poll"),
-                        isExpanded: true,
-                        value: newPost.numOptions,
-                        onChanged: (newVal) {
-                          setState(() {
-                            newPost.numOptions = int.parse(newVal.toString()) ;
-                            newPost.addOptions();
-                          });
-                        },
-                        items: newPost.chooseNumOptions.map((num) {
-                          return DropdownMenuItem(
-                            value: num ,
-                            child: Text(num.toString() + " Options"),
+                      Align(alignment: Alignment.centerLeft,child: Text("Poll",  style: Theme.of(context).textTheme.bodyText2,)),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: newPost.options!.asMap().entries.map((e) {
+                          return Padding(
+                            padding: EdgeInsets.fromLTRB(0,10,0,10),
+                            child: TextFormField(
+                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                              decoration: InputDecoration(hintText: "Option ${e.key} ", fillColor: Color(0xFFE8E8E8)),
+                              validator: (val) => headingValidator(e.value['option']),
+                              onChanged: (val) {
+                                setState(() {
+                                  e.value['option'] = val;
+                                });
+                              },
+                            ),
                           );
                         }).toList(),
                       ),
                     ],
-                  ) : Container() ,
-                  // fill in poll options input fields
-                  (newPost.isPoll && newPost.numOptions > 1 && newPost.options != null) ? Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: newPost.options!.map((e) {
-                      return Padding(
-                        padding: EdgeInsets.fromLTRB(0,10,0,10),
-                        child: TextFormField(
-                          decoration: InputDecoration(),
-                          validator: (val) => headingValidator(e['option']),
-                          onChanged: (val) {
-                            setState(() {
-                              e['option'] = val;
-                            });
-                          },
-                        ),
-                      );
-                    }).toList(),
                   ): Container(),
                   SizedBox(height: 20),
                   // display picture if chosen
+                  (newPost.isPoll && newPost.numOptions > 1 && newPost.options != null)? Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      IconButton(icon: new Icon(Icons.add_circle_outline), onPressed: () {
+                        setState(() {
+                          newPost.addOption();
+                        });
+                      }),
+                      IconButton(icon: new Icon(Icons.remove_circle_outline), onPressed: (){
+                        setState(() {
+                          newPost.removeOption();
+                        });
+                      })
+                    ],
+                  ): Container(),
                   newPost.pictureChosen? Column(
                       children:[
                         Align(alignment: Alignment.centerLeft,child: Text("Pictures",  style: Theme.of(context).textTheme.bodyText2,)),
@@ -211,15 +206,14 @@ class _AddPostState extends State<AddPost> {
                   // display file if chosen
                   newPost.fileChosen? Column(
                     children: [
-                      Align(alignment: Alignment.centerLeft ,child: Text("Files",  style: Theme.of(context).textTheme.bodyText2,)),
+                      Align(alignment: Alignment.centerLeft ,child: Text("File",  style: Theme.of(context).textTheme.bodyText2,)),
                       SizedBox(height: 10),
-                      Text(" ${newPost.filename}"),
+                      Align(alignment:Alignment.centerLeft,child: Text(" ${newPost.filename}", style: Theme.of(context).textTheme.caption,)),
                     ],
                   )  : Container(),
                   SizedBox(height: 20),
                   // row of poll, picture and file upload buttons
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
                         tooltip: "Photo",
@@ -227,22 +221,27 @@ class _AddPostState extends State<AddPost> {
                         onPressed: () => selectPicture(),
                       ),
                       Text("Photo", style: Theme.of(context).textTheme.caption),
+                      SizedBox(width: 30),
                       IconButton(
                         tooltip: "Attachment",
                         icon: new Icon(Icons.attach_file_outlined),
                         onPressed:() => selectFile(),
                       ),
                       Text("Attachment", style: Theme.of(context).textTheme.caption),
+                      SizedBox(width: 30),
                       IconButton(
                         icon: new Icon(Icons.poll_outlined),
                         onPressed: () {
                           setState(() {
                             newPost.isPoll = !newPost.isPoll ;
-                            newPost.numOptions = 2 ;
                             if(newPost.isPoll == false){
                               newPost.options = null;
-                              newPost.numOptions = 1 ;
+                              newPost.numOptions = 0 ;
                               newPost.alreadyVoted = [];
+                            }
+                            else{
+                              newPost.addOption();
+                              newPost.addOption();
                             }
                           });
                         } ,

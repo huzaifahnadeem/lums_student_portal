@@ -30,6 +30,7 @@ InputDecorationTheme createInputDecorTheme(){
       borderRadius: const BorderRadius.all( Radius.circular(5.0)),
     ),
     labelStyle: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+    hintStyle: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
     border: OutlineInputBorder(
       borderSide: BorderSide.none,
       borderRadius: const BorderRadius.all( Radius.circular(5.0)),
@@ -39,7 +40,7 @@ InputDecorationTheme createInputDecorTheme(){
       borderRadius: const BorderRadius.all( Radius.circular(5.0)),
     ),
     errorBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: deepOrange , width: 2),
+      borderSide: BorderSide.none,
       borderRadius: const BorderRadius.all( Radius.circular(5.0)),
     )
   );
@@ -87,6 +88,7 @@ ElevatedButtonThemeData createElevatedButtonTheme(){
 AppBarTheme createAppBarTheme () {
   return AppBarTheme(
     centerTitle: true,
+    backgroundColor: Colors.white,
     elevation: 0 ,
     iconTheme: IconThemeData(
       color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
