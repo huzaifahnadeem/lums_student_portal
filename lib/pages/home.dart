@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/saved.dart';
 import 'newsfeed.dart';
@@ -161,13 +162,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       // add a floating action button on the newsfeed screen
       floatingActionButton: _selectedIndex != 0 ? null: Visibility(
         visible: _showFloatingActionButton,
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.pushNamed(context, '/AddPost');
-          },
-          label: const Text('Add Post'),
-          icon: const Icon(Icons.add_box_sharp),
-          backgroundColor: Colors.red,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/AddPost');
+            },
+            child: Icon(Icons.add, color: Theme.of(context).primaryColor, size: 40,),
+            backgroundColor: Colors.white,
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
