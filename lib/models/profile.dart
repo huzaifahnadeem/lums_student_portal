@@ -5,7 +5,7 @@ import 'package:path/path.dart' as Path;
 import 'package:firebase_storage/firebase_storage.dart';
 
 
-class Profile{
+class ProfileModel{
   late String email ;
   late String name ;
   late String role ;
@@ -23,7 +23,7 @@ class Profile{
   List years = ["First-Year", "Sophomore", "Junior", "Senior", "Fifth-Year"];
   File? image;
   bool pictureChanged = false;
-  Profile({required this.email, required this.name, required this.role});
+  ProfileModel({required this.email, required this.name, required this.role});
   // delete picture
   Future deletePicture(String docID) async{
     try {

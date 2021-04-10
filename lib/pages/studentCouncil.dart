@@ -4,7 +4,8 @@ import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:lums_student_portal/pages/scDocuments.dart'; // for profile screen
+import 'package:lums_student_portal/pages/scDocuments.dart';
+import 'package:lums_student_portal/models/officeHours.dart'; // for profile screen
 
 class StudentCouncil extends StatefulWidget {
   @override
@@ -12,11 +13,12 @@ class StudentCouncil extends StatefulWidget {
 }
 
 class _StudentCouncilState extends State<StudentCouncil> {
-  List<DocumentSnapshot?> documentSnaps = []; // to get doc id: documentSnaps[index]!.id. Other data like: documentSnaps[index]!["name"]
-
+  List<DocumentSnapshot?> documentSnaps =
+      []; // to get doc id: documentSnaps[index]!.id. Other data like: documentSnaps[index]!["name"]
+  OfficeHoursModel? officeHours;
   FirebaseFirestore _db = FirebaseFirestore.instance;
   late Stream<QuerySnapshot?> _councilMembersIDsSnapshot;
-    
+
   void initState() {
     _councilMembersIDsSnapshot = _db
         .collection("Profiles")
@@ -26,9 +28,10 @@ class _StudentCouncilState extends State<StudentCouncil> {
   }
 
   void downloadFile(fileURL) async {
-    await canLaunch(fileURL!) ? await launch(fileURL!) : throw 'Could not launch ${fileURL} !';
+    await canLaunch(fileURL!)
+        ? await launch(fileURL!)
+        : throw 'Could not launch ${fileURL} !';
   }
-
 
   Widget councilProfilesBody() {
     return MaterialApp(
@@ -61,26 +64,34 @@ class _StudentCouncilState extends State<StudentCouncil> {
           ),
           body: TabBarView(
             children: [
-              ListView.builder( // Profiles tab
+              // Profiles Tab:
+              ListView.builder(
                 itemCount: documentSnaps.length,
                 itemBuilder: (BuildContext context, int index) {
                   return (Card(
                     child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage(documentSnaps[index]!["picture"]),
-                        // AssetImage("assets/default-avatar.png"),
-                        backgroundColor: Colors.grey,
-                        radius: 30,
-                      ),
+                      leading: documentSnaps[index]!["picture"] != null
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  documentSnaps[index]!["picture"]),
+                              backgroundColor: Colors.grey,
+                              radius: 30,
+                            )
+                          : CircleAvatar(
+                              backgroundImage:
+                                  AssetImage("assets/default-avatar.png"),
+                              backgroundColor: Colors.grey,
+                              radius: 30,
+                            ),
                       title: Text(documentSnaps[index]!["name"]),
-                      subtitle: Text('Dept etc'),
+                      // subtitle: Text('Dept etc'),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
                             return Profile(
-                                who: (documentSnaps[index]!.id)); // function returns a widget
+                                who: (documentSnaps[index]!
+                                    .id)); // function returns a widget
                           }),
                         );
                       },
@@ -88,9 +99,33 @@ class _StudentCouncilState extends State<StudentCouncil> {
                   ));
                 },
               ),
-              
-              Text("TODO: Office Hours screen"), // Office Hours Tab
-              
+
+              // Office Hours Tab:
+              ListView.builder(
+                itemCount: officeHours!.daysOfTheWeek.length, // = 5
+                itemBuilder: (BuildContext context, int index) {
+                  return (ExpansionTile(
+                    title: Text(
+                      officeHours!.daysOfTheWeek[index],
+                    ),
+                    initiallyExpanded: true,
+                    // TODO: Styling
+                    children: officeHours!.tiles[index].length != 0 // if no office hours for this day
+                        ? officeHours!.tiles[index]
+                        : [
+                            Text(
+                              "No office hours scheduled for " +
+                                  officeHours!.daysOfTheWeek[index] +
+                                  ".",
+                              textAlign: TextAlign.right,
+                            ),
+                            SizedBox(height: 10,),
+                          ],
+                  ));
+                },
+              ),
+
+              // Docs Tab:
               SCDocs(),
             ],
           ),
@@ -115,6 +150,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
             snapshot.data!.docs.forEach((thisDocumentSnap) {
               documentSnaps.add(thisDocumentSnap);
             });
+            officeHours = new OfficeHoursModel(documentSnaps, context);
             return councilProfilesBody();
           } else {
             return Center(

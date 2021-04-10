@@ -17,7 +17,7 @@ class EditProfile extends StatefulWidget {
 
 /// This is the private State class that goes with MyStatefulWidget.
 class _EditProfileState extends State<EditProfile> {
-  late Profile _profile;
+  late ProfileModel _profile;
   late bool objectInitialized;
   late Future<DocumentSnapshot?> _future;
   FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -25,10 +25,11 @@ class _EditProfileState extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
 
   TimeOfDay? selectedTime;
+  OfficeHours selectedOfficeHours = new OfficeHours("None", "None");
 
   void initState() {
     _future = _db.collection("Profiles").doc(widget.userId).get();
-    _profile = Profile(name: '', role: 'student', email: '');
+    _profile = ProfileModel(name: '', role: 'Student', email: '');
     objectInitialized = false;
     super.initState();
   }
@@ -85,6 +86,21 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  void formatTime() {
+    selectedOfficeHours.days == "MW"
+        ? selectedOfficeHours.days = "Mondays and Wednesdays"
+        : selectedOfficeHours.days == "TT"
+            ? selectedOfficeHours.days = "Tuesdays and Thursdays"
+            : selectedOfficeHours.days == "WF"
+                ? selectedOfficeHours.days = "Wednesdays and Fridays"
+                : selectedOfficeHours.days = "None";
+    selectedOfficeHours.time = selectedTime!.hourOfPeriod.toString() +
+        ":" +
+        (selectedTime!.minute.toString().length == 1? "0"+selectedTime!.minute.toString(): selectedTime!.minute.toString()) +
+        " " +
+        selectedTime!.period.toString().substring(10).toUpperCase();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,6 +131,7 @@ class _EditProfileState extends State<EditProfile> {
                         key: _formKey,
                         child: Column(
                           children: [
+                            // TODO: Add discard/confirmation dialog box when going back. WillPopScope class might be useful.
                             SizedBox(height: 15),
                             Container(
                               decoration: BoxDecoration(
@@ -142,11 +159,13 @@ class _EditProfileState extends State<EditProfile> {
                                           child: ListBody(
                                             children: <Widget>[
                                               ListTile(
-                                                leading: new Icon(Icons
-                                                    .add_photo_alternate_outlined),
-                                                title: Text('Upload a Photo'),
-                                                onTap: () => selectPicture(),
-                                              ),
+                                                  leading: new Icon(Icons
+                                                      .add_photo_alternate_outlined),
+                                                  title: Text('Upload a Photo'),
+                                                  onTap: () => {
+                                                        selectPicture(),
+                                                        Navigator.pop(context),
+                                                      }),
                                               ListTile(
                                                   leading: new Icon(Icons
                                                       .highlight_remove_sharp),
@@ -178,29 +197,10 @@ class _EditProfileState extends State<EditProfile> {
                                 child: CircleAvatar(
                                     radius: 80 + 4, // the profile avatar border
                                     backgroundColor: Colors.white,
-                                    child: _profile.pictureChanged? CircleAvatar(
-                                      backgroundImage: FileImage(_profile.image!),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                                blurRadius: 15,
-                                                color: Colors.black87,
-                                                spreadRadius: 5)
-                                          ],
-                                        ),
-                                        child: new Icon(
-                                          Icons.edit,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      backgroundColor: Colors.grey,
-                                      radius: 80,
-                                    ) : _profile.pictureURL == null
+                                    child: _profile.pictureChanged
                                         ? CircleAvatar(
-                                            backgroundImage: AssetImage(
-                                                "assets/default-avatar.png"),
+                                            backgroundImage:
+                                                FileImage(_profile.image!),
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
@@ -219,27 +219,49 @@ class _EditProfileState extends State<EditProfile> {
                                             backgroundColor: Colors.grey,
                                             radius: 80,
                                           )
-                                        : CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                                _profile.pictureURL!),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                      blurRadius: 15,
-                                                      color: Colors.black87,
-                                                      spreadRadius: 5)
-                                                ],
-                                              ),
-                                              child: new Icon(
-                                                Icons.edit,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                            radius: 80,
-                                            backgroundColor: Colors.grey,
-                                          )),
+                                        : _profile.pictureURL == null
+                                            ? CircleAvatar(
+                                                backgroundImage: AssetImage(
+                                                    "assets/default-avatar.png"),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                          blurRadius: 15,
+                                                          color: Colors.black87,
+                                                          spreadRadius: 5)
+                                                    ],
+                                                  ),
+                                                  child: new Icon(
+                                                    Icons.edit,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                backgroundColor: Colors.grey,
+                                                radius: 80,
+                                              )
+                                            : CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                    _profile.pictureURL!),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                          blurRadius: 15,
+                                                          color: Colors.black87,
+                                                          spreadRadius: 5)
+                                                    ],
+                                                  ),
+                                                  child: new Icon(
+                                                    Icons.edit,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                radius: 80,
+                                                backgroundColor: Colors.grey,
+                                              )),
                               ),
                             ),
                             SizedBox(height: 25),
@@ -299,7 +321,6 @@ class _EditProfileState extends State<EditProfile> {
                                 }).toList(),
                               ),
                             ),
-                            //  year. school-major.
                             SizedBox(height: 15),
                             Align(
                               alignment: Alignment.centerLeft,
@@ -333,31 +354,63 @@ class _EditProfileState extends State<EditProfile> {
                                 setState(() => _profile.major = val);
                               },
                             ),
-                            SizedBox(height: 15),
-                            // TODO: OFFICE HOURS: INSERT TIME AND DAY PICKER HERE, extract day and time as a string
+                            (_profile.role == "SC" || _profile.role == "IT")
+                                ? SizedBox(height: 0)
+                                : SizedBox(height: 15),
                             if (_profile.role == "SC" || _profile.role == "IT")
-                              TextFormField(
-                                initialValue: _profile.manifesto,
-                                maxLines: null,
-                                decoration:
-                                    InputDecoration(labelText: "Manifesto"),
-                                validator: (val) => headingValidator(val!),
-                                onChanged: (val) {
-                                  setState(() => _profile.manifesto = val);
-                                },
+                              Text(
+                                "Select Office Hours Days:",
+                                style: TextStyle(height: 5, fontSize: 15),
                               ),
-                            
-                            // FilterChip(
-                            //   avatar: CircleAvatar(
-                            //     backgroundColor: Colors.grey.shade800,
-                            //     child: Text('AB'),
-                            //   ),
-                            //   label: Text('Aaron Burr'),
-                            //   onSelected: (bool value) {},
-                            // ),
+                            if (_profile.role == "SC" || _profile.role == "IT")
+                              Wrap(spacing: 8.0, children: <Widget>[
+                                FilterChip(
+                                  label: Text('Mon-Wed'),
+                                  selected: selectedOfficeHours.days == "MW"
+                                      ? true
+                                      : false,
+                                  selectedColor: Theme.of(context).primaryColor,
+                                  onSelected: (bool value) {
+                                    setState(() {
+                                      selectedOfficeHours.days == "MW"
+                                          ? selectedOfficeHours.days = "None"
+                                          : selectedOfficeHours.days = "MW";
+                                    });
+                                  },
+                                ),
+                                FilterChip(
+                                  label: Text('Tues-Thurs'),
+                                  selected: selectedOfficeHours.days == "TT"
+                                      ? true
+                                      : false,
+                                  selectedColor: Theme.of(context).primaryColor,
+                                  onSelected: (bool value) {
+                                    setState(() {
+                                      selectedOfficeHours.days == "TT"
+                                          ? selectedOfficeHours.days = "None"
+                                          : selectedOfficeHours.days = "TT";
+                                    });
+                                  },
+                                ),
+                                FilterChip(
+                                  label: Text('Wed-Fri'),
+                                  selected: selectedOfficeHours.days == "WF"
+                                      ? true
+                                      : false,
+                                  selectedColor: Theme.of(context).primaryColor,
+                                  onSelected: (bool value) {
+                                    setState(() {
+                                      selectedOfficeHours.days == "WF"
+                                          ? selectedOfficeHours.days = "None"
+                                          : selectedOfficeHours.days = "WF";
+                                    });
+                                  },
+                                ),
+                              ]),
 
                             if (_profile.role == "SC" || _profile.role == "IT")
                               SizedBox(height: 15),
+
                             if (_profile.role == "SC" || _profile.role == "IT")
                               SizedBox(
                                 width: double.infinity,
@@ -375,8 +428,7 @@ class _EditProfileState extends State<EditProfile> {
                                   child: Text(
                                     "Office hours timeslot",
                                     textAlign: TextAlign.left,
-                                    style:
-                                        TextStyle(color: Colors.black),
+                                    style: TextStyle(color: Colors.black),
                                   ),
                                   onPressed: () async {
                                     selectedTime = await showTimePicker(
@@ -397,17 +449,42 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             if (_profile.role == "SC" || _profile.role == "IT")
                               SizedBox(height: 15),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 40,
-                              child: ElevatedButton(
-                                onPressed: () => update(snapshot.data!.id),
-                                child: Text('Update Profile',
-                                    style:
-                                        Theme.of(context).textTheme.headline5),
+
+                            if (_profile.role == "SC" || _profile.role == "IT")
+                              TextFormField(
+                                initialValue: _profile.manifesto,
+                                maxLines: null,
+                                decoration:
+                                    InputDecoration(labelText: "Manifesto"),
+                                // validator: (val) => headingValidator(val!), // 30 characters limit not needed for manifesto
+                                onChanged: (val) {
+                                  setState(() => _profile.manifesto = val);
+                                },
                               ),
-                            ),
+                            if (_profile.role == "SC" || _profile.role == "IT")
+                              SizedBox(height: 15),
+                            if (_profile.role == "SC" || _profile.role == "IT")
+                              SizedBox(
+                                width: double.infinity,
+                                height: 40,
+                                child: ElevatedButton(
+                                  onPressed: () => {
+                                    if (_profile.role != "Student")
+                                      {
+                                        formatTime(),
+                                        _profile.officeHours =
+                                            selectedOfficeHours.toMap(),
+                                      },
+                                    update(snapshot.data!.id)
+                                  },
+                                  child: Text('Update Profile',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headline5),
+                                ),
+                              ),
                             SizedBox(height: 15),
+                            // TODO: Add progress indicator after pressing update button
                           ],
                         )),
                   ));

@@ -4,6 +4,7 @@ import 'package:lums_student_portal/pages/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
+import 'package:lums_student_portal/models/profile.dart';
 
 class Profile extends StatefulWidget {
   late final String who;
@@ -21,17 +22,7 @@ class _ProfileState extends State<Profile> {
   FirebaseFirestore _db = FirebaseFirestore.instance;
   late final User? thisUser = FirebaseAuth.instance.currentUser;
   late Stream<DocumentSnapshot?> _streamOfProfileData;
-
-  String name = "none";
-  String rollno = "none";
-  String year = "none";
-  String dept = "none";
-  String residenceStatus = "none";
-  String schoolMajor = "none";
-  String officeHours = "none";
-  String manifesto = "none";
-  String pictureURL = "default";
-  String role = "Student";
+  late ProfileModel _profile;
 
   void initState() {
     who == "self"
@@ -57,7 +48,7 @@ class _ProfileState extends State<Profile> {
           centerTitle: true,
           elevation: 0,
         backgroundColor: Color(0xFFEA5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
-        actions: <Widget>[
+        actions: <Widget>[ // settings button
           if (who == "self")
             IconButton(
               icon: Icon(
@@ -68,7 +59,7 @@ class _ProfileState extends State<Profile> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) {
-                    return AppSettings(role: role);
+                    return AppSettings(role: _profile.role);
                   }),
                 );
               },
@@ -77,13 +68,13 @@ class _ProfileState extends State<Profile> {
       ),
       body: ListView(
         children: [
-          Stack(
+          Stack( // Profile Picture + Name
             children: <Widget>[
               Container(
                 color: Color(0xFFEA5757),
                 height: 120.0,
               ),
-              Container(
+              Container( // Profile Picture
                   child: Container(
                 width: double.infinity,
                 height: 250.0,
@@ -107,7 +98,7 @@ class _ProfileState extends State<Profile> {
                             radius:
                                 circleRadius + 4, // the profile avatar border
                             backgroundColor: Colors.white,
-                            child: pictureURL == "default"
+                            child: _profile.pictureURL == null
                                 ? CircleAvatar(
                                     backgroundImage:
                                         AssetImage("assets/default-avatar.png"),
@@ -115,15 +106,15 @@ class _ProfileState extends State<Profile> {
                                     radius: circleRadius,
                                   )
                                 : CircleAvatar(
-                                    backgroundImage: NetworkImage(pictureURL),
+                                    backgroundImage: NetworkImage(_profile.pictureURL!),
                                     radius: circleRadius,
                                   )),
                       ),
                       SizedBox(
                         height: 10.0,
                       ),
-                      Text(
-                        name,
+                      Text( // Name
+                        _profile.name,
                         style: GoogleFonts.robotoSlab(
                           color: Colors.black,
                           fontSize: 24.0,
@@ -148,48 +139,40 @@ class _ProfileState extends State<Profile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    rollno,
+                    _profile.email.substring(0, 8), // using substring to extract roll no from email
                     style: GoogleFonts.robotoSlab(
                       color: Color(0xFF808080),
                       fontSize: 18.0,
                     ),
                   ),
-                  if (year != "none")
+                  if (_profile.year != null)
                     Text(
-                      year,
+                      _profile.year!,
                       style: GoogleFonts.robotoSlab(
                         color: Color(0xFF808080),
                         fontSize: 18.0,
                       ),
                     ),
-                  if (dept != "none")
+                  if (_profile.hostel != null)
                     Text(
-                      dept,
+                      _profile.hostel!,
                       style: GoogleFonts.robotoSlab(
                         color: Color(0xFF808080),
                         fontSize: 18.0,
                       ),
                     ),
-                  if (residenceStatus != "none")
+                  if (_profile.school != null && _profile.major != null )
                     Text(
-                      residenceStatus,
+                      _profile.school! + ": " + _profile.major!,
                       style: GoogleFonts.robotoSlab(
                         color: Color(0xFF808080),
                         fontSize: 18.0,
                       ),
                     ),
-                  if (schoolMajor != "none")
+                  if (_profile.officeHours != null) SizedBox(height: 15.0),
+                  if (_profile.officeHours != null)
                     Text(
-                      schoolMajor,
-                      style: GoogleFonts.robotoSlab(
-                        color: Color(0xFF808080),
-                        fontSize: 18.0,
-                      ),
-                    ),
-                  if (officeHours != "none") SizedBox(height: 15.0),
-                  if (officeHours != "none")
-                    Text(
-                      "Office Hours: " + officeHours,
+                      "Office Hours:\n" + _profile.officeHours!['days'] + " at " + _profile.officeHours!['time'],
                       style: GoogleFonts.robotoSlab(
                         color: Colors.black,
                         fontSize: 18.0,
@@ -204,9 +187,9 @@ class _ProfileState extends State<Profile> {
                   //       fontSize: 28.0),
                   // ),
                   SizedBox(height: 15.0),
-                  if (manifesto != "none")
+                  if (_profile.manifesto != null)
                     Text(
-                      "Manifesto:\n" + manifesto,
+                      "Manifesto:\n" + _profile.manifesto!,
                       style: GoogleFonts.robotoSlab(
                         color: Colors.black,
                         fontSize: 18.0,
@@ -236,41 +219,32 @@ class _ProfileState extends State<Profile> {
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();
           } else if (snapshot.hasData) {
-            name = snapshot.data!["name"];
 
-            role = snapshot.data!["role"];
-
-            rollno = snapshot.data!["email"];
-            rollno = rollno.substring(0, 8); // extracting roll no from email
-
+            _profile = ProfileModel(name: snapshot.data!["name"], role: snapshot.data!["role"], email: snapshot.data!["email"]);
+            
             try {
-              year = snapshot.data!["year"];
+              _profile.year = snapshot.data!["year"];
             } catch (e) {}
 
             try {
-              dept = snapshot.data!["dept"];
+              _profile.hostel = snapshot.data!["residence_status"];
             } catch (e) {}
 
             try {
-              residenceStatus = snapshot.data!["residence_status"];
+              _profile.school = snapshot.data!["school"];
+              _profile.major = snapshot.data!["major"];
             } catch (e) {}
 
             try {
-              schoolMajor = snapshot.data!["school"];
-              schoolMajor = schoolMajor + ": " + snapshot.data!["major"];
+              _profile.officeHours = snapshot.data!["office_hours"];
             } catch (e) {}
 
             try {
-              Map officeHoursMap = snapshot.data!["office_hours"];
-              officeHours = officeHoursMap["day"]! + " " + officeHoursMap["time"]!;
+              _profile.manifesto = snapshot.data!["manifesto"];
             } catch (e) {}
 
             try {
-              manifesto = snapshot.data!["manifesto"];
-            } catch (e) {}
-
-            try {
-              pictureURL = snapshot.data!["picture"];
+              _profile.pictureURL = snapshot.data!["picture"];
             } catch (e) {}
 
             return ProfileBody();
