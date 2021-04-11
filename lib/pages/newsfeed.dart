@@ -142,7 +142,7 @@ class _PostItemState extends State<PostItem> {
                     onPressed: () => openPoll(),
                   ): Container(),
                   IconButton(
-                      icon: isSaved? new Icon(Icons.favorite, color: Colors.red,):new Icon(Icons.favorite_outline_sharp),
+                      icon: isSaved? new Icon(Icons.favorite, color: Colors.red):new Icon(Icons.favorite_outline_sharp),
                       onPressed: () => updateSaveStatus(),
                       ),
                   IconButton(
