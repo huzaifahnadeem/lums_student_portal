@@ -224,7 +224,7 @@ class _ProfileState extends State<Profile> {
             
             try {
               _profile.year = snapshot.data!["year"];
-            } catch (e) {print("here");}
+            } catch (e) {}
 
             try {
               _profile.hostel = snapshot.data!["residence_status"];
