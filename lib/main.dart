@@ -116,7 +116,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return (!_initialized) ? LoadingScreen() : StreamBuilder<User?>( // splash screen called here
+    return (!_initialized) ? LoadingScreen() : StreamBuilder<User?>(
       stream: _streamOfAuthChanges,
       builder: (context, snapshot){
         if (snapshot.hasData){

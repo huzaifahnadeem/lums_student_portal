@@ -6,7 +6,6 @@ import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/backend/validators.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/profile.dart';
-import 'package:lums_student_portal/pages/profile.dart';
 
 class About extends StatelessWidget {
   @override
@@ -42,23 +41,11 @@ class EditProfileArgs {
 class AppSettings extends StatelessWidget {
   // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
   late final String role;
-  final bool showSC = true, showIT = true;
   AppSettings({required this.role});
 
   @override
   Widget build(BuildContext context) {
-    /*if (role == "SC") {
-      showSC = true;
-      showIT = false;
-    } else if (role == "IT") {
-      showSC = true;
-      showIT = true;
-    } else {
-      // role == "Student"
-      showSC = false;
-      showIT = false;
-    }*/
-
+    
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
@@ -74,75 +61,56 @@ class AppSettings extends StatelessWidget {
         backgroundColor: Colors.white,
       ),
       body: ListView(
-        children: ListTile.divideTiles(context: context, tiles: [
-          ListTile(
-            leading: Icon(Icons.privacy_tip_outlined, color: Colors.black,),
-            title: Text('Change password', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
-            onTap: () {
-              Navigator.pushNamed(context, "/changePassword");
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.edit, color: Colors.black,),
-            title: Text('Edit profile', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
-            onTap: () {
-              Navigator.pushNamed(context, "/editProfile",
-                  arguments: EditProfileArgs(sc: true));
-            },
-          ),
-          showIT
-              ? ListTile(
-                  leading: Icon(Icons.update, color: Colors.black),
-                  title: Text('Update Role', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
-                  onTap: () {
-                    Navigator.pushNamed(context, "/updateAccount");
-                  },
-                )
-              : Container(),
-          ListTile(
-            leading: Icon(Icons.info_outline,color: Colors.black),
-            title: Text('About', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return About();
-                }),
-              );
-            },
-          ),
-          showIT
-              ? ListTile(
-                  leading: Icon(Icons.how_to_vote,color: Colors.black),
-                  title: Text('Initiate election process', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
-                  onTap: () {
-                    FirebaseFirestore.instance
-                        .collection("Election")
-                        .doc("events")
-                        .update({"happening": true});
-                  },
-                )
-              : Container(),
-          if (showIT)
+        children: ListTile.divideTiles(
+          context: context,
+          tiles: [
             ListTile(
-              leading: Icon(Icons.cancel_outlined,color: Colors.black),
-              title: Text('End election process', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
+              leading: Icon(Icons.privacy_tip),
+              title: Text('Change password'),
               onTap: () {
-                FirebaseFirestore.instance
-                    .collection("Election")
-                    .doc("events")
-                    .update({"happening": false});
+                Navigator.pushNamed(context, "/changePassword");
               },
             ),
-          ListTile(
-            leading: Icon(Icons.logout, color: Colors.black),
-            title: Text('Log out', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
-            onTap: () async {
-              await Authentication().signOut();
-              Navigator.pop(context);
-            },
-          )
-        ]).toList(),
+            ListTile(
+              leading: Icon(Icons.edit),
+              title: Text('Edit profile'),
+              onTap: () {
+                Navigator.pushNamed(context,"/editProfile", arguments: EditProfileArgs(sc: true) );
+              },
+            ),
+            (role == 'IT')? ListTile(
+              leading: Icon(Icons.update),
+              title: Text('Update Role'),
+              onTap: () {
+                Navigator.pushNamed(context,"/updateAccount");
+              },
+            ): Container(),
+            (role == 'IT')?
+              ListTile(
+                leading: Icon(Icons.how_to_vote),
+                title: Text('Initiate election process'),
+                onTap: () {
+                  FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":true});
+                },
+              ):Container(),
+            if ((role == 'IT'))
+              ListTile(
+                leading: Icon(Icons.cancel),
+                title: Text('End election process'),
+                onTap: () {
+                  FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":false});
+                },
+              ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Log out'),
+              onTap: () async {
+                await Authentication().signOut();
+                Navigator.pop(context);
+                },
+            )
+          ]
+        ).toList(),
       ),
     );
   }

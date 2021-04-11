@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:lums_student_portal/backend/validators.dart';
 import 'package:lums_student_portal/models/profile.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
+import 'package:intl/date_symbol_data_file.dart'; // for DateFormat
 
 class EditProfile extends StatefulWidget {
   final bool showSC;
@@ -24,15 +25,15 @@ class _EditProfileState extends State<EditProfile> {
   final filePicker = FilePicker.platform;
   final _formKey = GlobalKey<FormState>();
 
-  TimeOfDay? selectedTime;
-  OfficeHours selectedOfficeHours = new OfficeHours("None", "None");
-
   void initState() {
     _future = _db.collection("Profiles").doc(widget.userId).get();
     _profile = ProfileModel(name: '', role: 'Student', email: '');
     objectInitialized = false;
     super.initState();
   }
+
+  TimeOfDay? selectedTime;
+  OfficeHours? selectedOfficeHours;
 
   void deleteProfilePicture(String docID) async {
     String result = '';
@@ -87,18 +88,56 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void formatTime() {
-    selectedOfficeHours.days == "MW"
-        ? selectedOfficeHours.days = "Mondays and Wednesdays"
-        : selectedOfficeHours.days == "TT"
-            ? selectedOfficeHours.days = "Tuesdays and Thursdays"
-            : selectedOfficeHours.days == "WF"
-                ? selectedOfficeHours.days = "Wednesdays and Fridays"
-                : selectedOfficeHours.days = "None";
-    selectedOfficeHours.time = selectedTime!.hourOfPeriod.toString() +
+    selectedOfficeHours!.days == "MW"
+        ? selectedOfficeHours!.days = "Mondays and Wednesdays"
+        : selectedOfficeHours!.days == "TT"
+            ? selectedOfficeHours!.days = "Tuesdays and Thursdays"
+            : selectedOfficeHours!.days == "WF"
+                ? selectedOfficeHours!.days = "Wednesdays and Fridays"
+                : selectedOfficeHours!.days = "None";
+    selectedOfficeHours!.time = selectedTime!.hourOfPeriod.toString() +
         ":" +
         (selectedTime!.minute.toString().length == 1? "0"+selectedTime!.minute.toString(): selectedTime!.minute.toString()) +
         " " +
         selectedTime!.period.toString().substring(10).toUpperCase();
+  }
+
+  TimeOfDay timeConvert(String normTime) { // converts from '6:00 AM' to TimeOfDay object
+    // source: https://stackoverflow.com/questions/53382971/how-to-convert-string-to-timeofday-in-flutter
+    int hour;
+    int minute;
+    String ampm = normTime.substring(normTime.length - 2);
+    String result = normTime.substring(0, normTime.indexOf(' '));
+    if (ampm == 'AM' && int.parse(result.split(":")[1]) != 12) {
+      hour = int.parse(result.split(':')[0]);
+      if (hour == 12) hour = 0;
+      minute = int.parse(result.split(":")[1]);
+    } else {
+      hour = int.parse(result.split(':')[0]) - 12;
+      if (hour <= 0) {
+        hour = 24 + hour;
+      }
+      minute = int.parse(result.split(":")[1]);
+    }
+    return TimeOfDay(hour: hour, minute: minute);
+  }
+
+  void initTimeandOfficeHoursObjs() {
+    if (_profile.officeHoursNull()) {
+      selectedOfficeHours = null;
+    }
+    else {
+      selectedOfficeHours = new OfficeHours(_profile.officeHours!['days'], _profile.officeHours!['time']);
+      selectedOfficeHours!.days == "Mondays and Wednesdays"
+          ? selectedOfficeHours!.days = "MW"
+          : selectedOfficeHours!.days == "Tuesdays and Thursdays"
+              ? selectedOfficeHours!.days = "TT"
+              : selectedOfficeHours!.days == "Wednesdays and Fridays"
+                  ? selectedOfficeHours!.days = "WF"
+                  : selectedOfficeHours!.days = "None";
+      
+      selectedTime = timeConvert(selectedOfficeHours!.time);
+    }
   }
 
   @override
@@ -122,6 +161,7 @@ class _EditProfileState extends State<EditProfile> {
               //return (Text("Done"));
               if (!objectInitialized) {
                 _profile.convertToObject(snapshot.data!);
+                initTimeandOfficeHoursObjs();
                 objectInitialized = true;
               }
               return SafeArea(
@@ -366,43 +406,43 @@ class _EditProfileState extends State<EditProfile> {
                               Wrap(spacing: 8.0, children: <Widget>[
                                 FilterChip(
                                   label: Text('Mon-Wed'),
-                                  selected: selectedOfficeHours.days == "MW"
+                                  selected: selectedOfficeHours!.days == "MW"
                                       ? true
                                       : false,
                                   selectedColor: Theme.of(context).primaryColor,
                                   onSelected: (bool value) {
                                     setState(() {
-                                      selectedOfficeHours.days == "MW"
-                                          ? selectedOfficeHours.days = "None"
-                                          : selectedOfficeHours.days = "MW";
+                                      selectedOfficeHours!.days == "MW"
+                                          ? selectedOfficeHours!.days = "None"
+                                          : selectedOfficeHours!.days = "MW";
                                     });
                                   },
                                 ),
                                 FilterChip(
                                   label: Text('Tues-Thurs'),
-                                  selected: selectedOfficeHours.days == "TT"
+                                  selected: selectedOfficeHours!.days == "TT"
                                       ? true
                                       : false,
                                   selectedColor: Theme.of(context).primaryColor,
                                   onSelected: (bool value) {
                                     setState(() {
-                                      selectedOfficeHours.days == "TT"
-                                          ? selectedOfficeHours.days = "None"
-                                          : selectedOfficeHours.days = "TT";
+                                      selectedOfficeHours!.days == "TT"
+                                          ? selectedOfficeHours!.days = "None"
+                                          : selectedOfficeHours!.days = "TT";
                                     });
                                   },
                                 ),
                                 FilterChip(
                                   label: Text('Wed-Fri'),
-                                  selected: selectedOfficeHours.days == "WF"
+                                  selected: selectedOfficeHours!.days == "WF"
                                       ? true
                                       : false,
                                   selectedColor: Theme.of(context).primaryColor,
                                   onSelected: (bool value) {
                                     setState(() {
-                                      selectedOfficeHours.days == "WF"
-                                          ? selectedOfficeHours.days = "None"
-                                          : selectedOfficeHours.days = "WF";
+                                      selectedOfficeHours!.days == "WF"
+                                          ? selectedOfficeHours!.days = "None"
+                                          : selectedOfficeHours!.days = "WF";
                                     });
                                   },
                                 ),
@@ -433,7 +473,7 @@ class _EditProfileState extends State<EditProfile> {
                                   onPressed: () async {
                                     selectedTime = await showTimePicker(
                                       context: context,
-                                      initialTime: TimeOfDay.now(),
+                                      initialTime: selectedTime != null? selectedTime!: TimeOfDay.now(),
                                       builder: (BuildContext? context,
                                           Widget? child) {
                                         return MediaQuery(
@@ -463,8 +503,8 @@ class _EditProfileState extends State<EditProfile> {
                               ),
                             if (_profile.role == "SC" || _profile.role == "IT")
                               SizedBox(height: 15),
-                            if (_profile.role == "SC" || _profile.role == "IT")
-                              SizedBox(
+                            
+                            SizedBox(
                                 width: double.infinity,
                                 height: 40,
                                 child: ElevatedButton(
@@ -473,7 +513,7 @@ class _EditProfileState extends State<EditProfile> {
                                       {
                                         formatTime(),
                                         _profile.officeHours =
-                                            selectedOfficeHours.toMap(),
+                                            selectedOfficeHours!.toMap(),
                                       },
                                     update(snapshot.data!.id)
                                   },

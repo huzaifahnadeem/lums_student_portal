@@ -25,9 +25,12 @@ class Authentication {
         'name': temp.displayName,
         'email': temp.email,
         'role': 'Student',
-        'saved_posts' : null,
+        'major': null,
+        'school': null,
+        'year': null,
+        'hostel': null,
         'picture' : null,
-        'office_hours': null,
+        'office_hours': {'days': null, 'time': null},
         'manifesto': null,
       }) ;
       return true;

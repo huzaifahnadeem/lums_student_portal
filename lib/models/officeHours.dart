@@ -2,6 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 
+bool profilePhotoExists(List<DocumentSnapshot?> documentSnaps, int index) {
+    bool photoExists = false;
+    try{
+      documentSnaps[index]!["picture"] != null? photoExists = true : photoExists = false;
+    } 
+    catch (e) {
+      photoExists = false;
+    }
+    return photoExists;
+  }
+
 class OfficeHoursModel {
   late BuildContext context;
   List<DocumentSnapshot?> snapshots = [];
@@ -32,7 +43,7 @@ class OfficeHoursModel {
         for (final day in daysIndices) {
           tiles[day].add(Card(
             child: ListTile(
-              leading: thisSCmember["picture"] != null
+              leading: profilePhotoExists([thisSCmember], 0)
                   ? CircleAvatar(
                       backgroundImage: NetworkImage(thisSCmember["picture"]),
                       backgroundColor: Colors.grey,
