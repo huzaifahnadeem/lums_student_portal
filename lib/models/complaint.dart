@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart' as Path;
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'dart:core';
 
@@ -12,6 +10,9 @@ class Complaint {
   String complaint;
   String? tag;
   String? email;
+  String? isResolved = "Pending";
+  String? name;
+  String? resolution = "";
   static List categories = [
     "General",
     "Disciplinary Committee",
@@ -29,6 +30,9 @@ class Complaint {
   // create json object to add to database
   Map<String, dynamic> toMap() {
     return {
+      "resolution": this.resolution,
+      "name": this.name,
+      "isResolved": this.isResolved,
       "category": this.tag,
       "subject": this.subject,
       "complaint": this.complaint,
