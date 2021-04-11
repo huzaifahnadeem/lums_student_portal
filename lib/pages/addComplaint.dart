@@ -20,6 +20,7 @@ class AddComplaint extends StatefulWidget {
 class _AddComplaintState extends State<AddComplaint> {
   Complaint newComplaint = Complaint(subject: '', complaint: '', email: '');
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  FirebaseFirestore _db = FirebaseFirestore.instance;
   bool loading = false;
   String? email;
 
@@ -27,6 +28,15 @@ class _AddComplaintState extends State<AddComplaint> {
     User? thisUser = FirebaseAuth.instance.currentUser;
     email = thisUser!.email;
     setState(() => newComplaint.email = email);
+    _db
+        .collection("Profiles")
+        .where("email", isEqualTo: email)
+        .get()
+        .then((value) {
+      value.docs.forEach((result) {
+        setState(() => newComplaint.name = result.get("name"));
+      });
+    });
   }
 
   // function to call when user pressed "Add Post" button
@@ -64,7 +74,6 @@ class _AddComplaintState extends State<AddComplaint> {
               children: <Widget>[
                 Text('Would you like to lodge this complaint?',
                     textAlign: TextAlign.center)
-                // Text('Would you like to approve of this message?'),
               ],
             ),
           ),
@@ -130,7 +139,9 @@ class _AddComplaintState extends State<AddComplaint> {
                     // heading input field
                     TextFormField(
                       decoration: InputDecoration(
-                          labelText: "Add Subject", fillColor: Colors.white),
+                        labelText: "Add Subject",
+                        fillColor: Colors.white,
+                      ),
                       validator: (val) => headingValidator(
                           newComplaint.subject), // check subjet lenght
                       onChanged: (val) {
