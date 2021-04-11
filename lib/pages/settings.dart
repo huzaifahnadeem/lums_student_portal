@@ -279,7 +279,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
                       // onPressed: () => validate(),
                       onPressed: () => updateRole(),
                       child: Text('Update Role',
-                          style: Theme.of(context).textTheme.headline5),
+                          style: Theme.of(context).textTheme.headline5!.copyWith(fontSize: 17)),
                     ),
                   ),
                   SizedBox(
@@ -289,7 +289,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
                       // onPressed: () => validate(),
                       onPressed: () => updateChair(),
                       child: Text('Update Chair',
-                          style: Theme.of(context).textTheme.headline5),
+                          style: Theme.of(context).textTheme.headline5!.copyWith(fontSize: 17)),
                     ),
                   ),
                 ],
