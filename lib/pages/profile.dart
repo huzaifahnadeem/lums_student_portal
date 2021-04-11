@@ -167,8 +167,8 @@ class _ProfileState extends State<Profile> {
                         fontSize: 18.0,
                       ),
                     ),
-                  if (!_profile.officeHoursNull()) SizedBox(height: 15.0),
-                  if (!_profile.officeHoursNull())
+                  if (_profile.officeHours != null) SizedBox(height: 15.0),
+                  if (_profile.officeHours != null)
                     Text(
                       "Office Hours:\n" + _profile.officeHours!['days'] + " at " + _profile.officeHours!['time'],
                       style: GoogleFonts.robotoSlab(

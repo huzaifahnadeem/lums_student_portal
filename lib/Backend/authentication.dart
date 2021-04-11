@@ -30,7 +30,7 @@ class Authentication {
         'year': null,
         'hostel': null,
         'picture' : null,
-        'office_hours': {'days': null, 'time': null},
+        'office_hours': null,
         'manifesto': null,
       }) ;
       return true;

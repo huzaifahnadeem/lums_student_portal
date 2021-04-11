@@ -87,19 +87,31 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  void formatTime() {
-    selectedOfficeHours!.days == "MW"
-        ? selectedOfficeHours!.days = "Mondays and Wednesdays"
-        : selectedOfficeHours!.days == "TT"
-            ? selectedOfficeHours!.days = "Tuesdays and Thursdays"
-            : selectedOfficeHours!.days == "WF"
-                ? selectedOfficeHours!.days = "Wednesdays and Fridays"
-                : selectedOfficeHours!.days = "None";
-    selectedOfficeHours!.time = selectedTime!.hourOfPeriod.toString() +
+  void updateOfficeHoursInModel() {
+    bool updateTime = true;
+    if (selectedOfficeHours!.days == "MW") {
+      selectedOfficeHours!.days = "Mondays and Wednesdays";
+    }
+    else if (selectedOfficeHours!.days == "TT") {
+      selectedOfficeHours!.days = "Tuesdays and Thursdays";
+    }
+    else if (selectedOfficeHours!.days == "WF") {
+      selectedOfficeHours!.days = "Wednesdays and Fridays";
+    }
+    else { // case: {day: "None", time: "None"}
+      _profile.officeHours = null;
+      updateTime = false;
+    }
+    
+    if (updateTime) {
+      selectedOfficeHours!.time = selectedTime!.hourOfPeriod.toString() +
         ":" +
         (selectedTime!.minute.toString().length == 1? "0"+selectedTime!.minute.toString(): selectedTime!.minute.toString()) +
         " " +
         selectedTime!.period.toString().substring(10).toUpperCase();
+      _profile.officeHours = selectedOfficeHours!.toMap();
+    }
+    
   }
 
   TimeOfDay timeConvert(String normTime) { // converts from '6:00 AM' to TimeOfDay object
@@ -123,8 +135,8 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   void initTimeandOfficeHoursObjs() {
-    if (_profile.officeHoursNull()) {
-      selectedOfficeHours = null;
+    if (_profile.officeHours == null) {
+      selectedOfficeHours = new OfficeHours("None", "None");
     }
     else {
       selectedOfficeHours = new OfficeHours(_profile.officeHours!['days'], _profile.officeHours!['time']);
@@ -509,11 +521,8 @@ class _EditProfileState extends State<EditProfile> {
                                 height: 40,
                                 child: ElevatedButton(
                                   onPressed: () => {
-                                    if (_profile.role != "Student")
-                                      {
-                                        formatTime(),
-                                        _profile.officeHours =
-                                            selectedOfficeHours!.toMap(),
+                                    if (_profile.role != "Student") {
+                                        updateOfficeHoursInModel(),
                                       },
                                     update(snapshot.data!.id)
                                   },
@@ -537,142 +546,3 @@ class _EditProfileState extends State<EditProfile> {
         ));
   }
 }
-
-/*String residenceSelection = 'Select Residence Status';
-  String yearSelection = 'Select Your Year';
-  String schoolSelection = 'Select Your School';
-  String schoolOfficeHoursDay = 'Select Office Hours Day';*/
-/*
-Form(
-// TODO: Backend part not done
-child: SingleChildScrollView(
-child: SafeArea(
-minimum: EdgeInsets.all(30),
-child: Column(children: <Widget>[
-DropdownButtonFormField<String>(
-value: yearSelection,
-icon: const Icon(Icons.arrow_drop_down),
-style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
-onChanged: (String? newValue) {
-setState(() {
-yearSelection = newValue!;
-});
-},
-items: <String>['Select Your Year','First-Year', 'Sophomore', 'Junior', 'Senior', 'Fifth-Year']
-.map<DropdownMenuItem<String>>((String value) {
-return DropdownMenuItem<String>(
-value: value,
-child: Text(value),
-);
-}).toList(),
-),
-SizedBox(height: 15),
-DropdownButtonFormField<String>(
-value: residenceSelection,
-icon: const Icon(Icons.arrow_drop_down),
-style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
-onChanged: (String? newValue) {
-setState(() {
-residenceSelection = newValue!;
-});
-},
-items: <String>['Select Residence Status','Hostelite', 'Day Scholar']
-.map<DropdownMenuItem<String>>((String value) {
-return DropdownMenuItem<String>(
-value: value,
-child: Text(value),
-);
-}).toList(),
-),
-SizedBox(height: 15),
-DropdownButtonFormField<String>(
-value: schoolSelection,
-icon: const Icon(Icons.arrow_drop_down),
-style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
-onChanged: (String? newValue) {
-setState(() {
-schoolSelection = newValue!;
-});
-},
-items: <String>['Select Your School', 'MGSHSS', 'SAHSOL', 'SBASSE', 'SDSB', 'SOE']
-.map<DropdownMenuItem<String>>((String value) {
-return DropdownMenuItem<String>(
-value: value,
-child: Text(value),
-);
-}).toList(),
-),
-SizedBox(height: 15),
-if (showSC)
-DropdownButtonFormField<String>(
-value: schoolOfficeHoursDay,
-icon: const Icon(Icons.arrow_drop_down),
-style: Theme.of(context).inputDecorationTheme.labelStyle, // to match the style with textfields
-onChanged: (String? newValue) {
-setState(() {
-yearSelection = newValue!;
-});
-},
-items: <String>['Select Office Hours Day','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-.map<DropdownMenuItem<String>>((String value) {
-return DropdownMenuItem<String>(
-value: value,
-child: Text(value),
-);
-}).toList(),
-),
-if (showSC) SizedBox(height: 15),
-if (showSC)
-SizedBox(
-// Confirm Button
-width: double.infinity,
-height: 40,
-child: ElevatedButton (
-child: Text("Office hours timeslot"),
-onPressed: () async {
-selectedTime = await showTimePicker(
-context: context,
-initialTime: TimeOfDay.now(),
-builder: (BuildContext? context, Widget? child) {
-return MediaQuery(
-data: MediaQuery.of(context!)
-    .copyWith(alwaysUse24HourFormat: false),
-child: child!,
-);
-},
-);
-},
-),
-),
-if (showSC) SizedBox(height: 15),
-if (showSC)
-TextFormField(
-decoration: InputDecoration(labelText: "Manifesto"),
-maxLines: null,
-),
-if (showSC) SizedBox(height: 15),
-SizedBox(
-// Confirm Button
-width: double.infinity,
-height: 40,
-child: ElevatedButton(
-// onPressed: () => validate(),
-onPressed: () => {
-ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-content: Row(children: <Widget>[
-Icon(
-Icons.error,
-color: Colors.white,
-semanticLabel: "Error",
-),
-Text('TODO: Backend part not done')
-])))
-},
-child: Text('Confirm',
-style: Theme.of(context).textTheme.headline5),
-),
-),
-]),
-),
-),
-),*/
