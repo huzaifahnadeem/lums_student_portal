@@ -27,12 +27,6 @@ class _StudentCouncilState extends State<StudentCouncil> {
     super.initState();
   }
 
-  void downloadFile(fileURL) async {
-    await canLaunch(fileURL!)
-        ? await launch(fileURL!)
-        : throw 'Could not launch ${fileURL} !';
-  }
-
   Widget councilProfilesBody() {
     return MaterialApp(
       home: DefaultTabController(
@@ -70,7 +64,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
                 itemBuilder: (BuildContext context, int index) {
                   return (Card(
                     child: ListTile(
-                      leading: documentSnaps[index]!["picture"] != null
+                      leading: profilePhotoExists(documentSnaps, index)
                           ? CircleAvatar(
                               backgroundImage: NetworkImage(
                                   documentSnaps[index]!["picture"]),
@@ -85,6 +79,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
                             ),
                       title: Text(documentSnaps[index]!["name"]),
                       // subtitle: Text('Dept etc'),
+                      subtitle: Text(' '),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -109,7 +104,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
                       officeHours!.daysOfTheWeek[index],
                     ),
                     initiallyExpanded: true,
-                    // TODO: Styling
+                    // TODO? Styling
                     children: officeHours!.tiles[index].length != 0 // if no office hours for this day
                         ? officeHours!.tiles[index]
                         : [
