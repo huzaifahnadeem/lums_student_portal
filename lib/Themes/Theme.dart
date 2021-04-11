@@ -128,8 +128,7 @@ AppBarTheme createAppBarTheme() {
     backgroundColor: Colors.white,
     elevation: 0,
     iconTheme: IconThemeData(
-      color: Colors
-          .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+      color: Colors.black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
     ),
   );
 }
