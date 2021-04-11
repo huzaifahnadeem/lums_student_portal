@@ -257,7 +257,31 @@ class _AddPostState extends State<AddPost> {
                     width: double.infinity,
                     height: 40,
                     child: ElevatedButton(
-                      onPressed: () => validate(),
+                      onPressed: () async {
+                        return showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text("Are you sure you want to add this post?" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                              actions: [
+                                TextButton(
+                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  onPressed: () async {
+                                    validate();
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                       child: Text('Add Post',
                           style: Theme.of(context).textTheme.headline5),
                     ),

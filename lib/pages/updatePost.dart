@@ -31,7 +31,6 @@ class _UpdatePostState extends State<UpdatePost> {
   // prompt user to select a picture from gallery
   void selectPicture() async{
     if (imageReset == false){
-      imageReset = true ;
       print("About to delete pictures");
       bool result = await widget.post.deletePicture();
       widget.post.pictureURL = [] ;
@@ -45,10 +44,12 @@ class _UpdatePostState extends State<UpdatePost> {
     if(result != null) {
       widget.post.images = result.paths.map((path) => File(path!)).toList();
       setState(() {
+        imageReset = true ;
         widget.post.pictureChosen = true;
       });
     } else {
       setState(() {
+        imageReset = true ;
         widget.post.pictureChosen = false ;
         widget.post.images = [];
       });
@@ -171,6 +172,7 @@ class _UpdatePostState extends State<UpdatePost> {
                           return Padding(
                             padding: EdgeInsets.fromLTRB(0,10,0,10),
                             child: TextFormField(
+                              initialValue: e.value['option'],
                               autovalidateMode: AutovalidateMode.onUserInteraction,
                               decoration: InputDecoration(hintText: "Option ${e.key} ", fillColor: Color(0xFFE8E8E8)),
                               validator: (val) => headingValidator(e.value['option']),
@@ -239,7 +241,7 @@ class _UpdatePostState extends State<UpdatePost> {
                   ) : Container(),
                   SizedBox(height: 20),
                   // display file if chosen
-                  (widget.post.fileChosen && fileReset) ? Column(
+                  (widget.post.fileChosen) ? Column(
                     children: [
                       Align(alignment: Alignment.centerLeft ,child: Text("Files",  style: Theme.of(context).textTheme.bodyText2,)),
                       SizedBox(height: 10),
@@ -253,14 +255,97 @@ class _UpdatePostState extends State<UpdatePost> {
                       IconButton(
                         tooltip: "Photo",
                         icon: new Icon(Icons.add_photo_alternate_outlined, color: Color(0xFF56BF54)),
-                        onPressed: () => selectPicture(),
+                        onPressed: () async{
+                          if(imageReset){
+                          selectPicture();
+                          }
+                          else if(!imageReset && !widget.post.pictureChosen){
+                          selectPicture();
+                          }
+                          else {
+                            return showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Caution",
+                                      style: GoogleFonts.roboto(textStyle: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .headline6,)),
+                                  content: Text(
+                                      "Selecting a new picture will delete previously posted images. Are you sure you want to delete the previous images from your post?",
+                                      style: GoogleFonts.roboto(textStyle: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .bodyText2,)),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Yes', style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(color: Colors.redAccent),),
+                                      onPressed: () async {
+                                        selectPicture();
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('No', style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .bodyText1!
+                                          .copyWith(color: Colors.redAccent),),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
                       ),
                       Text("Photo", style: Theme.of(context).textTheme.caption),
                       SizedBox(width: 20),
                       IconButton(
                         tooltip: "Attachment",
                         icon: new Icon(Icons.attach_file_outlined, color: Color(0xFF1E64EC)),
-                        onPressed:() => selectFile(),
+                        onPressed: () async{
+                          if(fileReset){
+                            selectFile();
+                          }
+                          else if(!fileReset && !widget.post.fileChosen){
+                            selectFile();
+                          }
+                          else{
+                            return showDialog<void>(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text("Caution" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.headline6,)),
+                                  content: Text("Selecting a new file will delete previously posted file. Are you sure you want to delete the previous file from your post?" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                                  actions: [
+                                    TextButton(
+                                      child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                      onPressed: () async {
+                                        selectFile();
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                    TextButton(
+                                      child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        },
                       ),
                       Text("Attachment", style: Theme.of(context).textTheme.caption),
                       SizedBox(width: 20),
@@ -291,7 +376,31 @@ class _UpdatePostState extends State<UpdatePost> {
                     width: double.infinity,
                     height: 40,
                     child: ElevatedButton(
-                      onPressed: () => validate(),
+                      onPressed: () async{
+                        return showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text("Are you sure you want to update this post? This action can not be undone." , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                              actions: [
+                                TextButton(
+                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  onPressed: () async {
+                                    validate();
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                       child: Text('Update Post',
                           style: Theme.of(context).textTheme.headline5),
                     ),

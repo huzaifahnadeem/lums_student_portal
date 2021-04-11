@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -105,11 +106,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         }
       });
     });
-
     super.initState();
-    //scrollController = new ScrollController();
-    appBarTitle = "NewsFeed";
-    _selectedIndex = 0;
+     appBarTitle = "NewsFeed" ;
+    _selectedIndex = 0 ;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
     _tabController = TabController(length: _numTabs, vsync: this);
     //handleScroll();
