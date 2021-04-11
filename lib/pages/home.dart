@@ -243,9 +243,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         children: returnBody(),
       ),
       // add a floating action button on the newsfeed screen
-      floatingActionButton: _selectedIndex != 0
+      floatingActionButton: (_selectedIndex != 0)
           ? null
-          : Visibility(
+          : (userRole != "Student")? Visibility(
               visible: _showFloatingActionButton,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
@@ -261,7 +261,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   backgroundColor: Colors.white,
                 ),
               ),
-            ),
+            ): null,
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 12,
         unselectedFontSize: 10,
