@@ -71,7 +71,7 @@ class _ViewResolveState extends State<ViewResolve> {
         setState(() => resolvedBy = result.get("name"));
       });
     });
-
+    newResolution = resolution;
     super.initState();
   }
 
@@ -304,7 +304,7 @@ class _ViewResolveState extends State<ViewResolve> {
                               child: Column(children: [
                                 TextFormField(
                                   initialValue:
-                                      resolution == null ? "" : resolution,
+                                      resolution == null ? "" : newResolution,
                                   decoration: InputDecoration(
                                       labelText: "Add Resolution",
                                       fillColor: Colors.white,
