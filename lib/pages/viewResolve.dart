@@ -197,7 +197,7 @@ class _ViewResolveState extends State<ViewResolve> {
               children: <Widget>[
                 ListTile(
                     leading: new Icon(Icons.check_circle_outline_rounded,
-                        color: Colors.greenAccent),
+                        color: Color(0xFF56BF54)),
                     title: Text('Mark as Resolved'),
                     onTap: () => {
                           validateResolved(),

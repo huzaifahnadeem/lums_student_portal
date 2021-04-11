@@ -88,7 +88,6 @@ class _AddComplaintState extends State<AddComplaint> {
                 style: TextButton.styleFrom(primary: Colors.redAccent),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  // fetchUserInfo();
                   validate();
                 },
                 child: Text('Yes'))

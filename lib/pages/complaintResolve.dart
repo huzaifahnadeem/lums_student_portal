@@ -82,13 +82,13 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                                   ? Icon(
                                       Icons.access_time_rounded,
                                       // Icons.highlight_remove_rounded
-                                      color: Colors.yellow,
+                                      color: Color(0xFFFFB800),
                                     )
                                   : (documentSnaps[index]!["isResolved"] ==
                                           "Resolved")
                                       ? Icon(
                                           Icons.check_circle_outline_rounded,
-                                          color: Colors.greenAccent,
+                                          color: Color(0xFF56BF54),
                                         )
                                       : (documentSnaps[index]!["isResolved"] ==
                                               "Unresolved")
