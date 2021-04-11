@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:lums_student_portal/backend/validators.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/profile.dart';
-import 'package:lums_student_portal/themes/progessIndicator.dart';
-import 'package:intl/date_symbol_data_file.dart'; // for DateFormat
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
 class EditProfile extends StatefulWidget {
   final bool showSC;

@@ -4,9 +4,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lums_student_portal/backend/validators.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/post.dart';
-import 'package:lums_student_portal/themes/progessIndicator.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
 
 // check android ios file and image picker configs
