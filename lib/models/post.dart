@@ -22,8 +22,8 @@ class Post {
   List<dynamic> savedPosts = [];
   List<dynamic> alreadyVoted = [];
   static List categories = ["General", "Disciplinary Committee", "Academic", "Campus Development",
-    "Others", "Mental Health", "HR/PR", "Graduate Affairs"];
-  static List categories1 = ["General", "DC", "Academic", "Campus", "Others", "CAPS", "Graduates", "HR/PR"] ;
+                            "Mental Health", "Graduate Affairs", "HR/PR", "Others"];
+  static List categories1 = ["General", "DC", "Academic", "Camp Dev", "Health", "Graduates", "HR/PR", "Others"] ;
   List chooseNumOptions = [2,3,4] ;
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
