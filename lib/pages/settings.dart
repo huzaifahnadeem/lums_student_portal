@@ -16,7 +16,6 @@ class About extends StatelessWidget {
           title: Text(
             'About', // header
             style: GoogleFonts.robotoSlab(
-                color: Colors.white,
                 textStyle: Theme.of(context).textTheme.headline6),
           ),
         ),
@@ -77,15 +76,15 @@ class AppSettings extends StatelessWidget {
       body: ListView(
         children: ListTile.divideTiles(context: context, tiles: [
           ListTile(
-            leading: Icon(Icons.privacy_tip),
-            title: Text('Change password'),
+            leading: Icon(Icons.privacy_tip_outlined, color: Colors.black,),
+            title: Text('Change password', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
             onTap: () {
               Navigator.pushNamed(context, "/changePassword");
             },
           ),
           ListTile(
-            leading: Icon(Icons.edit),
-            title: Text('Edit profile'),
+            leading: Icon(Icons.edit, color: Colors.black,),
+            title: Text('Edit profile', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
             onTap: () {
               Navigator.pushNamed(context, "/editProfile",
                   arguments: EditProfileArgs(sc: true));
@@ -93,16 +92,16 @@ class AppSettings extends StatelessWidget {
           ),
           showIT
               ? ListTile(
-                  leading: Icon(Icons.update),
-                  title: Text('Update Role'),
+                  leading: Icon(Icons.update, color: Colors.black),
+                  title: Text('Update Role', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
                   onTap: () {
                     Navigator.pushNamed(context, "/updateAccount");
                   },
                 )
               : Container(),
           ListTile(
-            leading: Icon(Icons.info),
-            title: Text('About'),
+            leading: Icon(Icons.info_outline,color: Colors.black),
+            title: Text('About', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
             onTap: () {
               Navigator.push(
                 context,
@@ -114,8 +113,8 @@ class AppSettings extends StatelessWidget {
           ),
           showIT
               ? ListTile(
-                  leading: Icon(Icons.how_to_vote),
-                  title: Text('Initiate election process'),
+                  leading: Icon(Icons.how_to_vote,color: Colors.black),
+                  title: Text('Initiate election process', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
                   onTap: () {
                     FirebaseFirestore.instance
                         .collection("Election")
@@ -126,8 +125,8 @@ class AppSettings extends StatelessWidget {
               : Container(),
           if (showIT)
             ListTile(
-              leading: Icon(Icons.cancel),
-              title: Text('End election process'),
+              leading: Icon(Icons.cancel_outlined,color: Colors.black),
+              title: Text('End election process', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
               onTap: () {
                 FirebaseFirestore.instance
                     .collection("Election")
@@ -136,8 +135,8 @@ class AppSettings extends StatelessWidget {
               },
             ),
           ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('Log out'),
+            leading: Icon(Icons.logout, color: Colors.black),
+            title: Text('Log out', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
             onTap: () async {
               await Authentication().signOut();
               Navigator.pop(context);

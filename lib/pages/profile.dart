@@ -40,14 +40,12 @@ class _ProfileState extends State<Profile> {
         title: Text(
           'Profile',
           style: GoogleFonts.robotoSlab(
-              color: Colors.white,
-              fontSize: 40.0,
-              fontWeight: FontWeight.bold,
+              textStyle: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white)
               ),
         ),
           centerTitle: true,
           elevation: 0,
-        backgroundColor: Color(0xFFEA5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
+        backgroundColor: Color(0xFFEB5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
         actions: <Widget>[ // settings button
           if (who == "self")
             IconButton(
@@ -89,9 +87,9 @@ class _ProfileState extends State<Profile> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                                blurRadius: 10,
+                                blurRadius: 5,
                                 color: Colors.black38,
-                                spreadRadius: 5)
+                                spreadRadius: 2)
                           ],
                         ),
                         child: CircleAvatar(

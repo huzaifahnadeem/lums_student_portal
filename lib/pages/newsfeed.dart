@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -77,7 +78,8 @@ class _PostItemState extends State<PostItem> {
       child: Column(
         children: [
           ListTile(
-            title: Text("${widget.post['subject']}", style: Theme.of(context).textTheme.headline4,),
+            title: Text("${widget.post['subject']}", style: GoogleFonts.roboto(
+        textStyle: Theme.of(context).textTheme.headline4,)),
             trailing: Text("$timeDaysAgo", style: Theme.of(context).textTheme.caption,),
             subtitle: Text("${widget.post['category']}", style: Theme.of(context).textTheme.caption,),
           ),
@@ -128,7 +130,7 @@ class _PostItemState extends State<PostItem> {
                 children: [
                   Text("${widget.post['filename']}", style: Theme.of(context).textTheme.bodyText1,),
                   IconButton(
-                      icon: new Icon(Icons.download_outlined),
+                      icon: new Icon(Icons.download_sharp),
                       onPressed: () => downloadFile()
                   )
                 ],
@@ -138,11 +140,11 @@ class _PostItemState extends State<PostItem> {
               child: ButtonBar(
                 children: [
                   postModel.isPoll? IconButton(
-                    icon: new Icon(Icons.poll_outlined),
+                    icon: new Icon(Icons.poll_outlined, color: Color(0xFFFFB800)), //FFFD5E05
                     onPressed: () => openPoll(),
                   ): Container(),
                   IconButton(
-                      icon: isSaved? new Icon(Icons.favorite, color: Colors.red,):new Icon(Icons.favorite_outline_sharp),
+                      icon: isSaved? new Icon(Icons.favorite, color: Color(0xFFEB5757)):new Icon(Icons.favorite_outline_sharp),
                       onPressed: () => updateSaveStatus(),
                       ),
                   IconButton(
@@ -177,8 +179,9 @@ class _NewsfeedState extends State<Newsfeed> {
   FirebaseFirestore _db = FirebaseFirestore.instance;
   String? filter2 ;
   late Stream<QuerySnapshot?> _streamOfPostChanges ;
-  var categoryMap = {'DC': 'Disciplinary Committee', 'Academic': 'Academic Policy',
-    'General': 'General','Campus': 'Campus Development','Others':"Others"};
+  var categoryMap = {'DC': 'Disciplinary Committee', 'Academic': 'Academic',
+    'General': 'General','Campus': 'Campus Development','Others':"Others",
+    "CAPS":"Mental Health", "HR/PR":"HR/PR", "Graduates":"Graduate Affairs"};
 
   // display snackbar
   void displaySnackBar(String message){

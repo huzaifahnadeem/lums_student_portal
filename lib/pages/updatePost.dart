@@ -3,7 +3,8 @@ import 'dart:ui';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:lums_student_portal/backend/validators.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
 
@@ -107,7 +108,7 @@ class _UpdatePostState extends State<UpdatePost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Update Post",style: Theme.of(context).textTheme.headline6,),
+        title: Text("Update Post", style: GoogleFonts.robotoSlab( textStyle: Theme.of(context).textTheme.headline6),),
       ),
       body: loading? LoadingScreen(): SafeArea(
         minimum: EdgeInsets.fromLTRB(30,10,30,30),
@@ -184,15 +185,16 @@ class _UpdatePostState extends State<UpdatePost> {
                       ),
                     ],
                   ): Container(),
+                  SizedBox(height: 20),
                   (widget.post.isPoll && widget.post.numOptions > 1 && widget.post.options != null)? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      IconButton(icon: new Icon(Icons.add_circle_outline), onPressed: () {
+                      IconButton(icon: new Icon(Icons.add_circle_outline, color: Color(0xFF48D1E3)), onPressed: () {
                         setState(() {
                           widget.post.addOption();
                         });
                       }),
-                      IconButton(icon: new Icon(Icons.remove_circle_outline), onPressed: (){
+                      IconButton(icon: new Icon(Icons.remove_circle_outline, color: Colors.redAccent), onPressed: (){
                         setState(() {
                           widget.post.removeOption();
                         });
@@ -250,20 +252,21 @@ class _UpdatePostState extends State<UpdatePost> {
                     children: [
                       IconButton(
                         tooltip: "Photo",
-                        icon: new Icon(Icons.add_photo_alternate_outlined),
+                        icon: new Icon(Icons.add_photo_alternate_outlined, color: Color(0xFF56BF54)),
                         onPressed: () => selectPicture(),
                       ),
                       Text("Photo", style: Theme.of(context).textTheme.caption),
-                      SizedBox(width: 30),
+                      SizedBox(width: 20),
                       IconButton(
                         tooltip: "Attachment",
-                        icon: new Icon(Icons.attach_file_outlined),
+                        icon: new Icon(Icons.attach_file_outlined, color: Color(0xFF1E64EC)),
                         onPressed:() => selectFile(),
                       ),
                       Text("Attachment", style: Theme.of(context).textTheme.caption),
-                      SizedBox(width: 30),
+                      SizedBox(width: 20),
                       IconButton(
-                        icon: new Icon(Icons.poll_outlined),
+                        tooltip: "Poll",
+                        icon: new Icon(Icons.poll_outlined, color: Color(0xFFFFB800)),
                         onPressed: () {
                           setState(() {
                             widget.post.isPoll = !widget.post.isPoll ;
@@ -293,6 +296,7 @@ class _UpdatePostState extends State<UpdatePost> {
                           style: Theme.of(context).textTheme.headline5),
                     ),
                   ),
+                  SizedBox(height: 20),
                 ],
               ),
             )
