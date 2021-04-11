@@ -205,14 +205,14 @@ class _NewsfeedState extends State<Newsfeed> {
   String? filter2;
   late Stream<QuerySnapshot?> _streamOfPostChanges;
   var categoryMap = {
+    'General': 'General',
     'DC': 'Disciplinary Committee',
     'Academic': 'Academic',
-    'General': 'General',
-    'Campus': 'Campus Development',
-    'Others': "Others",
-    "CAPS": "Mental Health",
+    'Camp Dev': 'Campus Development',
+    "Health": "Mental Health",
+    "Graduates": "Graduate Affairs",
     "HR/PR": "HR/PR",
-    "Graduates": "Graduate Affairs"
+    'Others': "Others"
   };
 
   // display snackbar
