@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 
@@ -32,7 +33,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Change Password", style: Theme.of(context).textTheme.headline6,),
+        title: Text("Change Password", style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 25))),
         automaticallyImplyLeading: true,
         backgroundColor: Colors.white,
       ),
@@ -46,14 +47,15 @@ class _ChangePasswordState extends State<ChangePassword> {
                 children: [
                   Icon(
                     Icons.enhanced_encryption_outlined,
-                    size: 150,
+                    size: 100,
                     color: Colors.black87,
                   ),
+                  SizedBox(height: 20),
                   Flexible(
                     fit: FlexFit.loose,
                     child: Text(
                       "Please validate your current password and provide a new valid password",
-                      style: Theme.of(context).textTheme.bodyText2 ,
+                      style: Theme.of(context).textTheme.bodyText1,
                     ),
                   ),
                   SizedBox(height: 30, width: 0),
@@ -90,6 +92,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                           style: Theme.of(context).textTheme.headline5),
                     ),
                   ),
+                  SizedBox(height: 20),
                 ],
               ),
             )
