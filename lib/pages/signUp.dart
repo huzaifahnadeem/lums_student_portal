@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
-import 'package:lums_student_portal/backend/validators.dart';
-
+import 'package:lums_student_portal/Backend/validators.dart';
 
 class SignUp extends StatefulWidget {
-  final Function switchScreen ;
+  final Function switchScreen;
 
   SignUp({required this.switchScreen, Key? key}) : super(key: key);
 
@@ -17,28 +16,29 @@ class _SignUpState extends State<SignUp> {
   // member variables
   final _formKey = GlobalKey<FormState>();
   String name = "";
-  String email = "" , password = "", confirmPassword = "";
+  String email = "", password = "", confirmPassword = "";
   String message = "";
 
   // Form validation Function
   void validate() async {
     if (_formKey.currentState!.validate()) {
-      message =
-      await Authentication().signUpWithEmailAndPassword(email, password, name);
+      message = await Authentication()
+          .signUpWithEmailAndPassword(email, password, name);
       if (message != "") {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Row(children: <Widget>[
-              Icon(
-                Icons.error,
-                color: Colors.white,
-                semanticLabel: "Error",
-              ),
-              Text(' $message')
-            ])));
+          Icon(
+            Icons.error,
+            color: Colors.white,
+            semanticLabel: "Error",
+          ),
+          Text(' $message')
+        ])));
         message = "";
       }
     }
   }
+
   // methods
   @override
   Widget build(BuildContext context) {
@@ -92,7 +92,7 @@ class _SignUpState extends State<SignUp> {
                 onChanged: (val) {
                   setState(() => confirmPassword = val);
                 },
-                validator: (val) => confirmPasswordValidator(password,val),
+                validator: (val) => confirmPasswordValidator(password, val),
               ),
               SizedBox(height: 25),
               SizedBox(
@@ -101,8 +101,8 @@ class _SignUpState extends State<SignUp> {
                 child: ElevatedButton(
                   onPressed: () => validate(),
                   child: Text('Sign Up',
-                    style: GoogleFonts.roboto(
-                        textStyle: Theme.of(context).textTheme.headline5)),
+                      style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.headline5)),
                 ),
               ),
               SizedBox(height: 10),
@@ -114,7 +114,10 @@ class _SignUpState extends State<SignUp> {
                   ),
                   Text(
                     "Already have an account?",
-                    style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
                   TextButton(
