@@ -7,7 +7,7 @@ import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/complaint.dart';
 import 'package:lums_student_portal/pages/settings.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
-import 'package:lums_student_portal/themes/progessIndicator.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
