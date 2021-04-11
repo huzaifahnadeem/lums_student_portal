@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lums_student_portal/backend/authentication.dart';
-import 'package:lums_student_portal/backend/validators.dart';
+import 'package:lums_student_portal/Backend/authentication.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 
 
 class ChangePassword extends StatefulWidget {

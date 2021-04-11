@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lums_student_portal/pages/viewComplaint.dart';
-import 'package:lums_student_portal/themes/progessIndicator.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

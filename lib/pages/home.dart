@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lums_student_portal/Backend/authentication.dart';
-import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/saved.dart';
 import 'newsfeed.dart';
@@ -13,8 +11,6 @@ import 'package:lums_student_portal/pages/studentCouncil.dart'; // for Student C
 import 'package:lums_student_portal/pages/addComplaint.dart'; // for adding complaint
 import 'package:lums_student_portal/pages/complaintHistory.dart'; // for complaint History
 import 'package:lums_student_portal/pages/complaintResolve.dart'; // for ressolving complaint
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
