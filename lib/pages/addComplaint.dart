@@ -34,7 +34,6 @@ class _AddComplaintState extends State<AddComplaint> {
         .get()
         .then((value) {
       value.docs.forEach((result) {
-        // print(result.get("name"));
         setState(() => newComplaint.name = result.get("name"));
       });
     });

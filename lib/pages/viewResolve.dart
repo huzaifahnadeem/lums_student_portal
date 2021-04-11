@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
 
@@ -11,6 +13,7 @@ class ViewResolve extends StatefulWidget {
   late final String name;
   late final String isResolved;
   late final String id;
+  late final String? resolution;
 
   ViewResolve(
       {required this.subject,
@@ -18,6 +21,7 @@ class ViewResolve extends StatefulWidget {
       required this.complaint,
       required this.name,
       required this.isResolved,
+      required this.resolution,
       required this.id});
 
   @override
@@ -27,6 +31,7 @@ class ViewResolve extends StatefulWidget {
       complaint: complaint,
       name: name,
       isResolved: isResolved,
+      resolution: resolution,
       id: id);
 }
 
@@ -37,7 +42,10 @@ class _ViewResolveState extends State<ViewResolve> {
   late final String name;
   late final String isResolved;
   late final String id;
-  late String resolution;
+  late final String? resolution;
+  late String? newResolution;
+  String? email;
+  String? resolvedBy;
 
   FirebaseFirestore _db = FirebaseFirestore.instance;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -49,18 +57,25 @@ class _ViewResolveState extends State<ViewResolve> {
       required this.complaint,
       required this.name,
       required this.isResolved,
+      required this.resolution,
       required this.id});
 
+  // void fetchResolveName() async {
+
+  // }
   void initState() {
+    User? thisUser = FirebaseAuth.instance.currentUser;
+    email = thisUser!.email;
     _db
-        .collection("Complaints")
-        .doc(id)
+        .collection("Profiles")
+        .where("email", isEqualTo: email)
         .get()
-        .then((DocumentSnapshot documentSnapshot) {
-      if (documentSnapshot.exists) {
-        setState(() => resolution = (documentSnapshot.data()!["resolution"]));
-      }
+        .then((value) {
+      value.docs.forEach((result) {
+        setState(() => resolvedBy = result.get("name"));
+      });
     });
+
     super.initState();
   }
 
@@ -80,6 +95,7 @@ class _ViewResolveState extends State<ViewResolve> {
       setState(() {
         loading = false;
       });
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: <Widget>[
         Icon(
@@ -99,9 +115,11 @@ class _ViewResolveState extends State<ViewResolve> {
       });
       await markResolved();
       await updateResolution();
+      await resolvedByUser();
       setState(() {
         loading = false;
       });
+      Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: <Widget>[
         Icon(
@@ -122,6 +140,7 @@ class _ViewResolveState extends State<ViewResolve> {
     setState(() {
       loading = false;
     });
+    Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: <Widget>[
       Icon(
@@ -133,11 +152,20 @@ class _ViewResolveState extends State<ViewResolve> {
     ])));
   }
 
+  Future<void> resolvedByUser() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolvedBy": resolvedBy})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
   Future<void> updateResolution() {
     return _db
         .collection("Complaints")
         .doc(id)
-        .update({"resolution": resolution})
+        .update({"resolution": newResolution})
         .then((value) => print("Resolution Updated"))
         .catchError((error) => print("Failed to update user: $error"));
   }
@@ -279,6 +307,8 @@ class _ViewResolveState extends State<ViewResolve> {
                               key: _formKey,
                               child: Column(children: [
                                 TextFormField(
+                                  initialValue:
+                                      resolution == null ? "" : resolution,
                                   decoration: InputDecoration(
                                       labelText: "Add Resolution",
                                       fillColor: Colors.white,
@@ -291,9 +321,9 @@ class _ViewResolveState extends State<ViewResolve> {
                                   maxLines: 5,
                                   keyboardType: TextInputType.multiline,
                                   validator: (val) =>
-                                      resolutionValidator(resolution),
+                                      resolutionValidator(newResolution!),
                                   onChanged: (val) {
-                                    setState(() => resolution = val);
+                                    setState(() => newResolution = val);
                                   },
                                 ),
                                 Container(
@@ -306,7 +336,9 @@ class _ViewResolveState extends State<ViewResolve> {
                                         width: 150,
                                         height: 40,
                                         child: ElevatedButton(
-                                          onPressed: () => validateResolution(),
+                                          onPressed: () {
+                                            validateResolution();
+                                          },
                                           child: Text('Update',
                                               style: Theme.of(context)
                                                   .textTheme

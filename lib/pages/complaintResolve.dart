@@ -39,6 +39,7 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                         subject: (documentSnaps[index]!["subject"]),
                         complaint: (documentSnaps[index]!["complaint"]),
                         category: (documentSnaps[index]!["category"]),
+                        resolvedBy: (documentSnaps[index]!["resolvedBy"]),
                         isResolved: (documentSnaps[index]!["isResolved"]),
                       ); // function returns a widget
                     }));
@@ -51,6 +52,7 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                         complaint: (documentSnaps[index]!["complaint"]),
                         category: (documentSnaps[index]!["category"]),
                         name: (documentSnaps[index]!["name"]),
+                        resolution: (documentSnaps[index]!["resolution"]),
                         isResolved: (documentSnaps[index]!["isResolved"]),
                         id: (documentSnaps[index]!.id),
                       ); // function returns a widget

@@ -10,16 +10,19 @@ class ViewComplaint extends StatefulWidget {
   late final String category;
   late final String complaint;
   late final String isResolved;
+  late final String? resolvedBy;
   ViewComplaint(
       {required this.subject,
       required this.category,
       required this.complaint,
+      required this.resolvedBy,
       required this.isResolved});
   @override
   _ViewComplaintState createState() => _ViewComplaintState(
       subject: subject,
       category: category,
       complaint: complaint,
+      resolvedBy: resolvedBy,
       isResolved: isResolved);
 }
 
@@ -28,10 +31,13 @@ class _ViewComplaintState extends State<ViewComplaint> {
   late final String category;
   late final String complaint;
   late final String isResolved;
+  late final String? resolvedBy;
+
   _ViewComplaintState(
       {required this.subject,
       required this.category,
       required this.complaint,
+      required this.resolvedBy,
       required this.isResolved});
   @override
   Widget build(BuildContext context) {
@@ -89,7 +95,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
                             fontWeight: FontWeight.w300,
                             color: Colors.black45))
                     : (isResolved == "Resolved")
-                        ? Text("Resolved By: TODO",
+                        ? Text("Resolved By: $resolvedBy",
                             style: TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.w400,

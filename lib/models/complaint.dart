@@ -12,7 +12,9 @@ class Complaint {
   String? email;
   String? isResolved = "Pending";
   String? name;
-  String? resolution = "";
+  String? resolution;
+  String? resolvedBy;
+
   static List categories = [
     "General",
     "Disciplinary Committee",
@@ -30,6 +32,7 @@ class Complaint {
   // create json object to add to database
   Map<String, dynamic> toMap() {
     return {
+      "resolvedBy": this.resolvedBy,
       "resolution": this.resolution,
       "name": this.name,
       "isResolved": this.isResolved,

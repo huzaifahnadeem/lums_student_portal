@@ -43,6 +43,7 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                             subject: (documentSnaps[index]!["subject"]),
                             complaint: (documentSnaps[index]!["complaint"]),
                             category: (documentSnaps[index]!["category"]),
+                            resolvedBy: (documentSnaps[index]!["resolvedBy"]),
                             isResolved: (documentSnaps[index]!["isResolved"]),
                           ); // function returns a widget
                         }));
@@ -74,7 +75,7 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                                   : (documentSnaps[index]!["isResolved"] ==
                                           "Resolved")
                                       ? Text(
-                                          'Resolved By: TODO',
+                                          'Resolved By: ${documentSnaps[index]!["resolvedBy"]}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .caption,
