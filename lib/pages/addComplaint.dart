@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 
+import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/complaint.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
@@ -54,7 +55,7 @@ class _AddComplaintState extends State<AddComplaint> {
           color: Colors.white,
           semanticLabel: "Done",
         ),
-        Text('Done')
+        Text('  Complaint Lodged')
       ])));
     }
   }
@@ -108,20 +109,22 @@ class _AddComplaintState extends State<AddComplaint> {
                     child: Form(
                   key: _formKey,
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Container(
-                      width: double.infinity,
-                      child: DropdownButton(
-                        hint: Text("Category"),
-                        isExpanded: true,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: DropdownButtonFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: InputDecoration(
+                            hintText: "Select Category",
+                            fillColor: Colors.white),
+                        validator: (val) => dropDownValidator(val),
+                        isExpanded: false,
                         value: newComplaint.tag,
-                        focusColor: Colors.red[400],
-                        dropdownColor: Colors.red[400],
                         onChanged: (newVal) {
                           setState(() {
                             newComplaint.tag = newVal.toString();
                           });
                         },
-                        items: Complaint.categories.map((categoryItem) {
+                        items: Complaint.categories1.map((categoryItem) {
                           return DropdownMenuItem(
                             value: categoryItem,
                             child: Text(categoryItem),
@@ -139,7 +142,7 @@ class _AddComplaintState extends State<AddComplaint> {
                         labelText: "Add Subject",
                         fillColor: Colors.white,
                       ),
-                      validator: (val) => headingValidator(
+                      validator: (val) => subjectValidator(
                           newComplaint.subject), // check subjet lenght
                       onChanged: (val) {
                         setState(() => newComplaint.subject = val);
@@ -153,7 +156,7 @@ class _AddComplaintState extends State<AddComplaint> {
                         labelText: "Write Complaint",
                         fillColor: Colors.white,
                       ),
-                      maxLines: 10,
+                      maxLines: 9,
                       keyboardType: TextInputType.multiline,
                       validator: (val) =>
                           complaintValidator(newComplaint.complaint),

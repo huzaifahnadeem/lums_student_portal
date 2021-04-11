@@ -14,17 +14,33 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
   List<DocumentSnapshot?> documentSnaps = [];
   late Stream<QuerySnapshot?> _streamOfComplaintResolve;
   FirebaseFirestore _db = FirebaseFirestore.instance;
+  String timeDaysAgo = '';
 
   // setting initial state
   void initState() {
-    _streamOfComplaintResolve = _db.collection("Complaints").snapshots();
+    _streamOfComplaintResolve = _db
+        .collection("Complaints")
+        .orderBy("time", descending: true)
+        .snapshots();
     super.initState();
+  }
+
+  // calculate days ago
+  void calcDaysAgo(Timestamp complaintTime) {
+    int difference = (Timestamp.now().seconds - complaintTime.seconds);
+    difference = (difference ~/ 86400);
+    if (difference > 1) {
+      timeDaysAgo = difference.toString() + " days ago";
+    } else {
+      timeDaysAgo = "today";
+    }
   }
 
   Widget complaintResolve() {
     return ListView.builder(
       itemCount: documentSnaps.length,
       itemBuilder: (BuildContext context, int index) {
+        calcDaysAgo(documentSnaps[index]!["time"]);
         return (Container(
           child: Card(
               semanticContainer: true,
@@ -40,6 +56,7 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                         category: (documentSnaps[index]!["category"]),
                         resolvedBy: (documentSnaps[index]!["resolvedBy"]),
                         isResolved: (documentSnaps[index]!["isResolved"]),
+                        resolution: (documentSnaps[index]!["resolution"]),
                       ); // function returns a widget
                     }));
                   },
@@ -53,22 +70,34 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                         name: (documentSnaps[index]!["name"]),
                         resolution: (documentSnaps[index]!["resolution"]),
                         isResolved: (documentSnaps[index]!["isResolved"]),
+                        resolvedByName: (documentSnaps[index]!["resolvedBy"]),
                         id: (documentSnaps[index]!.id),
                       ); // function returns a widget
                     }));
                   },
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      // crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Padding(padding: EdgeInsets.all(10)),
-                        Container(
-                            padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                            child: Text(
-                              documentSnaps[index]!["subject"],
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.w400),
-                            )),
+                        // Container(
+                        //     padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
+                        //     child: Text(
+                        //       documentSnaps[index]!["subject"],
+                        //       style: TextStyle(
+                        //           fontSize: 20, fontWeight: FontWeight.w400),
+                        //     ))
                         ListTile(
+                          dense: true,
+                          title: Text(documentSnaps[index]!["subject"],
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w400)),
+                          trailing: Text(
+                            "$timeDaysAgo",
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        ListTile(
+                          dense: true,
                           title: Text(
                             documentSnaps[index]!["category"],
                             style: Theme.of(context).textTheme.caption,

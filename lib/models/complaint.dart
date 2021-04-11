@@ -15,14 +15,15 @@ class Complaint {
   String? resolution;
   String? resolvedBy;
 
-  static List categories = [
+  static List categories1 = [
     "General",
     "Disciplinary Committee",
-    "Academic Policy",
+    "Academic",
     "Campus Development",
-    "Others"
+    "Mental Health",
+    "Graduate Affairs",
+    "HR/PR"
   ];
-  static List categories1 = ["General", "DC", "Academic", "Campus", "Others"];
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
   //class constructor

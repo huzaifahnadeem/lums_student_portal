@@ -7,19 +7,23 @@ class ViewComplaint extends StatefulWidget {
   late final String complaint;
   late final String isResolved;
   late final String? resolvedBy;
+  late final String? resolution;
+
   ViewComplaint(
       {required this.subject,
       required this.category,
       required this.complaint,
       required this.resolvedBy,
-      required this.isResolved});
+      required this.isResolved,
+      required this.resolution});
   @override
   _ViewComplaintState createState() => _ViewComplaintState(
       subject: subject,
       category: category,
       complaint: complaint,
       resolvedBy: resolvedBy,
-      isResolved: isResolved);
+      isResolved: isResolved,
+      resolution: resolution);
 }
 
 class _ViewComplaintState extends State<ViewComplaint> {
@@ -28,13 +32,15 @@ class _ViewComplaintState extends State<ViewComplaint> {
   late final String complaint;
   late final String isResolved;
   late final String? resolvedBy;
+  late final String? resolution;
 
   _ViewComplaintState(
       {required this.subject,
       required this.category,
       required this.complaint,
       required this.resolvedBy,
-      required this.isResolved});
+      required this.isResolved,
+      required this.resolution});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,6 +118,17 @@ class _ViewComplaintState extends State<ViewComplaint> {
                         fontSize: 20,
                         fontWeight: FontWeight.w300,
                         color: Colors.black)),
+              ),
+              Container(
+                decoration: BoxDecoration(),
+                padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
+                child: (isResolved == "Resolved")
+                    ? Text("$resolution",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w300,
+                            color: Colors.black))
+                    : null,
               ),
             ],
           ),

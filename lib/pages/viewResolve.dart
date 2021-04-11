@@ -12,6 +12,7 @@ class ViewResolve extends StatefulWidget {
   late final String name;
   late final String isResolved;
   late final String id;
+  late final String? resolvedByName;
   late final String? resolution;
 
   ViewResolve(
@@ -21,6 +22,7 @@ class ViewResolve extends StatefulWidget {
       required this.name,
       required this.isResolved,
       required this.resolution,
+      required this.resolvedByName,
       required this.id});
 
   @override
@@ -31,6 +33,7 @@ class ViewResolve extends StatefulWidget {
       name: name,
       isResolved: isResolved,
       resolution: resolution,
+      resolvedByName: resolvedByName,
       id: id);
 }
 
@@ -41,6 +44,7 @@ class _ViewResolveState extends State<ViewResolve> {
   late final String name;
   late final String isResolved;
   late final String id;
+  late final String? resolvedByName;
   late final String? resolution;
   late String? newResolution;
   String? email;
@@ -56,6 +60,7 @@ class _ViewResolveState extends State<ViewResolve> {
       required this.complaint,
       required this.name,
       required this.isResolved,
+      required this.resolvedByName,
       required this.resolution,
       required this.id});
 
@@ -99,7 +104,7 @@ class _ViewResolveState extends State<ViewResolve> {
           color: Colors.white,
           semanticLabel: "Done",
         ),
-        Text('Done')
+        Text('  Resolution Updated')
       ])));
     }
   }
@@ -123,7 +128,7 @@ class _ViewResolveState extends State<ViewResolve> {
           color: Colors.white,
           semanticLabel: "Done",
         ),
-        Text('Done')
+        Text('  Resolved')
       ])));
     }
   }
@@ -133,6 +138,7 @@ class _ViewResolveState extends State<ViewResolve> {
       loading = true;
     });
     await markUnresolved();
+    await updateUnresolved();
     setState(() {
       loading = false;
     });
@@ -144,7 +150,7 @@ class _ViewResolveState extends State<ViewResolve> {
         color: Colors.white,
         semanticLabel: "Done",
       ),
-      Text('Done')
+      Text('  Unresolved')
     ])));
   }
 
@@ -162,6 +168,15 @@ class _ViewResolveState extends State<ViewResolve> {
         .collection("Complaints")
         .doc(id)
         .update({"resolution": newResolution})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> updateUnresolved() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolution": null})
         .then((value) => print("Resolution Updated"))
         .catchError((error) => print("Failed to update user: $error"));
   }
@@ -260,106 +275,142 @@ class _ViewResolveState extends State<ViewResolve> {
             : SingleChildScrollView(
                 padding: EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                      child: Text(subject,
-                          style: TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black54)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
-                      child: Text(category,
-                          style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black54)),
-                    ),
-                    Container(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                        child: Text(subject,
+                            style: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.black54)),
+                      ),
+                      Container(
                         padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
-                        child: Text("Submitted By: $name",
+                        child: Text(category,
                             style: TextStyle(
                                 fontSize: 25,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black54)),
+                      ),
+                      Container(
+                          padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
+                          child: Text("Submitted By: $name",
+                              style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.w300,
+                                  color: Colors.black45))),
+                      Container(
+                        // decoration: BoxDecoration(),
+                        padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
+                        child: Text("$complaint",
+                            style: TextStyle(
+                                fontSize: 20,
                                 fontWeight: FontWeight.w300,
-                                color: Colors.black45))),
-                    Container(
-                      // decoration: BoxDecoration(),
-                      padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                      child: Text("$complaint",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w300,
-                              color: Colors.black)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                      child: (isResolved == "Pending")
-                          ? Form(
-                              key: _formKey,
-                              child: Column(children: [
-                                TextFormField(
-                                  initialValue:
-                                      resolution == null ? "" : newResolution,
-                                  decoration: InputDecoration(
-                                      labelText: "Add Resolution",
-                                      fillColor: Colors.white,
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.black12,
-                                          ))),
-                                  maxLines: 5,
-                                  keyboardType: TextInputType.multiline,
-                                  validator: (val) =>
-                                      resolutionValidator(newResolution!),
-                                  onChanged: (val) {
-                                    setState(() => newResolution = val);
-                                  },
-                                ),
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(0, 30, 0, 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      SizedBox(
-                                        width: 150,
-                                        height: 40,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            validateResolution();
-                                          },
-                                          child: Text('Update',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 150,
-                                        height: 40,
-                                        child: ElevatedButton(
-                                          onPressed: () => showMyDialog(),
-                                          child: Text('Resolve',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5),
-                                        ),
-                                      ),
-                                    ],
+                                color: Colors.black)),
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
+                        child: (isResolved == "Pending")
+                            ? Form(
+                                key: _formKey,
+                                child: Column(children: [
+                                  TextFormField(
+                                    initialValue:
+                                        resolution == null ? "" : newResolution,
+                                    decoration: InputDecoration(
+                                        labelText: "Add Resolution",
+                                        fillColor: Colors.white,
+                                        enabledBorder: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(25.0),
+                                            borderSide: BorderSide(
+                                              color: Colors.black12,
+                                            ))),
+                                    maxLines: 5,
+                                    keyboardType: TextInputType.multiline,
+                                    validator: (val) =>
+                                        resolutionValidator(newResolution!),
+                                    onChanged: (val) {
+                                      setState(() => newResolution = val);
+                                    },
                                   ),
-                                )
-                              ]))
-                          : null,
-                    )
-                  ],
-                ),
+                                  Container(
+                                    padding: EdgeInsets.fromLTRB(0, 30, 0, 10),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        SizedBox(
+                                          width: 150,
+                                          height: 40,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              validateResolution();
+                                            },
+                                            child: Text('Update',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 150,
+                                          height: 40,
+                                          child: ElevatedButton(
+                                            onPressed: () => showMyDialog(),
+                                            child: Text('Resolve',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline5),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ]))
+                            : (isResolved == "Resolved")
+                                ? Column(
+                                    children: [
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        padding:
+                                            EdgeInsets.fromLTRB(0, 20, 10, 10),
+                                        child: Text(
+                                            "Resolved By: $resolvedByName",
+                                            style: TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.black45)),
+                                      ),
+                                      Container(
+                                        alignment: Alignment.topLeft,
+                                        padding:
+                                            EdgeInsets.fromLTRB(0, 20, 10, 10),
+                                        child: Text("$resolution",
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.black)),
+                                      )
+                                    ],
+                                  )
+                                : (isResolved == "Unresolved")
+                                    ? Container(
+                                        alignment: Alignment.topLeft,
+                                        padding:
+                                            EdgeInsets.fromLTRB(0, 20, 10, 10),
+                                        child: Text("Unresolved",
+                                            style: TextStyle(
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.w300,
+                                                color: Colors.black45)),
+                                      )
+                                    : null,
+                      )
+                    ]),
               ));
   }
 }
