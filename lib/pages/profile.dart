@@ -169,8 +169,8 @@ class _ProfileState extends State<Profile> {
                         fontSize: 18.0,
                       ),
                     ),
-                  if (_profile.officeHours != null) SizedBox(height: 15.0),
-                  if (_profile.officeHours != null)
+                  if (!_profile.officeHoursNull()) SizedBox(height: 15.0),
+                  if (!_profile.officeHoursNull())
                     Text(
                       "Office Hours:\n" + _profile.officeHours!['days'] + " at " + _profile.officeHours!['time'],
                       style: GoogleFonts.robotoSlab(
@@ -224,7 +224,7 @@ class _ProfileState extends State<Profile> {
             
             try {
               _profile.year = snapshot.data!["year"];
-            } catch (e) {}
+            } catch (e) {print("here");}
 
             try {
               _profile.hostel = snapshot.data!["residence_status"];

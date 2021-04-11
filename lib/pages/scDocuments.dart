@@ -26,6 +26,35 @@ class _SCDocsState extends State<SCDocs> {
         : throw 'Could not launch ${fileURL} !';
   }
 
+  Widget thisDocumentCard(index) {
+    Widget toReturn = Text("");
+    try {
+        toReturn = Card(
+        child: ListTile(
+          leading: Icon(Icons.description),
+          title: Text(documentSnaps[index]!["name"]),
+          trailing: Icon(Icons.file_download),
+          onTap: () {
+            downloadFile(documentSnaps[index]!["url"]);
+          },
+        ),
+        );
+      }
+      catch (e) {
+        toReturn = Card(
+        child: ListTile(
+          leading: Icon(Icons.description),
+          title: Text("Error reading this document", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+          trailing: Icon(Icons.file_download),
+          onTap: () {
+            downloadFile(documentSnaps[index]!["url"]);
+          },
+        ),
+        );
+      }
+      return toReturn;
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot?>(
@@ -47,16 +76,9 @@ class _SCDocsState extends State<SCDocs> {
               // Profiles tab
               itemCount: documentSnaps.length,
               itemBuilder: (BuildContext context, int index) {
-                return (Card(
-                  child: ListTile(
-                    leading: Icon(Icons.description),
-                    title: Text(documentSnaps[index]!["name"]),
-                    trailing: Icon(Icons.file_download),
-                    onTap: () {
-                      downloadFile(documentSnaps[index]!["url"]);
-                    },
-                  ),
-                ));
+                return (
+                  thisDocumentCard(index)
+                );
               },
             ));
           } else {

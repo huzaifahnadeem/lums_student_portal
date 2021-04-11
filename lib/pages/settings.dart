@@ -6,7 +6,6 @@ import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/backend/validators.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/profile.dart';
-import 'package:lums_student_portal/pages/profile.dart';
 
 class About extends StatelessWidget {
   @override
@@ -39,24 +38,12 @@ class EditProfileArgs {
 class AppSettings extends StatelessWidget {
   // TODO: adjust theme as per screens e.g. app bar color. Listtile text font etc
   late final String role;
-  final bool showSC = true, showIT = true;
   AppSettings({required this.role});
 
 
   @override
   Widget build(BuildContext context) {
-    /*if (role == "SC") {
-      showSC = true;
-      showIT = false;
-    } else if (role == "IT") {
-      showSC = true;
-      showIT = true;
-    } else {
-      // role == "Student"
-      showSC = false;
-      showIT = false;
-    }*/
-
+    
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
@@ -89,7 +76,7 @@ class AppSettings extends StatelessWidget {
                 Navigator.pushNamed(context,"/editProfile", arguments: EditProfileArgs(sc: true) );
               },
             ),
-            showIT? ListTile(
+            (role == 'IT')? ListTile(
               leading: Icon(Icons.update),
               title: Text('Update Role'),
               onTap: () {
@@ -108,7 +95,7 @@ class AppSettings extends StatelessWidget {
                 );
               },
             ),
-            showIT?
+            (role == 'IT')?
               ListTile(
                 leading: Icon(Icons.how_to_vote),
                 title: Text('Initiate election process'),
@@ -116,7 +103,7 @@ class AppSettings extends StatelessWidget {
                   FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":true});
                 },
               ):Container(),
-            if (showIT)
+            if ((role == 'IT'))
               ListTile(
                 leading: Icon(Icons.cancel),
                 title: Text('End election process'),
