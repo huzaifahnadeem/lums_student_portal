@@ -101,21 +101,6 @@ class ProfileModel{
       this.officeHours = doc['office_hours'];
     }
   }
-  bool officeHoursNull() {
-    bool isNull = false;
-    try {
-      if (officeHours == null) {
-        isNull = true;
-      }
-      if(officeHours!['days'] == null && officeHours!['time'] == null) {
-        isNull = true;
-      }
-    }
-    catch (e) {
-     isNull = false; 
-    }
-    return isNull;
-  }
 }
 
 class OfficeHours{
