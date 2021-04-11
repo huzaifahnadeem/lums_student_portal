@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/saved.dart';
 import 'newsfeed.dart';
@@ -41,7 +44,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       label: 'Home',
     ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.report),
+      icon: Icon(Icons.error_outline),
       label: 'Complaints',
     ),
     BottomNavigationBarItem(
@@ -128,16 +131,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _selectedIndex >= 2? null:AppBar(
-        title: Align( alignment: Alignment.topLeft,
-            child: Text(appBarTitles[_selectedIndex], style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white ),)),
+        title: Text(appBarTitles[_selectedIndex], style: GoogleFonts.robotoSlab(
+            textStyle: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white)),),
         backgroundColor: Theme.of(context).primaryColor,
         actions: [ _selectedIndex == 0 ? Padding(padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
             child: DropdownButtonHideUnderline(
               child: DropdownButton(
-                icon: new Icon(Icons.filter_list, color: Colors.white,),
+                icon: new Icon(Icons.filter_list, color: Colors.white,size: 15,),
                 isExpanded: false,
                 value: filter,
-                dropdownColor: Colors.amber,
+                dropdownColor: Theme.of(context).accentColor,
                 onChanged: (newVal) => applyFilter(newVal.toString()),
                 items: Post.categories1.map((categoryItem) {
                   return DropdownMenuItem(
@@ -150,6 +153,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ): Container(),
         ],
         bottom: TabBar(
+          indicatorWeight: 3,
+          indicatorSize: TabBarIndicatorSize.tab,
           controller: _tabController,
           tabs: _tabsEachScreen[_selectedIndex],
           indicatorColor: Colors.white,
@@ -162,16 +167,27 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       // add a floating action button on the newsfeed screen
       floatingActionButton: _selectedIndex != 0 ? null: Visibility(
         visible: _showFloatingActionButton,
-        child: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.pushNamed(context, '/AddPost');
-          },
-          label: const Text('Add Post'),
-          icon: const Icon(Icons.add_box_sharp),
-          backgroundColor: Colors.red,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/AddPost');
+            },
+            child: Icon(Icons.add, color: Theme.of(context).primaryColor, size: 40,),
+            backgroundColor: Colors.white,
+          ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedFontSize: 12,
+        unselectedFontSize: 10,
+        unselectedIconTheme: IconThemeData(
+          color: Colors.black,
+        ),
+        selectedIconTheme: IconThemeData(
+          color: Theme.of(context).accentColor,
+        ),
+        backgroundColor: Colors.white,
         type: BottomNavigationBarType.fixed,
         items: _bottomBarButtons,
         currentIndex: _selectedIndex,

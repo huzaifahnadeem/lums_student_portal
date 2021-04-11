@@ -22,6 +22,7 @@ class _LoginState extends State<Login> {
   String email = "";
   String password = "";
   String message = "";
+  bool obscure = true;
 
   // Form validation Function
   void validate() async {
@@ -43,6 +44,13 @@ class _LoginState extends State<Login> {
         message = '' ;
       }
     }
+  }
+
+  // Toggles the password show status
+  void _toggle() {
+    setState(() {
+      obscure = !obscure;
+    });
   }
 
   // member functions
@@ -81,8 +89,12 @@ class _LoginState extends State<Login> {
               TextFormField(
                 decoration: InputDecoration(
                   labelText: "Password",
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.lock_sharp, color: Colors.grey, size: 20,),
+                    onPressed: () => _toggle(),
+                  ),
                 ),
-                obscureText: true,
+                obscureText: obscure,
                 onChanged: (val) {
                   setState(() => password = val);
                 },

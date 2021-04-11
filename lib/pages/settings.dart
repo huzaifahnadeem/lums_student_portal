@@ -12,27 +12,30 @@ class About extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'About', // header
-          style: GoogleFonts.robotoSlab(
-              color: Colors.white,
-              textStyle: Theme.of(context).textTheme.headline6),
+        appBar: AppBar(
+          title: Text(
+            'About', // header
+            style: GoogleFonts.robotoSlab(
+                textStyle: Theme.of(context).textTheme.headline6),
+          ),
         ),
-      ),
-      // ZUHA ADD ABOUT TEXT HERE
-      body: Padding(padding: EdgeInsets.all(20), child: Column(
-        children: [
-          Flexible(child: Text( "TODO: About Sceen's styling etc.\n CS 360 Project: LUMS Student Portal\n By: Group 04\n For: LUMS Student Council\n App Version: v0.1.0")),
-        ],),
-      )
-    );
+        // ZUHA ADD ABOUT TEXT HERE
+        body: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              Flexible(
+                  child: Text(
+                      "TODO: About Sceen's styling etc.\n CS 360 Project: LUMS Student Portal\n By: Group 04\n For: LUMS Student Council\n App Version: v0.1.0")),
+            ],
+          ),
+        ));
   }
 }
 
 class EditProfileArgs {
-  final bool sc ;
-  final String uID = FirebaseAuth.instance.currentUser!.uid ;
+  final bool sc;
+  final String uID = FirebaseAuth.instance.currentUser!.uid;
   EditProfileArgs({required this.sc});
 }
 
@@ -41,7 +44,6 @@ class AppSettings extends StatelessWidget {
   late final String role;
   final bool showSC = true, showIT = true;
   AppSettings({required this.role});
-
 
   @override
   Widget build(BuildContext context) {
@@ -60,86 +62,91 @@ class AppSettings extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(
-          color: Theme.of(context).primaryColor, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+          color: Theme.of(context)
+              .primaryColor, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
         ),
         title: Text(
           'Settings', // TODO: looks off as compared to other screens (newsfeed etc) because it's centered and due to its font size/typeface. Need to discuss with others
           style: GoogleFonts.robotoSlab(
               color: Colors.black,
-              textStyle: Theme.of(context).textTheme.headline6
-              ),
+              textStyle: Theme.of(context).textTheme.headline6),
         ),
         backgroundColor: Colors.white,
       ),
       body: ListView(
-        children: ListTile.divideTiles(
-          context: context,
-          tiles: [
+        children: ListTile.divideTiles(context: context, tiles: [
+          ListTile(
+            leading: Icon(Icons.privacy_tip_outlined, color: Colors.black,),
+            title: Text('Change password', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
+            onTap: () {
+              Navigator.pushNamed(context, "/changePassword");
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.edit, color: Colors.black,),
+            title: Text('Edit profile', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
+            onTap: () {
+              Navigator.pushNamed(context, "/editProfile",
+                  arguments: EditProfileArgs(sc: true));
+            },
+          ),
+          showIT
+              ? ListTile(
+                  leading: Icon(Icons.update, color: Colors.black),
+                  title: Text('Update Role', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
+                  onTap: () {
+                    Navigator.pushNamed(context, "/updateAccount");
+                  },
+                )
+              : Container(),
+          ListTile(
+            leading: Icon(Icons.info_outline,color: Colors.black),
+            title: Text('About', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return About();
+                }),
+              );
+            },
+          ),
+          showIT
+              ? ListTile(
+                  leading: Icon(Icons.how_to_vote,color: Colors.black),
+                  title: Text('Initiate election process', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
+                  onTap: () {
+                    FirebaseFirestore.instance
+                        .collection("Election")
+                        .doc("events")
+                        .update({"happening": true});
+                  },
+                )
+              : Container(),
+          if (showIT)
             ListTile(
-              leading: Icon(Icons.privacy_tip),
-              title: Text('Change password'),
+              leading: Icon(Icons.cancel_outlined,color: Colors.black),
+              title: Text('End election process', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
               onTap: () {
-                Navigator.pushNamed(context, "/changePassword");
+                FirebaseFirestore.instance
+                    .collection("Election")
+                    .doc("events")
+                    .update({"happening": false});
               },
             ),
-            ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Edit profile'),
-              onTap: () {
-                Navigator.pushNamed(context,"/editProfile", arguments: EditProfileArgs(sc: true) );
-              },
-            ),
-            showIT? ListTile(
-              leading: Icon(Icons.update),
-              title: Text('Update Role'),
-              onTap: () {
-                Navigator.pushNamed(context,"/updateAccount");
-              },
-            ): Container(),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('About'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return About();
-                  }),
-                );
-              },
-            ),
-            showIT?
-              ListTile(
-                leading: Icon(Icons.how_to_vote),
-                title: Text('Initiate election process'),
-                onTap: () {
-                  FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":true});
-                },
-              ):Container(),
-            if (showIT)
-              ListTile(
-                leading: Icon(Icons.cancel),
-                title: Text('End election process'),
-                onTap: () {
-                  FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":false});
-                },
-              ),
-            ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Log out'),
-              onTap: () async {
-                await Authentication().signOut();
-                Navigator.pop(context);
-                },
-            )
-          ]
-        ).toList(),
+          ListTile(
+            leading: Icon(Icons.logout, color: Colors.black),
+            title: Text('Log out', style: Theme.of(context).textTheme.bodyText1!.copyWith(fontSize: 16),),
+            onTap: () async {
+              await Authentication().signOut();
+              Navigator.pop(context);
+            },
+          )
+        ]).toList(),
       ),
     );
   }
 }
-
-
 
 class UpdateAccount extends StatefulWidget {
   @override
@@ -148,25 +155,27 @@ class UpdateAccount extends StatefulWidget {
 
 class _UpdateAccountState extends State<UpdateAccount> {
   final _formKey = GlobalKey<FormState>();
-  String emailRoleUpdate = '' ;
+  String emailRoleUpdate = '';
   String emailToMakeChair = '';
   ProfileModel profileObject = ProfileModel(email: "", name: "", role: "");
-  String? category ;
-  String? role ;
+  String? category;
+  String? role;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   // update chair - error handling left
   void updateChair() async {
     bool noerror = true;
     String progress = "Please select category";
-    if (_formKey.currentState!.validate() && category!= null) {
+    if (_formKey.currentState!.validate() && category != null) {
       try {
-        QuerySnapshot newChair = await db.collection("Profiles").where("email", isEqualTo: emailRoleUpdate).get();
+        QuerySnapshot newChair = await db
+            .collection("Profiles")
+            .where("email", isEqualTo: emailRoleUpdate)
+            .get();
         String idOfNewChair = "";
-        if (newChair.docs.length == 0){
+        if (newChair.docs.length == 0) {
           progress = "Email does not exist!";
-        }
-        else{
+        } else {
           idOfNewChair = newChair.docs[0].id;
           DocumentReference chairDocRef = db.collection("Chairs").doc(category);
           await chairDocRef.update({"uid": idOfNewChair});
@@ -178,42 +187,45 @@ class _UpdateAccountState extends State<UpdateAccount> {
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: <Widget>[
-          Icon(
-            Icons.notification_important,
-            color: Colors.white,
-            semanticLabel: "Error",
-          ),
-          Text('  $progress')
-        ])));
+      Icon(
+        Icons.notification_important,
+        color: Colors.white,
+        semanticLabel: "Error",
+      ),
+      Text('  $progress')
+    ])));
   }
+
   void updateRole() async {
     String progress = "Please select Role";
     if (_formKey.currentState!.validate() && role != null) {
       try {
-        QuerySnapshot newChair = await db.collection("Profiles").where("email", isEqualTo: emailRoleUpdate).get();
-        if (newChair.docs.length == 0){
+        QuerySnapshot newChair = await db
+            .collection("Profiles")
+            .where("email", isEqualTo: emailRoleUpdate)
+            .get();
+        if (newChair.docs.length == 0) {
           progress = "Email does not exist!";
-        }
-        else{
-          String idOfRoleToUpdate = newChair.docs[0].id ;
-          DocumentReference profileDocRef = db.collection("Profiles").doc(idOfRoleToUpdate);
-          await profileDocRef.update({"role":role});
+        } else {
+          String idOfRoleToUpdate = newChair.docs[0].id;
+          DocumentReference profileDocRef =
+              db.collection("Profiles").doc(idOfRoleToUpdate);
+          await profileDocRef.update({"role": role});
           progress = "Role Updated";
         }
-
       } on Exception catch (e) {
         progress = "Update Failed! The email may not exist";
       }
     }
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: <Widget>[
-          Icon(
-            Icons.notification_important,
-            color: Colors.white,
-            semanticLabel: "Error",
-          ),
-          Text('  $progress')
-        ])));
+      Icon(
+        Icons.notification_important,
+        color: Colors.white,
+        semanticLabel: "Error",
+      ),
+      Text('  $progress')
+    ])));
   }
 
   @override
@@ -253,7 +265,8 @@ class _UpdateAccountState extends State<UpdateAccount> {
                       role = newVal.toString();
                     });
                   },
-                  items: profileObject.roles.map<DropdownMenuItem<String>>((value) {
+                  items: profileObject.roles
+                      .map<DropdownMenuItem<String>>((value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -314,8 +327,3 @@ class _UpdateAccountState extends State<UpdateAccount> {
     );
   }
 }
-
-
-
-
-
