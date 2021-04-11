@@ -101,7 +101,6 @@ class _PostItemState extends State<PostItem> {
                   height: 400.0,
                   initialPage: 0,
                   enlargeCenterPage: true,
-                  reverse: true,
                   enableInfiniteScroll: false,
                 ) ,
                 items: postModel.pictureURL.map((imgUrl) {
@@ -197,7 +196,7 @@ class _NewsfeedState extends State<Newsfeed> {
 
   // setting initial state
   void initState()  {
-    _streamOfPostChanges = _db.collection("Posts").snapshots();
+    _streamOfPostChanges = _db.collection("Posts").orderBy("time",descending: true).snapshots();
     super.initState();
   }
   @override

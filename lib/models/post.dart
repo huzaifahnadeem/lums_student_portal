@@ -11,7 +11,7 @@ class Post {
   String content ;
   String? tag ;
   bool isPoll = false , pictureChosen = false, fileChosen = false;
-  int numOptions = 1;
+  int numOptions = 0;
   List<dynamic> pictureURL = [] ;
   List<dynamic> images = [] ;
   File? image, file ;
@@ -67,7 +67,31 @@ class Post {
     this.savedPosts = doc['saved_posts'];
     this.alreadyVoted = doc['already_voted'];
   }
-
+  // add a single option
+  void addOption(){
+    if (isPoll) {
+      if(options == null){
+        options = [];
+      }
+      Map<String, dynamic> temp = PollOption("", 0).toMap();
+      options!.insert(numOptions, temp);
+      numOptions += 1 ;
+    }
+  }
+  void removeOption(){
+    print(numOptions);
+    print(options);
+    if (isPoll) {
+      if(numOptions==2){
+        return;
+      }
+      else{
+        print("removing");
+        options!.removeLast();
+        numOptions -= 1;
+      }
+    }
+  }
   // add n number of options to options list
   void addOptions(){
     if (isPoll) {
