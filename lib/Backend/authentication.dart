@@ -92,7 +92,6 @@ class Authentication {
       if (err.code == "invalid-email") {
         return "Invalid Email";
       }
-      var code;
       if (err.code == "user-not-found") {
         return "Account Does Not Exist";
       }
