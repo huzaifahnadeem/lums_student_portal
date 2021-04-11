@@ -45,7 +45,7 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Sign In',
+          'Sign Up',
           style: GoogleFonts.robotoSlab(
               textStyle: Theme.of(context).textTheme.headline6),
         ),
@@ -101,7 +101,8 @@ class _SignUpState extends State<SignUp> {
                 child: ElevatedButton(
                   onPressed: () => validate(),
                   child: Text('Sign Up',
-                      style: Theme.of(context).textTheme.headline5),
+                    style: GoogleFonts.roboto(
+                        textStyle: Theme.of(context).textTheme.headline5)),
                 ),
               ),
               SizedBox(height: 10),
