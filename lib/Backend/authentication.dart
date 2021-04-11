@@ -25,7 +25,10 @@ class Authentication {
         'name': temp.displayName,
         'email': temp.email,
         'role': 'Student',
-        'saved_posts' : null,
+        'major': null,
+        'school': null,
+        'year': null,
+        'hostel': null,
         'picture' : null,
         'office_hours': null,
         'manifesto': null,
@@ -33,6 +36,26 @@ class Authentication {
       return true;
     }
     return false;
+  }
+  // changePassword
+  Future<String> changePassword(String newPassword, String oldPassword) async{
+    User? temp = _auth.currentUser ;
+    EmailAuthCredential credential = EmailAuthProvider.credential(email: temp!.email!, password: oldPassword) as EmailAuthCredential;
+    try {
+      await temp.reauthenticateWithCredential(credential);
+    } on Exception catch (e) {
+      print(e);
+      return  "Failed to re-authenticate";
+    }
+    try {
+      await temp.updatePassword(newPassword);
+      return "Password updated";
+    } on FirebaseAuthException catch (e) {
+      if(e.code == 'weak-password'){
+        return e.message.toString();
+      }
+      return  "Updating process failed! please try later";
+    }
   }
   // Sign up with email and password
   Future<String> signUpWithEmailAndPassword (String email, String password, String name) async {
@@ -72,7 +95,6 @@ class Authentication {
       if (err.code == "invalid-email") {
         return "Invalid Email";
       }
-      var code;
       if (err.code == "user-not-found") {
         return "Account Does Not Exist";
       }

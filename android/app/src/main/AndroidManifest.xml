@@ -3,9 +3,18 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    
+    <queries>
+        <intent> 
+            <!-- Declaring our intent to open urls in browser apps. Required for support in Android 11 (API 30)  -->
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
     <application
         android:requestLegacyExternalStorage="true"
-        android:label="lums_student_portal"
+        android:label="LUMS Student Portal"
         android:icon="@mipmap/launcher_icon">
 
         <activity

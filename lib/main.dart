@@ -3,13 +3,16 @@ import 'package:firebase_core/firebase_core.dart'; // Firebase's core functional
 import 'package:firebase_auth/firebase_auth.dart'; // Firebase authentication service
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/signUpOrLogin.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/addPost.dart';
+import 'package:lums_student_portal/pages/changePassword.dart';
+import 'package:lums_student_portal/pages/editProfile.dart';
 import 'package:lums_student_portal/pages/home.dart';
 import 'package:lums_student_portal/pages/poll.dart';
+import 'package:lums_student_portal/pages/settings.dart';
 import 'package:lums_student_portal/pages/updatePost.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
-import 'package:lums_student_portal/themes/Theme.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
 
@@ -23,6 +26,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        splashColor: primary_color,
         scaffoldBackgroundColor: Colors.white,
         primaryColor: primary_color,
         textTheme: createTextTheme(),
@@ -32,7 +36,9 @@ class App extends StatelessWidget {
         brightness: Brightness.light,
         snackBarTheme: createSnackBarTheme(),
         buttonTheme: createButtonTheme(),
-        accentColor: Colors.red
+        accentColor: primary_accent,
+        iconTheme: createIconTheme(),
+
       ),
       initialRoute: '/',
       onGenerateRoute: (settings) {
@@ -59,7 +65,22 @@ class App extends StatelessWidget {
             builder: (context) { return Poll(id: id);},
           );
         }
-
+        else if (settings.name == '/changePassword') {
+          return MaterialPageRoute(
+            builder: (context) { return ChangePassword();},
+          );
+        }
+        else if (settings.name == '/editProfile') {
+          final EditProfileArgs args = settings.arguments as EditProfileArgs;
+          return MaterialPageRoute(
+            builder: (context) { return EditProfile(showSC: args.sc, userId: args.uID);},
+          );
+        }
+        else if (settings.name == '/updateAccount') {
+          return MaterialPageRoute(
+            builder: (context) { return UpdateAccount();},
+          );
+        }
       },
     );
   }
@@ -95,7 +116,7 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return (!_initialized) ? LoadingScreen() : StreamBuilder<User?>( // splash screen called here
+    return (!_initialized) ? LoadingScreen() : StreamBuilder<User?>(
       stream: _streamOfAuthChanges,
       builder: (context, snapshot){
         if (snapshot.hasData){
@@ -110,7 +131,6 @@ class _LandingPageState extends State<LandingPage> {
         }
         else {
           print ("Error During Authentication, Going to Authentication Section");
-          print (snapshot.data);
           return SignUpOrLogin();
         }
       },

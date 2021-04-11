@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/themes/progessIndicator.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,20 +25,17 @@ class Poll extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Poll", style: Theme
-              .of(context)
-              .textTheme
-              .headline6,),
+          title: Text("Poll", style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6)),
           backgroundColor: Colors.white,
           iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
+            color: Color(0xFFEB5757), //change your color here
           ),
         ),
         body: StreamBuilder<DocumentSnapshot?>(
             stream: _db.collection("Posts").doc(id).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return Center(child: Text("An Error Occured"),);
+                return Center(child: Text("An Error Occurred"));
               }
               else if (snapshot.connectionState == ConnectionState.waiting) {
                 return LoadingScreen();
@@ -151,21 +149,22 @@ class _PollItemState extends State<PollItem> {
                   onTapCancel: () => _handleTapCancel(),
                   child: filled? new Icon(Icons.radio_button_checked_outlined):new Icon(Icons.radio_button_unchecked_outlined),
                   ),
-                SizedBox(width: 10,),
-                Flexible(child: Text(widget.content, style: Theme.of(context).textTheme.bodyText2,)
+                SizedBox(width: 10),
+                Flexible(child: Text(widget.content, style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 15)))
                 )
               ],
             ),
-            SizedBox(height: 10,),
+            SizedBox(height: 10),
             widget.voted ? new LinearPercentIndicator(
               width: MediaQuery.of(context).size.width - 50,
               animation: true,
-              lineHeight: 30.0,
+              lineHeight: 23.0,
               animationDuration: 2000,
               percent: percentage,
-              center: Text("${(percentage * 100).round()} %", style: Theme.of(context).textTheme.caption!.copyWith(color: Colors.black, fontSize: 15),),
+              center: Text("${(percentage * 100).round()} %", style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.caption!.copyWith(color: Colors.black, fontSize: 15))),
               linearStrokeCap: LinearStrokeCap.roundAll,
-              progressColor: Colors.lightGreenAccent,
+              backgroundColor: Color(0xFFE8E8E8),
+              progressColor: Color(0xFF3A7BEC),
             ) : Container(),
           ]
       ),
