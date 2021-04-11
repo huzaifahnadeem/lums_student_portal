@@ -60,9 +60,6 @@ class _ViewResolveState extends State<ViewResolve> {
       required this.resolution,
       required this.id});
 
-  // void fetchResolveName() async {
-
-  // }
   void initState() {
     User? thisUser = FirebaseAuth.instance.currentUser;
     email = thisUser!.email;
