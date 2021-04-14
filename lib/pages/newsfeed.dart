@@ -11,7 +11,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class PostItem extends StatefulWidget {
   final DocumentSnapshot post;
   final Function displaySnackBar;
-  PostItem({required this.post, required this.displaySnackBar, Key? key})
+  final String? role ;
+  PostItem({required this.post, required this.displaySnackBar, required this.role, Key? key})
       : super(key: key);
   @override
   _PostItemState createState() => _PostItemState();
@@ -172,7 +173,7 @@ class _PostItemState extends State<PostItem> {
                         : new Icon(Icons.favorite_outline_sharp),
                     onPressed: () => updateSaveStatus(),
                   ),
-                  InkWell(
+                  (widget.role != "Student" && widget.role != null)  ? InkWell(
                     child: new Icon(Icons.delete),
                     onTap: () async {
                       return showDialog<void>(
@@ -200,11 +201,11 @@ class _PostItemState extends State<PostItem> {
                         },
                       );
                     },
-                  ),
-                  IconButton(
+                  ): Container(),
+                  (widget.role != "Student" && widget.role != null) ? IconButton(
                     icon: new Icon(Icons.edit),
                     onPressed: () => updatePost(),
-                  )
+                  ):Container(),
                 ],
               ),
             ),
@@ -218,8 +219,9 @@ class _PostItemState extends State<PostItem> {
 
 class Newsfeed extends StatefulWidget {
   //late final ScrollController scrollController ;
+  late final String? role ;
   late final String filter;
-  Newsfeed({required this.filter, Key? key}) : super(key: key);
+  Newsfeed({required this.filter, required this.role, Key? key}) : super(key: key);
   @override
   _NewsfeedState createState() => _NewsfeedState();
 }
@@ -229,16 +231,7 @@ class _NewsfeedState extends State<Newsfeed> {
   FirebaseFirestore _db = FirebaseFirestore.instance;
   String? filter2;
   late Stream<QuerySnapshot?> _streamOfPostChanges;
-  var categoryMap = {
-    'General': 'General',
-    'DC': 'Disciplinary Committee',
-    'Academic': 'Academic',
-    'Camp Dev': 'Campus Development',
-    "Health": "Mental Health",
-    "Graduates": "Graduate Affairs",
-    "HR/PR": "HR/PR",
-    'Others': "Others"
-  };
+
 
   // display snackbar
   void displaySnackBar(String message) {
@@ -262,7 +255,7 @@ class _NewsfeedState extends State<Newsfeed> {
 
   @override
   Widget build(BuildContext context) {
-    filter2 = categoryMap[widget.filter]!;
+    filter2 = Post.categoryMap[widget.filter]!;
     return StreamBuilder<QuerySnapshot?>(
         stream: _streamOfPostChanges,
         builder: (context, snapshot) {
@@ -278,12 +271,12 @@ class _NewsfeedState extends State<Newsfeed> {
                     ? true
                     : (element['category'] == filter2 ? true : false));
             return ListView.builder(
-              //controller: widget.scrollController,
               itemCount: result.length,
               itemBuilder: (BuildContext context, int index) {
                 return PostItem(
                   post: result.toList()[index],
                   displaySnackBar: displaySnackBar,
+                  role: widget.role,
                 );
               },
             );

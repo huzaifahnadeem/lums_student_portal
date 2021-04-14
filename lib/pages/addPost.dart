@@ -148,7 +148,18 @@ class _AddPostState extends State<AddPost> {
                   // fill in poll options input fields
                   (newPost.isPoll && newPost.numOptions > 1 && newPost.options != null) ? Column(
                     children: [
-                      Align(alignment: Alignment.centerLeft,child: Text("Poll",  style: GoogleFonts.roboto( textStyle: Theme.of(context).textTheme.bodyText2,))),
+                      Align(alignment: Alignment.centerLeft,child: Text("Poll",
+                          style: GoogleFonts.roboto( textStyle: Theme.of(context).textTheme.bodyText2,))),
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: InputDecoration(hintText: "Poll Question", fillColor: Colors.white),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        validator: (val) => emptyNullValidator(newPost.pollQuestion),
+                        onChanged: (val) {
+                          setState(() => newPost.pollQuestion = val);
+                        },
+                      ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: newPost.options!.asMap().entries.map((e) {
@@ -237,6 +248,7 @@ class _AddPostState extends State<AddPost> {
                           setState(() {
                             newPost.isPoll = !newPost.isPoll ;
                             if(newPost.isPoll == false){
+                              newPost.pollQuestion = null ;
                               newPost.options = null;
                               newPost.numOptions = 0 ;
                               newPost.alreadyVoted = [];

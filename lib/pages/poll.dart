@@ -47,12 +47,25 @@ class Poll extends StatelessWidget {
                       .data()!['already_voted'];
                   bool voted = alreadyVotedArray.contains(userID);
                   int totalVotes = countVotes(options);
-                  return ListView.builder(
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return PollItem(id: id, index: index, content: options[index]['option'],
-                          votes: options[index]['votes'], voted: voted, totalVotes: totalVotes, user: userID);
-                    },
+                  return Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.topLeft,
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          "${snapshot.data!.data()!['poll_question']}",
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: options.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return PollItem(id: id, index: index, content: options[index]['option'],
+                              votes: options[index]['votes'], voted: voted, totalVotes: totalVotes, user: userID);
+                        },
+                      ),
+                    ],
                   );
                 }
                 else {
@@ -73,11 +86,11 @@ class PollItem extends StatefulWidget {
   final int index;
   final String content;
   final int votes;
-  final bool voted;
+  bool voted;
   final int totalVotes;
   final String user ;
 
-  const PollItem(
+  PollItem(
       {required this.id, required this.index, required this.content, required this.votes, required this.voted, required this.totalVotes,
         required this.user, Key? key}) : super(key: key);
 
@@ -87,9 +100,11 @@ class PollItem extends StatefulWidget {
 
 class _PollItemState extends State<PollItem> {
   bool filled = false;
+  bool justVoted = false;
 
   void selected(BuildContext context) async {
-    if (widget.voted) {
+
+    if (justVoted) {
       //
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: <Widget>[
@@ -102,6 +117,7 @@ class _PollItemState extends State<PollItem> {
           ])));
     }
     else {
+      justVoted = true;
       DocumentReference documentReference = FirebaseFirestore.instance.collection('Posts').doc(widget.id);
       FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot snapshot = await transaction.get(documentReference);
@@ -124,7 +140,7 @@ class _PollItemState extends State<PollItem> {
   }
   void _handleTapUp(TapUpDetails e){
     setState(() {
-      filled = false ;
+      filled = true ;
     });
   }
   void _handleTapCancel(){
@@ -161,7 +177,7 @@ class _PollItemState extends State<PollItem> {
               lineHeight: 23.0,
               animationDuration: 2000,
               percent: percentage,
-              center: Text("${(percentage * 100).round()} %", style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.caption!.copyWith(color: Colors.black, fontSize: 15))),
+              center: Text("${(percentage * 100).toStringAsPrecision(4)} %", style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.caption!.copyWith(color: Colors.black, fontSize: 15))),
               linearStrokeCap: LinearStrokeCap.roundAll,
               backgroundColor: Color(0xFFE8E8E8),
               progressColor: Color(0xFF3A7BEC),

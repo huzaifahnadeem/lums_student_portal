@@ -147,8 +147,6 @@ class _SavedState extends State<Saved> {
   FirebaseFirestore _db = FirebaseFirestore.instance;
   String? filter2 ;
   late Stream<QuerySnapshot?> _streamOfSavedPostChanges ;
-  var categoryMap = {'DC': 'Disciplinary Committee', 'Academic': 'Academic Policy',
-    'General': 'General','Campus': 'Campus Development','Others':"Others"};
 
   // setting initial state
   void initState()  {
@@ -157,7 +155,7 @@ class _SavedState extends State<Saved> {
   }
   @override
   Widget build(BuildContext context) {
-    filter2 = categoryMap[widget.filter]!;
+    filter2 = Post.categoryMap[widget.filter]!;
     print(filter2);
     return StreamBuilder<QuerySnapshot?>(
         stream: _streamOfSavedPostChanges,

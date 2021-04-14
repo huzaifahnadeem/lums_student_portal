@@ -18,12 +18,23 @@ class Post {
   String? filename ;
   String? fileURL ;
   Timestamp? time;
+  String? pollQuestion ;
   List? options ;
   List<dynamic> savedPosts = [];
   List<dynamic> alreadyVoted = [];
   static List categories = ["General", "Disciplinary Committee", "Academic", "Campus Development",
                             "Mental Health", "Graduate Affairs", "HR/PR", "Others"];
   static List categories1 = ["General", "DC", "Academic", "Camp Dev", "Health", "Graduates", "HR/PR", "Others"] ;
+  static var categoryMap = {
+    'General': 'General',
+    'DC': 'Disciplinary Committee',
+    'Academic': 'Academic',
+    'Camp Dev': 'Campus Development',
+    "Health": "Mental Health",
+    "Graduates": "Graduate Affairs",
+    "HR/PR": "HR/PR",
+    'Others': "Others"
+  };
   List chooseNumOptions = [2,3,4] ;
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
@@ -44,6 +55,7 @@ class Post {
       "numOptions": this.numOptions,
       "picture_url": this.pictureURL,
       "file_url": this.fileURL,
+      "poll_question": this.pollQuestion,
       "options": this.options,
       "time": this.time,
       "saved_posts": this.savedPosts,
@@ -64,6 +76,7 @@ class Post {
     this.pictureURL = doc['picture_url'];
     this.fileURL = doc['file_url'];
     this.options = doc['options'];
+    this.pollQuestion = doc['poll_question'];
     this.time = doc['time'] ;
     this.savedPosts = doc['saved_posts'];
     this.alreadyVoted = doc['already_voted'];
