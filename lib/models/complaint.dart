@@ -14,6 +14,7 @@ class Complaint {
   String? name;
   String? resolution;
   String? resolvedBy;
+  List delegatedMembers = [];
 
   static List categories1 = [
     "General",
@@ -33,6 +34,7 @@ class Complaint {
   // create json object to add to database
   Map<String, dynamic> toMap() {
     return {
+      "delegatedMembers": this.delegatedMembers,
       "resolvedBy": this.resolvedBy,
       "resolution": this.resolution,
       "name": this.name,

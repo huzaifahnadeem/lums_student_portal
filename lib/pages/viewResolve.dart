@@ -14,6 +14,8 @@ class ViewResolve extends StatefulWidget {
   late final String id;
   late final String? resolvedByName;
   late final String? resolution;
+  late final List delegatedMembers;
+  late final List scMembers;
 
   ViewResolve(
       {required this.subject,
@@ -23,7 +25,9 @@ class ViewResolve extends StatefulWidget {
       required this.isResolved,
       required this.resolution,
       required this.resolvedByName,
-      required this.id});
+      required this.id,
+      required this.delegatedMembers,
+      required this.scMembers});
 
   @override
   _ViewResolveState createState() => _ViewResolveState(
@@ -34,7 +38,9 @@ class ViewResolve extends StatefulWidget {
       isResolved: isResolved,
       resolution: resolution,
       resolvedByName: resolvedByName,
-      id: id);
+      id: id,
+      delegatedMembers: delegatedMembers,
+      scMembers: scMembers);
 }
 
 class _ViewResolveState extends State<ViewResolve> {
@@ -47,6 +53,10 @@ class _ViewResolveState extends State<ViewResolve> {
   late final String? resolvedByName;
   late final String? resolution;
   late String? newResolution;
+  late final List delegatedMembers;
+  late final List scMembers;
+  var dictionary = new Map();
+
   String? email;
   String? resolvedBy;
 
@@ -62,7 +72,9 @@ class _ViewResolveState extends State<ViewResolve> {
       required this.isResolved,
       required this.resolvedByName,
       required this.resolution,
-      required this.id});
+      required this.id,
+      required this.delegatedMembers,
+      required this.scMembers});
 
   void initState() {
     User? thisUser = FirebaseAuth.instance.currentUser;
@@ -77,7 +89,60 @@ class _ViewResolveState extends State<ViewResolve> {
       });
     });
     newResolution = resolution;
+    for (var i = 0; i < delegatedMembers.length; i++) {
+      scMembers.remove(delegatedMembers[i]);
+    }
+    for (var i = 0; i < scMembers.length; i++) {
+      _db.collection("Profiles").doc(scMembers[i]).get().then((value) {
+        setState(() => dictionary[scMembers[i]] = value.get("name"));
+      });
+    }
     super.initState();
+  }
+
+  Future<void> resolvedByUser() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolvedBy": resolvedBy})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> updateResolution() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolution": newResolution})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> updateUnresolved() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolution": null})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> markResolved() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"isResolved": "Resolved"})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> markUnresolved() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"isResolved": "Unresolved"})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
   }
 
   String? resolutionValidator(String res) {
@@ -154,51 +219,6 @@ class _ViewResolveState extends State<ViewResolve> {
     ])));
   }
 
-  Future<void> resolvedByUser() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"resolvedBy": resolvedBy})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> updateResolution() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"resolution": newResolution})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> updateUnresolved() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"resolution": null})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> markResolved() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"isResolved": "Resolved"})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> markUnresolved() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"isResolved": "Unresolved"})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
   Future<void> showMyDialog() async {
     return showDialog<void>(
       context: context,
@@ -248,6 +268,7 @@ class _ViewResolveState extends State<ViewResolve> {
 
   @override
   Widget build(BuildContext context) {
+    print(dictionary);
     return Scaffold(
         appBar: AppBar(
           toolbarHeight: 80,

@@ -19,11 +19,11 @@ class _AddComplaintState extends State<AddComplaint> {
   Complaint newComplaint = Complaint(subject: '', complaint: '', email: '');
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FirebaseFirestore _db = FirebaseFirestore.instance;
+  User? thisUser = FirebaseAuth.instance.currentUser;
   bool loading = false;
   String? email;
 
   void initState() {
-    User? thisUser = FirebaseAuth.instance.currentUser;
     email = thisUser!.email;
     setState(() => newComplaint.email = email);
     _db
@@ -44,6 +44,7 @@ class _AddComplaintState extends State<AddComplaint> {
       setState(() {
         loading = true;
       });
+      await delegateTo();
       await newComplaint.addComplaintToDB();
       setState(() {
         loading = false;
@@ -58,6 +59,14 @@ class _AddComplaintState extends State<AddComplaint> {
         Text('  Complaint Lodged')
       ])));
     }
+  }
+
+  Future<void> delegateTo() async {
+    _db.collection("Chairs").doc(newComplaint.tag).get().then((value) {
+      newComplaint.delegatedMembers.add(thisUser!.uid);
+      newComplaint.delegatedMembers.add(value.get("uid"));
+      // print(newComplaint.delegatedMembers);
+    });
   }
 
   Future<void> showMyDialog() async {
