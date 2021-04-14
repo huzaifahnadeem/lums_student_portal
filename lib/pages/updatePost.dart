@@ -166,6 +166,17 @@ class _UpdatePostState extends State<UpdatePost> {
                   (widget.post.isPoll && widget.post.numOptions > 1 && widget.post.options != null)? Column(
                     children: [
                       Align(alignment: Alignment.centerLeft,child: Text("Poll",  style: Theme.of(context).textTheme.bodyText2,)),
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        initialValue: widget.post.pollQuestion,
+                        decoration: InputDecoration(hintText: "Poll Question", fillColor: Colors.white),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        validator: (val) => emptyNullValidator(widget.post.pollQuestion),
+                        onChanged: (val) {
+                          setState(() => widget.post.pollQuestion = val);
+                        },
+                      ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: widget.post.options!.asMap().entries.map((e) {
@@ -358,6 +369,7 @@ class _UpdatePostState extends State<UpdatePost> {
                             if(widget.post.isPoll == false){
                               widget.post.options = null;
                               widget.post.numOptions = 0 ;
+                              widget.post.pollQuestion = null;
                               widget.post.alreadyVoted = [];
                             }
                             else{

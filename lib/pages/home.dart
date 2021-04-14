@@ -107,7 +107,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _selectedIndex = 0 ;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
     _tabController = TabController(length: _numTabs, vsync: this);
-    //handleScroll();
   }
 
   void applyFilter(String value) {
@@ -118,33 +117,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   void dispose() {
-    //scrollController.removeListener(() {});
-    //scrollController.dispose();
     super.dispose();
   }
 
-  /*void showFloatingButton() {
-    if(mounted){setState(() {
-      _showFloatingActionButton = true;
-    });}
-  }
-  void hideFloatingButton() {
-    if (mounted){setState(() {
-      _showFloatingActionButton = false;
-    });}
-  }
-  void handleScroll() async {
-    scrollController.addListener(() {
-      if (scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        hideFloatingButton();
-      }
-      if (scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-        showFloatingButton();
-      }
-    });
-  }*/
   // change state when an icon in bottom bar is tapped
   void navigate(int newIndex) {
     if (newIndex != _selectedIndex) {
@@ -160,7 +135,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     List<List<Widget>> views = [
       [
         // news feed subscreens
-        Newsfeed(filter: filter),
+        Newsfeed(filter: filter, role: userRole),
         Saved(filter: filter)
       ],
       [
