@@ -15,7 +15,7 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
   late Stream<QuerySnapshot?> _streamOfComplaintHistory;
 
   FirebaseFirestore _db = FirebaseFirestore.instance;
-  String? email;
+  String? uid;
   String timeDaysAgo = '';
 
   // calculate days ago
@@ -32,7 +32,7 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
   // setting initial state
   void initState() {
     User? thisUser = FirebaseAuth.instance.currentUser;
-    email = thisUser!.email;
+    uid = thisUser!.uid;
     _streamOfComplaintHistory = _db
         .collection("Complaints")
         .orderBy("time", descending: true)
@@ -46,7 +46,7 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
       itemBuilder: (BuildContext context, int index) {
         calcDaysAgo(documentSnaps[index]!["time"]);
         return (Container(
-          child: documentSnaps[index]!["email"] == email
+          child: documentSnaps[index]!["senderUid"] == uid
               ? Card(
                   semanticContainer: true,
                   margin: EdgeInsets.all(10),
@@ -68,15 +68,6 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Padding(padding: EdgeInsets.all(10)),
-                            // Container(
-                            //     padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
-                            // child: Text(
-                            //   documentSnaps[index]!["subject"],
-                            //   style: TextStyle(
-                            //       fontSize: 20,
-                            //       fontWeight: FontWeight.w400),
-                            //     )),
                             ListTile(
                               dense: true,
                               title: Text(documentSnaps[index]!["subject"],
@@ -104,7 +95,7 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                                   : (documentSnaps[index]!["isResolved"] ==
                                           "Resolved")
                                       ? Text(
-                                          'Resolved By: ${documentSnaps[index]!["resolvedBy"]}',
+                                          'Resolved by ${documentSnaps[index]!["resolvedBy"]}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .caption,
@@ -158,6 +149,9 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();
           } else if (snapshot.hasData) {
+            if (snapshot.data!.docs.length == 0) {
+              return Center(child: Text('No Complaints to Show.'));
+            }
             documentSnaps = []; // reset list.
             snapshot.data!.docs.forEach((thisDocumentSnap) {
               documentSnaps.add(thisDocumentSnap);

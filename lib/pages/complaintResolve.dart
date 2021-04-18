@@ -16,26 +16,18 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
   late Stream<QuerySnapshot?> _streamOfComplaintResolve;
   FirebaseFirestore _db = FirebaseFirestore.instance;
   User? thisUser = FirebaseAuth.instance.currentUser;
-  String? senderName;
-  String? email;
+  String? uid;
   List forwardList = [];
   String timeDaysAgo = '';
 
   // setting initial state
   void initState() {
+    uid = thisUser!.uid;
     _streamOfComplaintResolve = _db
         .collection("Complaints")
         .orderBy("time", descending: true)
         .snapshots();
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: thisUser!.email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => senderName = result.id);
-      });
-    });
+
     _db.collection("Profiles").get().then((value) {
       value.docs.forEach((result) {
         if (result.get("role") == "SC" || result.get("role") == "IT") {
@@ -65,71 +57,76 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
       itemBuilder: (BuildContext context, int index) {
         calcDaysAgo(documentSnaps[index]!["time"]);
         return (Container(
-          child: Card(
-              semanticContainer: true,
-              margin: EdgeInsets.all(10),
-              elevation: 4,
-              child: InkWell(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return ViewResolve(
-                        subject: (documentSnaps[index]!["subject"]),
-                        complaint: (documentSnaps[index]!["complaint"]),
-                        category: (documentSnaps[index]!["category"]),
-                        name: (documentSnaps[index]!["name"]),
-                        resolution: (documentSnaps[index]!["resolution"]),
-                        isResolved: (documentSnaps[index]!["isResolved"]),
-                        resolvedByName: (documentSnaps[index]!["resolvedBy"]),
-                        id: (documentSnaps[index]!.id),
-                        delegatedMembers:
-                            (documentSnaps[index]!["delegatedMembers"]),
-                        scMembers: forwardList,
-                      ); // function returns a widget
-                    }));
-                  },
-                  child: Column(children: [
-                    ListTile(
-                      dense: true,
-                      title: Text(documentSnaps[index]!["subject"],
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w400)),
-                      trailing: Text(
-                        "$timeDaysAgo",
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    ),
-                    ListTile(
-                      dense: true,
-                      title: Text(
-                        documentSnaps[index]!["category"],
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                      subtitle: Text(
-                        "Submitted By: ${documentSnaps[index]!["name"]}",
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                      trailing: (documentSnaps[index]!["isResolved"] ==
-                              "Pending")
-                          ? Icon(
-                              Icons.access_time_rounded,
-                              // Icons.highlight_remove_rounded
-                              color: Color(0xFFFFB800),
-                            )
-                          : (documentSnaps[index]!["isResolved"] == "Resolved")
-                              ? Icon(
-                                  Icons.check_circle_outline_rounded,
-                                  color: Color(0xFF56BF54),
-                                )
-                              : (documentSnaps[index]!["isResolved"] ==
-                                      "Unresolved")
+          child: documentSnaps[index]!["delegatedMembers"].contains(uid)
+              ? Card(
+                  semanticContainer: true,
+                  margin: EdgeInsets.all(10),
+                  elevation: 4,
+                  child: InkWell(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return ViewResolve(
+                            subject: (documentSnaps[index]!["subject"]),
+                            complaint: (documentSnaps[index]!["complaint"]),
+                            category: (documentSnaps[index]!["category"]),
+                            name: (documentSnaps[index]!["name"]),
+                            resolution: (documentSnaps[index]!["resolution"]),
+                            isResolved: (documentSnaps[index]!["isResolved"]),
+                            resolvedByName:
+                                (documentSnaps[index]!["resolvedBy"]),
+                            id: (documentSnaps[index]!.id),
+                            delegatedMembers:
+                                (documentSnaps[index]!["delegatedMembers"]),
+                            scMembers: forwardList,
+                            senderUid: (documentSnaps[index]!["senderUid"]),
+                          ); // function returns a widget
+                        }));
+                      },
+                      child: Column(children: [
+                        ListTile(
+                          dense: true,
+                          title: Text(documentSnaps[index]!["subject"],
+                              style: TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w400)),
+                          trailing: Text(
+                            "$timeDaysAgo",
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                        ),
+                        ListTile(
+                          dense: true,
+                          title: Text(
+                            documentSnaps[index]!["category"],
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                          subtitle: Text(
+                            "Submitted by ${documentSnaps[index]!["name"]}",
+                            style: Theme.of(context).textTheme.caption,
+                          ),
+                          trailing:
+                              (documentSnaps[index]!["isResolved"] == "Pending")
                                   ? Icon(
-                                      Icons.highlight_remove_rounded,
-                                      color: Colors.redAccent,
+                                      Icons.access_time_rounded,
+                                      // Icons.highlight_remove_rounded
+                                      color: Color(0xFFFFB800),
                                     )
-                                  : null,
-                    ),
-                  ]))),
+                                  : (documentSnaps[index]!["isResolved"] ==
+                                          "Resolved")
+                                      ? Icon(
+                                          Icons.check_circle_outline_rounded,
+                                          color: Color(0xFF56BF54),
+                                        )
+                                      : (documentSnaps[index]!["isResolved"] ==
+                                              "Unresolved")
+                                          ? Icon(
+                                              Icons.highlight_remove_rounded,
+                                              color: Colors.redAccent,
+                                            )
+                                          : null,
+                        ),
+                      ])))
+              : null,
         ));
       },
     );
@@ -147,6 +144,9 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();
           } else if (snapshot.hasData) {
+            if (snapshot.data!.docs.length == 0) {
+              return Center(child: Text('No Complaints to Show.'));
+            }
             documentSnaps = []; // reset list.
             snapshot.data!.docs.forEach((thisDocumentSnap) {
               documentSnaps.add(thisDocumentSnap);

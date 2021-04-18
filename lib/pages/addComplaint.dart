@@ -16,26 +16,30 @@ class AddComplaint extends StatefulWidget {
 }
 
 class _AddComplaintState extends State<AddComplaint> {
-  Complaint newComplaint = Complaint(subject: '', complaint: '', email: '');
+  Complaint newComplaint = Complaint(subject: '', complaint: '', senderUid: '');
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FirebaseFirestore _db = FirebaseFirestore.instance;
   User? thisUser = FirebaseAuth.instance.currentUser;
+  String? uid;
   bool loading = false;
-  String? email;
+  List updateList = [];
 
   void initState() {
-    email = thisUser!.email;
-    setState(() => newComplaint.email = email);
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => newComplaint.name = result.get("name"));
-      });
+    uid = thisUser!.uid;
+    setState(() => newComplaint.senderUid = uid);
+    _db.collection("Profiles").doc(uid).get().then((value) {
+      setState(() => newComplaint.name = value.get("name"));
     });
     super.initState();
+  }
+
+  Future<void> delegateTo() async {
+    return _db.collection("Chairs").doc(newComplaint.tag).get().then((value) {
+      updateList.add(value.get("uid"));
+      setState(() {
+        newComplaint.delegatedMembers = updateList;
+      });
+    });
   }
 
   // function to call when user pressed "Add Post" button
@@ -47,6 +51,7 @@ class _AddComplaintState extends State<AddComplaint> {
       await delegateTo();
       await newComplaint.addComplaintToDB();
       setState(() {
+        updateList.clear();
         loading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -59,14 +64,6 @@ class _AddComplaintState extends State<AddComplaint> {
         Text('  Complaint Lodged')
       ])));
     }
-  }
-
-  Future<void> delegateTo() async {
-    _db.collection("Chairs").doc(newComplaint.tag).get().then((value) {
-      newComplaint.delegatedMembers.add(thisUser!.uid);
-      newComplaint.delegatedMembers.add(value.get("uid"));
-      // print(newComplaint.delegatedMembers);
-    });
   }
 
   Future<void> showMyDialog() async {

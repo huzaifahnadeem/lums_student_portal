@@ -17,6 +17,7 @@ class ViewResolve extends StatefulWidget {
   late final String? resolution;
   late final List delegatedMembers;
   late final List scMembers;
+  late final String senderUid;
 
   ViewResolve(
       {required this.subject,
@@ -28,7 +29,8 @@ class ViewResolve extends StatefulWidget {
       required this.resolvedByName,
       required this.id,
       required this.delegatedMembers,
-      required this.scMembers});
+      required this.scMembers,
+      required this.senderUid});
 
   @override
   _ViewResolveState createState() => _ViewResolveState(
@@ -41,7 +43,8 @@ class ViewResolve extends StatefulWidget {
       resolvedByName: resolvedByName,
       id: id,
       delegatedMembers: delegatedMembers,
-      scMembers: scMembers);
+      scMembers: scMembers,
+      senderUid: senderUid);
 }
 
 class _ViewResolveState extends State<ViewResolve> {
@@ -56,13 +59,15 @@ class _ViewResolveState extends State<ViewResolve> {
   late String? newResolution;
   late final List delegatedMembers;
   late final List scMembers;
+  late final String senderUid;
+  String? uid;
+  bool isChair = false;
+
   var dictionary = new Map();
   bool _toggled = false;
 
   late String? newDelegate = "";
 
-  String? email;
-  String? uid;
   String? resolvedBy;
 
   FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -79,25 +84,24 @@ class _ViewResolveState extends State<ViewResolve> {
       required this.resolution,
       required this.id,
       required this.delegatedMembers,
-      required this.scMembers});
+      required this.scMembers,
+      required this.senderUid});
 
   void initState() {
     User? thisUser = FirebaseAuth.instance.currentUser;
-    email = thisUser!.email;
-    uid = thisUser.uid;
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => resolvedBy = result.get("name"));
+    uid = thisUser!.uid;
+    _db.collection("Chairs").where("uid", isEqualTo: uid).get().then((value) {
+      value.docs.forEach((element) {
+        if (element.get("uid") == uid) {
+          setState(() {
+            isChair = true;
+          });
+        }
       });
     });
     newResolution = resolution;
-    for (var i = 0; i < delegatedMembers.length; i++) {
-      scMembers.remove(delegatedMembers[i]);
-    }
+    scMembers.remove(senderUid);
+    scMembers.remove(uid);
     for (var i = 0; i < scMembers.length; i++) {
       _db.collection("Profiles").doc(scMembers[i]).get().then((value) {
         setState(() {
@@ -105,7 +109,9 @@ class _ViewResolveState extends State<ViewResolve> {
         });
       });
     }
-    print(scMembers);
+    _db.collection("Profiles").doc(uid).get().then((value) {
+      setState(() => resolvedBy = value.get("name"));
+    });
     super.initState();
   }
 
@@ -309,9 +315,9 @@ class _ViewResolveState extends State<ViewResolve> {
 
   @override
   Widget build(BuildContext context) {
-    print(scMembers);
-    print(delegatedMembers);
-    print(dictionary);
+    // print(scMembers);
+    // print(delegatedMembers);
+    // print(dictionary);
     return Scaffold(
         appBar: AppBar(
           toolbarHeight: 80,
@@ -348,33 +354,59 @@ class _ViewResolveState extends State<ViewResolve> {
                         child: Text(subject,
                             style: TextStyle(
                                 fontSize: 35,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w600,
                                 color: Colors.black54)),
                       ),
                       Container(
-                        padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
+                        padding: EdgeInsets.fromLTRB(0, 20, 10, 0),
                         child: Text(category,
                             style: TextStyle(
-                                fontSize: 25,
+                                fontSize: 26,
                                 fontWeight: FontWeight.w400,
-                                color: Colors.black54)),
+                                color: Colors.black45)),
                       ),
                       Container(
-                          padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
-                          child: Text("Submitted By: $name",
+                          padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                          child: Text("Submitted by $name",
                               style: TextStyle(
-                                  fontSize: 25,
-                                  fontWeight: FontWeight.w300,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w400,
                                   color: Colors.black45))),
+                      (isResolved == "Resolved")
+                          ? Container(
+                              alignment: Alignment.topLeft,
+                              padding: EdgeInsets.fromLTRB(0, 5, 10, 10),
+                              child: Text("Resolved by $resolvedByName",
+                                  style: TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black45)),
+                            )
+                          : Text(""),
                       Container(
-                        // decoration: BoxDecoration(),
-                        padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                        child: Text("$complaint",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black)),
-                      ),
+                          decoration: BoxDecoration(),
+                          padding: EdgeInsets.fromLTRB(0, 20, 5, 10),
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text("Complaint",
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.black45)),
+                              ),
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.fromLTRB(20, 15, 0, 0),
+                                child: Text("$complaint",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.black)),
+                              )
+                            ],
+                          )),
                       Container(
                         padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
                         child: (isResolved == "Pending")
@@ -554,20 +586,17 @@ class _ViewResolveState extends State<ViewResolve> {
                                 ? Column(
                                     children: [
                                       Container(
-                                        alignment: Alignment.topLeft,
-                                        padding:
-                                            EdgeInsets.fromLTRB(0, 20, 10, 10),
-                                        child: Text(
-                                            "Resolved By: $resolvedByName",
+                                        alignment: Alignment.centerLeft,
+                                        child: Text("Resolution",
                                             style: TextStyle(
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.w300,
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.w400,
                                                 color: Colors.black45)),
                                       ),
                                       Container(
-                                        alignment: Alignment.topLeft,
+                                        alignment: Alignment.centerLeft,
                                         padding:
-                                            EdgeInsets.fromLTRB(0, 20, 10, 10),
+                                            EdgeInsets.fromLTRB(20, 15, 0, 0),
                                         child: Text("$resolution",
                                             style: TextStyle(
                                                 fontSize: 20,
@@ -580,11 +609,11 @@ class _ViewResolveState extends State<ViewResolve> {
                                     ? Container(
                                         alignment: Alignment.topLeft,
                                         padding:
-                                            EdgeInsets.fromLTRB(0, 20, 10, 10),
+                                            EdgeInsets.fromLTRB(0, 5, 10, 10),
                                         child: Text("Unresolved",
                                             style: TextStyle(
-                                                fontSize: 25,
-                                                fontWeight: FontWeight.w300,
+                                                fontSize: 26,
+                                                fontWeight: FontWeight.w400,
                                                 color: Colors.black45)),
                                       )
                                     : Text(""),

@@ -9,7 +9,7 @@ class Complaint {
   String subject;
   String complaint;
   String? tag;
-  String? email;
+  String? senderUid;
   String? isResolved = "Pending";
   String? name;
   String? resolution;
@@ -29,7 +29,9 @@ class Complaint {
 
   //class constructor
   Complaint(
-      {required this.subject, required this.complaint, required this.email});
+      {required this.subject,
+      required this.complaint,
+      required this.senderUid});
 
   // create json object to add to database
   Map<String, dynamic> toMap() {
@@ -42,7 +44,7 @@ class Complaint {
       "category": this.tag,
       "subject": this.subject,
       "complaint": this.complaint,
-      "email": this.email,
+      "senderUid": this.senderUid,
       "time": Timestamp.now()
     };
   }

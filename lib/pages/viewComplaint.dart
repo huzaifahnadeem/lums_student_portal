@@ -77,59 +77,89 @@ class _ViewComplaintState extends State<ViewComplaint> {
                 child: Text(subject,
                     style: TextStyle(
                         fontSize: 35,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                         color: Colors.black54)),
               ),
               Container(
-                padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
+                padding: EdgeInsets.fromLTRB(0, 20, 10, 0),
                 child: Text(category,
                     style: TextStyle(
-                        fontSize: 25,
+                        fontSize: 26,
                         fontWeight: FontWeight.w400,
-                        color: Colors.black54)),
+                        color: Colors.black45)),
               ),
               Container(
-                padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
+                padding: EdgeInsets.fromLTRB(0, 5, 10, 20),
                 child: (isResolved == "Unresolved")
                     ? Text("Unresolved",
                         style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.w300,
+                            fontSize: 26,
+                            fontWeight: FontWeight.w400,
                             color: Colors.black45))
                     : (isResolved == "Resolved")
-                        ? Text("Resolved By: $resolvedBy",
+                        ? Text("Resolved by $resolvedBy",
                             style: TextStyle(
-                                fontSize: 25,
+                                fontSize: 26,
                                 fontWeight: FontWeight.w400,
                                 color: Colors.black45))
                         : (isResolved == "Pending")
                             ? Text("Pending",
                                 style: TextStyle(
-                                    fontSize: 25,
+                                    fontSize: 26,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.black45))
                             : null,
               ),
               Container(
-                decoration: BoxDecoration(),
-                padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                child: Text("$complaint",
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.black)),
-              ),
+                  decoration: BoxDecoration(),
+                  padding: EdgeInsets.fromLTRB(0, 20, 5, 10),
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text("Complaint",
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black45)),
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.fromLTRB(20, 15, 0, 0),
+                        child: Text("$complaint",
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w300,
+                                color: Colors.black)),
+                      )
+                    ],
+                  )),
               Container(
-                decoration: BoxDecoration(),
-                padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                child: (isResolved == "Resolved")
-                    ? Text("$resolution",
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.black))
-                    : null,
-              ),
+                  decoration: BoxDecoration(),
+                  padding: EdgeInsets.fromLTRB(0, 20, 5, 10),
+                  child: (isResolved == "Resolved")
+                      ? Column(
+                          children: [
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text("Resolution",
+                                  style: TextStyle(
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black45)),
+                            ),
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.fromLTRB(20, 15, 0, 0),
+                              child: Text("$resolution",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w300,
+                                      color: Colors.black)),
+                            )
+                          ],
+                        )
+                      : null),
             ],
           ),
         ));
