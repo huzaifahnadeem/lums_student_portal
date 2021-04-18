@@ -51,6 +51,10 @@ class _PostItemState extends State<PostItem> {
     });
   }
 
+  void openPoll() {
+    Navigator.pushNamed(context, '/poll', arguments: widget.post.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     calcDaysAgo();
@@ -118,6 +122,13 @@ class _PostItemState extends State<PostItem> {
             trailing: FittedBox(
               child: ButtonBar(
                 children: [
+                  postModel.isPoll
+                      ? IconButton(
+                    tooltip: "Open the poll",
+                    icon: new Icon(Icons.poll_outlined,
+                        color: Color(0xFFFFB800)), //FFFD5E05
+                    onPressed: () => openPoll(),
+                  ) : Container(),
                   IconButton(
                     icon: isSaved? new Icon(Icons.favorite, color: Colors.red,):new Icon(Icons.favorite_outline_sharp),
                     onPressed: () => updateSaveStatus(),

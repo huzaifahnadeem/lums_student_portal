@@ -111,32 +111,34 @@ class _PostItemState extends State<PostItem> {
                     style: Theme.of(context).textTheme.bodyText1,
                   )),
             ),
-            SizedBox(
-              height: 20,
-            ),
             // post pictures
             widget.post['picture_chosen']
-                ? CarouselSlider(
-                    options: CarouselOptions(
-                      height: 400.0,
-                      initialPage: 0,
-                      enlargeCenterPage: true,
-                      enableInfiniteScroll: false,
-                    ),
-                    items: postModel.pictureURL.map((imgUrl) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            child: FadeInImage.memoryNetwork(
-                              fit: BoxFit.fill,
-                              placeholder: kTransparentImage,
-                              image: imgUrl,
-                            ),
+                ? Column(
+                  children: [
+                    SizedBox(height: 20,),
+                    CarouselSlider(
+                        options: CarouselOptions(
+                          height: 400.0,
+                          initialPage: 0,
+                          enlargeCenterPage: true,
+                          enableInfiniteScroll: false,
+                        ),
+                        items: postModel.pictureURL.map((imgUrl) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: FadeInImage.memoryNetwork(
+                                  fit: BoxFit.fill,
+                                  placeholder: kTransparentImage,
+                                  image: imgUrl,
+                                ),
+                              );
+                            },
                           );
-                        },
-                      );
-                    }).toList())
+                        }).toList()),
+                  ],
+                )
                 : Container(),
           ]),
           ListTile(
