@@ -162,19 +162,23 @@ class _PostItemState extends State<PostItem> {
                 children: [
                   postModel.isPoll
                       ? IconButton(
+                          tooltip: "Open the poll",
                           icon: new Icon(Icons.poll_outlined,
                               color: Color(0xFFFFB800)), //FFFD5E05
                           onPressed: () => openPoll(),
-                        )
-                      : Container(),
+                        ) : Container(),
                   IconButton(
+                    tooltip: "Save this post",
                     icon: isSaved
                         ? new Icon(Icons.favorite, color: Color(0xFFEB5757))
                         : new Icon(Icons.favorite_outline_sharp),
                     onPressed: () => updateSaveStatus(),
                   ),
                   (widget.role != "Student" && widget.role != null)  ? InkWell(
-                    child: new Icon(Icons.delete),
+                    child: new IconButton(
+                        tooltip: "Delete this post",
+                        icon: new Icon(Icons.delete), onPressed: () {},
+                    ),
                     onTap: () async {
                       return showDialog<void>(
                         context: context,
@@ -203,6 +207,7 @@ class _PostItemState extends State<PostItem> {
                     },
                   ): Container(),
                   (widget.role != "Student" && widget.role != null) ? IconButton(
+                    tooltip: "Edit this post",
                     icon: new Icon(Icons.edit),
                     onPressed: () => updatePost(),
                   ):Container(),

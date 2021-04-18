@@ -3,14 +3,17 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const Color primary_color = Color(0xFFEB5757);
-const Color primary_accent = Color(0xFFC93D3D);
-const Color secondary_color = Colors.white;
-const Color secondary_accent = Color(0xFFE8E8E8); //Color(0xFFEFEAEA)
-const Color text3 = Color(0xFFBDBDBD);
-const Color text2 = Color(0xFF666565);
-const Color text1 = Colors.black;
-const Color tertiary_color = Color(0xFF56BF54);
+const Color yellow = Color(0xFFFFB800); // used for poll icon
+const Color primary_color = Color(0xFFEB5757); // primary color of the app - used for stuff like app bar, splash screen, button colors, save post icon, nav bar icons etc
+const Color primary_accent = Color(0xFFC93D3D); // primary accent - used in the bottom nav bar
+const Color secondary_accent = Colors.redAccent ; // used for remove icon for polls in add post
+const Color secondary_color = Colors.white; // app bar title of homepage, background color, input fields.
+const Color secondary_darker = Color(0xFFE8E8E8); // used when want to differentiate from background white
+const Color grey = Color(0xFF666565); // used for headings and captions
+const Color green = Color(0xFF56BF54); // an alternative color, can be used subtly in some areas for eg used for photo icon in add post
+const Color darkBlue = Color(0xFF1E64EC); // same as above - eg. used for attachment icon in add post
+const Color lightBlue = Color(0xFF48D1E3); // same as above - eg. used for add poll option icon in add post
+const Color black = Colors.black; // used for body texts, unselected icon in nav bar, settings icons, most app bar titles
 
 //App bar title
 //App bar subtitle
@@ -79,7 +82,7 @@ TextTheme createTextTheme() {
 
     // for Post Headings
     headline4: initial.headline4!.copyWith(
-      color: text2,
+      color: grey,
       fontSize: 30,
       fontWeight: FontWeight.bold,
       letterSpacing: 1.0,
@@ -87,7 +90,7 @@ TextTheme createTextTheme() {
 
     // For Captions and other small text
     caption: initial.caption!.copyWith(
-      color: text2,
+      color: grey,
       fontWeight: FontWeight.normal,
     ),
     bodyText1: initial.bodyText1!.copyWith(
