@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -73,7 +74,7 @@ class _PostItemState extends State<PostItem> {
   void downloadFile() async {
     await canLaunch(postModel.fileURL!)
         ? await launch(postModel.fileURL!)
-        : throw 'Could not launch ${postModel.fileURL}!';
+        : widget.displaySnackBar("Your device can not launch this url!");
   }
 
   @override
@@ -166,47 +167,44 @@ class _PostItemState extends State<PostItem> {
                       ? IconButton(
                           tooltip: "Open the poll",
                           icon: new Icon(Icons.poll_outlined,
-                              color: Color(0xFFFFB800)), //FFFD5E05
+                              color: yellow), //FFFD5E05
                           onPressed: () => openPoll(),
                         ) : Container(),
                   IconButton(
                     tooltip: "Save this post",
                     icon: isSaved
-                        ? new Icon(Icons.favorite, color: Color(0xFFEB5757))
+                        ? new Icon(Icons.favorite, color: Theme.of(context).primaryColor)
                         : new Icon(Icons.favorite_outline_sharp),
                     onPressed: () => updateSaveStatus(),
                   ),
-                  (widget.role != "Student" && widget.role != null)  ? InkWell(
-                    child: new IconButton(
-                        tooltip: "Delete this post",
-                        icon: new Icon(Icons.delete), onPressed: () {},
-                    ),
-                    onTap: () async {
-                      return showDialog<void>(
-                        context: context,
-                        builder: (BuildContext context) {
+                  (widget.role != "Student" && widget.role != null)  ? new IconButton(
+                      tooltip: "Delete this post",
+                      icon: new Icon(Icons.delete), onPressed: () async {
+                        return showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text("Caution", textAlign: TextAlign.center, style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6,)),
-                              content: Text("Are you sure you want to delete this post? This can not be undone." , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                              title: Text("Caution" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.headline6,)),
+                              content: Text("Are you sure you want to delete this post? This action can not be undone." , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
                               actions: [
                                 TextButton(
-                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
                                   onPressed: () async {
-                                      deletePost();
-                                      Navigator.of(context).pop();
+                                    deletePost();
+                                    Navigator.of(context).pop();
                                   },
                                 ),
                                 TextButton(
-                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
                                 ),
                               ],
                             );
-                        },
-                      );
-                    },
+                          },
+                        );
+                      },
                   ): Container(),
                   (widget.role != "Student" && widget.role != null) ? IconButton(
                     tooltip: "Edit this post",
@@ -245,8 +243,8 @@ class _NewsfeedState extends State<Newsfeed> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Row(children: <Widget>[
       Icon(
-        Icons.error,
-        color: Colors.white,
+        Icons.notification_important,
+        color: secondary_color,
         semanticLabel: "Error",
       ),
       Text('  $message')

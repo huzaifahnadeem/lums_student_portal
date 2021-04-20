@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:transparent_image/transparent_image.dart';
 import'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PostItem extends StatefulWidget {
   final DocumentSnapshot post;
@@ -50,7 +52,11 @@ class _PostItemState extends State<PostItem> {
       isSaved = !isSaved ;
     });
   }
-
+  void downloadFile() async {
+    await canLaunch(postModel.fileURL!)
+        ? await launch(postModel.fileURL!)
+        : throw 'Could not launch ${postModel.fileURL}!';
+  }
   void openPoll() {
     Navigator.pushNamed(context, '/poll', arguments: widget.post.id);
   }
@@ -63,7 +69,7 @@ class _PostItemState extends State<PostItem> {
       child: Column(
         children: [
           ListTile(
-            title: Text("${widget.post['subject']}", style: Theme.of(context).textTheme.headline6,),
+            title: Text("${widget.post['subject']}", style: Theme.of(context).textTheme.headline4,),
             trailing: Text("$timeDaysAgo", style: Theme.of(context).textTheme.caption,),
             subtitle: Text("${widget.post['category']}", style: Theme.of(context).textTheme.caption,),
           ),
@@ -80,29 +86,33 @@ class _PostItemState extends State<PostItem> {
                       child: Text("${widget.post['content']}", style: Theme.of(context).textTheme.bodyText1,)
                   ),
                 ),
-                SizedBox(height: 20,),
                 // post pictures
-                widget.post['picture_chosen']? CarouselSlider(
-                    options: CarouselOptions(
-                      height: 400.0,
-                      initialPage: 0,
-                      enlargeCenterPage: true,
-                      enableInfiniteScroll: false,
-                    ) ,
-                    items: postModel.pictureURL.map((imgUrl) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                            width: MediaQuery.of(context).size.width,
-                            child: FadeInImage.memoryNetwork(
-                              fit: BoxFit.fill,
-                              placeholder: kTransparentImage,
-                              image: imgUrl,
-                            ),
+                widget.post['picture_chosen']? Column(
+                  children: [
+                    SizedBox(height: 20,),
+                    CarouselSlider(
+                        options: CarouselOptions(
+                          height: 400.0,
+                          initialPage: 0,
+                          enlargeCenterPage: true,
+                          enableInfiniteScroll: false,
+                        ) ,
+                        items: postModel.pictureURL.map((imgUrl) {
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: FadeInImage.memoryNetwork(
+                                  fit: BoxFit.fill,
+                                  placeholder: kTransparentImage,
+                                  image: imgUrl,
+                                ),
+                              );
+                            },
                           );
-                        },
-                      );
-                    }).toList()
+                        }).toList()
+                    ),
+                  ],
                 ): Container(),
               ]
           ),
@@ -115,7 +125,7 @@ class _PostItemState extends State<PostItem> {
                   Text("${widget.post['filename']}", style: Theme.of(context).textTheme.bodyText1,),
                   IconButton(
                       icon: new Icon(Icons.download_outlined),
-                      onPressed: () => {} )
+                      onPressed: () => downloadFile() )
                 ],
               ),
             ): Container(),
@@ -126,11 +136,11 @@ class _PostItemState extends State<PostItem> {
                       ? IconButton(
                     tooltip: "Open the poll",
                     icon: new Icon(Icons.poll_outlined,
-                        color: Color(0xFFFFB800)), //FFFD5E05
+                        color: yellow),
                     onPressed: () => openPoll(),
                   ) : Container(),
                   IconButton(
-                    icon: isSaved? new Icon(Icons.favorite, color: Colors.red,):new Icon(Icons.favorite_outline_sharp),
+                    icon: isSaved? new Icon(Icons.favorite, color: Theme.of(context).primaryColor,):new Icon(Icons.favorite_outline_sharp),
                     onPressed: () => updateSaveStatus(),
                   ),
                 ],
@@ -139,7 +149,7 @@ class _PostItemState extends State<PostItem> {
           ),
         ],
       ),
-    );;
+    );
   }
 }
 
@@ -161,7 +171,7 @@ class _SavedState extends State<Saved> {
 
   // setting initial state
   void initState()  {
-    _streamOfSavedPostChanges = _db.collection("Posts").where("saved_posts", arrayContains: userID).snapshots();
+    _streamOfSavedPostChanges = _db.collection("Posts").orderBy("time", descending: true).where("saved_posts", arrayContains: userID).snapshots();
     super.initState();
   }
   @override
@@ -172,7 +182,7 @@ class _SavedState extends State<Saved> {
         stream: _streamOfSavedPostChanges,
         builder: (context, snapshot) {
           if(snapshot.hasError){
-            return Center(child: Text("An Error Occured"),);
+            return Center(child: Text("An Error Occurred"),);
           }
           else if (snapshot.connectionState == ConnectionState.waiting){
             return LoadingScreen();

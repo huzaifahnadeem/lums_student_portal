@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,10 +27,6 @@ class Poll extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text("Poll", style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6)),
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(
-            color: Color(0xFFEB5757), //change your color here
-          ),
         ),
         body: StreamBuilder<DocumentSnapshot?>(
             stream: _db.collection("Posts").doc(id).snapshots(),
@@ -110,7 +107,7 @@ class _PollItemState extends State<PollItem> {
           content: Row(children: <Widget>[
             Icon(
               Icons.error,
-              color: Colors.white,
+              color: secondary_color,
               semanticLabel: "Done",
             ),
             Text(' You have already voted')
@@ -163,7 +160,7 @@ class _PollItemState extends State<PollItem> {
                   onTapDown: (e) => _handleTapDown(e),
                   onTapUp: (e) => _handleTapUp(e),
                   onTapCancel: () => _handleTapCancel(),
-                  child: filled? new Icon(Icons.radio_button_checked_outlined):new Icon(Icons.radio_button_unchecked_outlined),
+                  child: filled? new Icon(Icons.radio_button_checked_outlined, color: Theme.of(context).accentColor,):new Icon(Icons.radio_button_unchecked_outlined),
                   ),
                 SizedBox(width: 10),
                 Flexible(child: Text(widget.content, style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 15)))
@@ -175,12 +172,12 @@ class _PollItemState extends State<PollItem> {
               width: MediaQuery.of(context).size.width - 50,
               animation: true,
               lineHeight: 23.0,
-              animationDuration: 2000,
+              animationDuration: 1000,
               percent: percentage,
               center: Text("${(percentage * 100).toStringAsPrecision(4)} %", style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.caption!.copyWith(color: Colors.black, fontSize: 15))),
               linearStrokeCap: LinearStrokeCap.roundAll,
-              backgroundColor: Color(0xFFE8E8E8),
-              progressColor: Color(0xFF3A7BEC),
+              backgroundColor: secondary_darker,
+              progressColor: yellow,
             ) : Container(),
           ]
       ),

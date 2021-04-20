@@ -30,6 +30,7 @@ class App extends StatelessWidget {
         splashColor: primary_color,
         scaffoldBackgroundColor: Colors.white,
         primaryColor: primary_color,
+        primaryColorLight: primary_lighter,
         textTheme: createTextTheme(),
         appBarTheme: createAppBarTheme(),
         inputDecorationTheme: createInputDecorTheme(),
@@ -122,8 +123,6 @@ class _LandingPageState extends State<LandingPage> {
       builder: (context, snapshot){
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
-            print("Successful Authentication, Going to Home Screen");
-            print(snapshot.data);
             if (snapshot.data!.emailVerified) {
               return Home();
             }
@@ -139,7 +138,6 @@ class _LandingPageState extends State<LandingPage> {
           return Center(child: Text("Something went wrong! Please try later", style: Theme.of(context).textTheme.bodyText1,));
         }
         else{
-          print(snapshot.connectionState);
           return LoadingScreen();
         }
       },

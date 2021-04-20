@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 
 class VerifyAccount extends StatefulWidget {
 
@@ -24,7 +25,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
             content: Row(children: <Widget>[
               Icon(
                 Icons.error,
-                color: Colors.white,
+                color: secondary_color,
                 semanticLabel: "Error",
               ),
               Text('   $error')
@@ -45,7 +46,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
               Icon(
                 Icons.verified_user_outlined,
                 size: 100,
-                color: Colors.black,
+                color: grey,
               ),
               SizedBox(height: 10, width: 0),
               Flexible(
