@@ -83,9 +83,11 @@ class _StudentCouncilState extends State<StudentCouncil> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
-                            return Profile(
+                            return (
+                              Profile(
                                 who: (documentSnaps[index]!
-                                    .id)); // function returns a widget
+                                    .id))
+                              ); // function returns a widget
                           }),
                         );
                       },
@@ -101,9 +103,12 @@ class _StudentCouncilState extends State<StudentCouncil> {
                   return (ExpansionTile(
                     title: Text(
                       officeHours!.daysOfTheWeek[index],
+                      style: TextStyle(
+                      color: Colors.black,
                     ),
-                    initiallyExpanded: true,
-                    // TODO? Styling
+                    ),
+                    // expand the current day's tab. On Saturday and Sunday expand all.
+                    initiallyExpanded: DateTime.now().weekday >= 6 ? true : index == DateTime.now().weekday - 1, // -1 in DateTime.now().weekday because it represents monday as int 1 but my index refers to monday as 0
                     children: officeHours!.tiles[index].length != 0 // if no office hours for this day
                         ? officeHours!.tiles[index]
                         : [
@@ -134,6 +139,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
         stream: _councilMembersIDsSnapshot,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
+            print(snapshot.error);
             return Center(
               child: Text("An Error Occured"),
             );
@@ -144,6 +150,9 @@ class _StudentCouncilState extends State<StudentCouncil> {
             snapshot.data!.docs.forEach((thisDocumentSnap) {
               documentSnaps.add(thisDocumentSnap);
             });
+            documentSnaps.sort(
+              (a, b) => a!["name"].toUpperCase().compareTo(b!["name"].toUpperCase()) // uppercase because otherwise compareTo thinks that uppercase letters come before lowercase
+            );
             officeHours = new OfficeHoursModel(documentSnaps, context);
             return councilProfilesBody();
           } else {
