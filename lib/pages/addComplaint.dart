@@ -19,7 +19,7 @@ class _AddComplaintState extends State<AddComplaint> {
   bool loading = false;
   String? email;
 
-  void fetchUserInfo() async {
+  void initState() {
     User? thisUser = FirebaseAuth.instance.currentUser;
     email = thisUser!.email;
     setState(() => newComplaint.email = email);
@@ -32,6 +32,7 @@ class _AddComplaintState extends State<AddComplaint> {
         setState(() => newComplaint.name = result.get("name"));
       });
     });
+    super.initState();
   }
 
   // function to call when user pressed "Add Post" button
@@ -85,7 +86,6 @@ class _AddComplaintState extends State<AddComplaint> {
                 style: TextButton.styleFrom(primary: Colors.redAccent),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  fetchUserInfo();
                   validate();
                 },
                 child: Text('Yes'))

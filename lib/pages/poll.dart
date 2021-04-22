@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,10 +27,6 @@ class Poll extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: Text("Poll", style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6)),
-          backgroundColor: Colors.white,
-          iconTheme: IconThemeData(
-            color: Color(0xFFEB5757), //change your color here
-          ),
         ),
         body: StreamBuilder<DocumentSnapshot?>(
             stream: _db.collection("Posts").doc(id).snapshots(),
@@ -47,12 +44,25 @@ class Poll extends StatelessWidget {
                       .data()!['already_voted'];
                   bool voted = alreadyVotedArray.contains(userID);
                   int totalVotes = countVotes(options);
-                  return ListView.builder(
-                    itemCount: options.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return PollItem(id: id, index: index, content: options[index]['option'],
-                          votes: options[index]['votes'], voted: voted, totalVotes: totalVotes, user: userID);
-                    },
+                  return Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.topLeft,
+                        padding: EdgeInsets.all(20),
+                        child: Text(
+                          "${snapshot.data!.data()!['poll_question']}",
+                          style: Theme.of(context).textTheme.bodyText2,
+                        ),
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: options.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return PollItem(id: id, index: index, content: options[index]['option'],
+                              votes: options[index]['votes'], voted: voted, totalVotes: totalVotes, user: userID);
+                        },
+                      ),
+                    ],
                   );
                 }
                 else {
@@ -73,11 +83,11 @@ class PollItem extends StatefulWidget {
   final int index;
   final String content;
   final int votes;
-  final bool voted;
+  bool voted;
   final int totalVotes;
   final String user ;
 
-  const PollItem(
+  PollItem(
       {required this.id, required this.index, required this.content, required this.votes, required this.voted, required this.totalVotes,
         required this.user, Key? key}) : super(key: key);
 
@@ -87,21 +97,24 @@ class PollItem extends StatefulWidget {
 
 class _PollItemState extends State<PollItem> {
   bool filled = false;
+  bool justVoted = false;
 
   void selected(BuildContext context) async {
-    if (widget.voted) {
+
+    if (justVoted) {
       //
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: <Widget>[
             Icon(
               Icons.error,
-              color: Colors.white,
+              color: secondary_color,
               semanticLabel: "Done",
             ),
             Text(' You have already voted')
           ])));
     }
     else {
+      justVoted = true;
       DocumentReference documentReference = FirebaseFirestore.instance.collection('Posts').doc(widget.id);
       FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot snapshot = await transaction.get(documentReference);
@@ -124,7 +137,7 @@ class _PollItemState extends State<PollItem> {
   }
   void _handleTapUp(TapUpDetails e){
     setState(() {
-      filled = false ;
+      filled = true ;
     });
   }
   void _handleTapCancel(){
@@ -147,7 +160,7 @@ class _PollItemState extends State<PollItem> {
                   onTapDown: (e) => _handleTapDown(e),
                   onTapUp: (e) => _handleTapUp(e),
                   onTapCancel: () => _handleTapCancel(),
-                  child: filled? new Icon(Icons.radio_button_checked_outlined):new Icon(Icons.radio_button_unchecked_outlined),
+                  child: filled? new Icon(Icons.radio_button_checked_outlined, color: Theme.of(context).accentColor,):new Icon(Icons.radio_button_unchecked_outlined),
                   ),
                 SizedBox(width: 10),
                 Flexible(child: Text(widget.content, style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 15)))
@@ -159,12 +172,12 @@ class _PollItemState extends State<PollItem> {
               width: MediaQuery.of(context).size.width - 50,
               animation: true,
               lineHeight: 23.0,
-              animationDuration: 2000,
+              animationDuration: 1000,
               percent: percentage,
-              center: Text("${(percentage * 100).round()} %", style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.caption!.copyWith(color: Colors.black, fontSize: 15))),
+              center: Text("${(percentage * 100).toStringAsPrecision(4)} %", style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.caption!.copyWith(color: Colors.black, fontSize: 15))),
               linearStrokeCap: LinearStrokeCap.roundAll,
-              backgroundColor: Color(0xFFE8E8E8),
-              progressColor: Color(0xFF3A7BEC),
+              backgroundColor: secondary_darker,
+              progressColor: yellow,
             ) : Container(),
           ]
       ),

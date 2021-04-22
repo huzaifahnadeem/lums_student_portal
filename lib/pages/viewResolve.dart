@@ -70,7 +70,7 @@ class _ViewResolveState extends State<ViewResolve> {
         setState(() => resolvedBy = result.get("name"));
       });
     });
-
+    newResolution = resolution;
     super.initState();
   }
 
@@ -196,7 +196,7 @@ class _ViewResolveState extends State<ViewResolve> {
               children: <Widget>[
                 ListTile(
                     leading: new Icon(Icons.check_circle_outline_rounded,
-                        color: Colors.greenAccent),
+                        color: Color(0xFF56BF54)),
                     title: Text('Mark as Resolved'),
                     onTap: () => {
                           validateResolved(),
@@ -303,7 +303,7 @@ class _ViewResolveState extends State<ViewResolve> {
                               child: Column(children: [
                                 TextFormField(
                                   initialValue:
-                                      resolution == null ? "" : resolution,
+                                      resolution == null ? "" : newResolution,
                                   decoration: InputDecoration(
                                       labelText: "Add Resolution",
                                       fillColor: Colors.white,

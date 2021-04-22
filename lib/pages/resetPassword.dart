@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 
 class ResetPassword extends StatefulWidget {
   final Function switchScreen ;
@@ -29,7 +30,6 @@ class _ResetPasswordState extends State<ResetPassword> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
-        backgroundColor: Colors.white,
         leading: TextButton(
           onPressed:() => widget.switchScreen(),
           child: Text("Back",
@@ -47,7 +47,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                     Icon(
                       Icons.lock_open_sharp,
                       size: 200,
-                      color: Colors.black87,
+                      color: grey,
                     ),
                     Flexible(
                       fit: FlexFit.loose,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 
 class Login extends StatefulWidget {
   final Function switchScreen1;
@@ -35,7 +36,7 @@ class _LoginState extends State<Login> {
             content: Row(children: <Widget>[
           Icon(
             Icons.error,
-            color: Colors.white,
+            color: secondary_color,
             semanticLabel: "Error",
           ),
           Text('  $message')
@@ -62,7 +63,6 @@ class _LoginState extends State<Login> {
           style: GoogleFonts.robotoSlab(
               textStyle: Theme.of(context).textTheme.headline6),
         ),
-        backgroundColor: Colors.white,
       ),
       body: Form(
         key: _formKey,
@@ -75,7 +75,7 @@ class _LoginState extends State<Login> {
                   width: 300,
                   child: Image(
                     image: AssetImage("assets/sclogo.png"),
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).accentColor,
                   )),
               TextFormField(
                 decoration: InputDecoration(labelText: "Email"),
@@ -89,7 +89,7 @@ class _LoginState extends State<Login> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.lock_sharp, color: Colors.grey, size: 20,),
+                    icon: Icon(Icons.lock_sharp, color: grey, size: 20,),
                     onPressed: () => _toggle(),
                   ),
                 ),
@@ -116,10 +116,7 @@ class _LoginState extends State<Login> {
                 children: <Widget>[
                   Text(
                     "Don't have an account?",
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption!
-                        .copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
                   TextButton(
@@ -127,7 +124,7 @@ class _LoginState extends State<Login> {
                     child: Text(
                       'Sign Up',
                       style: Theme.of(context).textTheme.caption!.copyWith(
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).accentColor,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),
@@ -139,7 +136,7 @@ class _LoginState extends State<Login> {
                 child: Text(
                   'Forgot Your Password?',
                   style: Theme.of(context).textTheme.caption!.copyWith(
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).accentColor,
                       fontWeight: FontWeight.bold),
                 ),
               )

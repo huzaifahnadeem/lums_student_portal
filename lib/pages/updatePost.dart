@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
@@ -96,8 +97,8 @@ class _UpdatePostState extends State<UpdatePost> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: <Widget>[
             Icon(
-              Icons.done_all,
-              color: Colors.white,
+              Icons.notification_important,
+              color: secondary_color,
               semanticLabel: "Done",
             ),
             Text('  $result')
@@ -120,10 +121,11 @@ class _UpdatePostState extends State<UpdatePost> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // heading input field
+                  SizedBox(height: 10,),
                   TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     initialValue: widget.post.subject,
-                    decoration: InputDecoration(labelText: "Heading...", fillColor: Colors.white),
+                    decoration: InputDecoration(labelText: "Heading"),
                     validator: (val) => headingValidator(widget.post.subject),
                     onChanged: (val) {
                       setState(() => widget.post.subject = val);
@@ -134,7 +136,7 @@ class _UpdatePostState extends State<UpdatePost> {
                   TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     initialValue: widget.post.content,
-                    decoration: InputDecoration(labelText: "Write your post here...", fillColor: Colors.white),
+                    decoration: InputDecoration(labelText: "Content"),
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
                     validator: (val) => postValidator(widget.post.content),
@@ -148,7 +150,7 @@ class _UpdatePostState extends State<UpdatePost> {
                     alignment: Alignment.centerLeft,
                     child: DropdownButtonFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration:  InputDecoration(hintText: "Select Category", fillColor: Colors.white),
+                      decoration:  InputDecoration(labelText: "Category"),
                       validator: (val) => dropDownValidator(val),
                       isExpanded: false,
                       value: widget.post.tag,
@@ -165,7 +167,20 @@ class _UpdatePostState extends State<UpdatePost> {
                   // fill in poll options input fields
                   (widget.post.isPoll && widget.post.numOptions > 1 && widget.post.options != null)? Column(
                     children: [
-                      Align(alignment: Alignment.centerLeft,child: Text("Poll",  style: Theme.of(context).textTheme.bodyText2,)),
+                      Align(alignment: Alignment.centerLeft,child: Text("Poll",
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color: grey),)),
+                      SizedBox(height: 20,),
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        initialValue: widget.post.pollQuestion,
+                        decoration: InputDecoration(labelText: "Poll Question"),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                        validator: (val) => emptyNullValidator(widget.post.pollQuestion),
+                        onChanged: (val) {
+                          setState(() => widget.post.pollQuestion = val);
+                        },
+                      ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: widget.post.options!.asMap().entries.map((e) {
@@ -174,7 +189,7 @@ class _UpdatePostState extends State<UpdatePost> {
                             child: TextFormField(
                               initialValue: e.value['option'],
                               autovalidateMode: AutovalidateMode.onUserInteraction,
-                              decoration: InputDecoration(hintText: "Option ${e.key} ", fillColor: Color(0xFFE8E8E8)),
+                              decoration: InputDecoration(labelText: "Option ${e.key.toInt()+1}"),
                               validator: (val) => headingValidator(e.value['option']),
                               onChanged: (val) {
                                 setState(() {
@@ -189,17 +204,13 @@ class _UpdatePostState extends State<UpdatePost> {
                   ): Container(),
                   SizedBox(height: 20),
                   (widget.post.isPoll && widget.post.numOptions > 1 && widget.post.options != null)? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      IconButton(icon: new Icon(Icons.add_circle_outline, color: Color(0xFF48D1E3)), onPressed: () {
-                        setState(() {
-                          widget.post.addOption();
-                        });
+                      IconButton(tooltip: "Add an option", icon: new Icon(Icons.add_circle_outline, color: lightBlue),
+                          onPressed: () {setState(() {widget.post.addOption();});
                       }),
-                      IconButton(icon: new Icon(Icons.remove_circle_outline, color: Colors.redAccent), onPressed: (){
-                        setState(() {
-                          widget.post.removeOption();
-                        });
+                      IconButton(tooltip: "Remove an option", icon: new Icon(Icons.remove_circle_outline, color: Theme.of(context).primaryColorLight),
+                          onPressed: (){setState(() {widget.post.removeOption();});
                       })
                     ],
                   ): Container(),
@@ -207,7 +218,8 @@ class _UpdatePostState extends State<UpdatePost> {
                   // display picture if chosen
                   (widget.post.pictureChosen && imageReset) ? Column(
                       children:[
-                        Align(alignment: Alignment.centerLeft,child: Text("Pictures",  style: Theme.of(context).textTheme.bodyText2,)),
+                        Align(alignment: Alignment.centerLeft,child: Text("Pictures",
+                          style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color: grey),)),
                         SizedBox(height: 10,),
                         GridView.count(
                             mainAxisSpacing: 10,
@@ -224,7 +236,8 @@ class _UpdatePostState extends State<UpdatePost> {
                   ) : Container(),
                   (widget.post.pictureChosen && imageReset == false) ? Column(
                       children:[
-                        Align(alignment: Alignment.centerLeft,child: Text("Pictures",  style: Theme.of(context).textTheme.bodyText2,)),
+                        Align(alignment: Alignment.centerLeft,child: Text("Pictures",
+                          style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color: grey),)),
                         SizedBox(height: 10,),
                         GridView.count(
                             mainAxisSpacing: 10,
@@ -243,7 +256,8 @@ class _UpdatePostState extends State<UpdatePost> {
                   // display file if chosen
                   (widget.post.fileChosen) ? Column(
                     children: [
-                      Align(alignment: Alignment.centerLeft ,child: Text("Files",  style: Theme.of(context).textTheme.bodyText2,)),
+                      Align(alignment: Alignment.centerLeft ,child: Text("Files",
+                        style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color:grey),)),
                       SizedBox(height: 10),
                       Align(alignment:Alignment.centerLeft,child: Text(" ${widget.post.filename}", style: Theme.of(context).textTheme.caption,)),
                     ],
@@ -253,8 +267,8 @@ class _UpdatePostState extends State<UpdatePost> {
                   Row(
                     children: [
                       IconButton(
-                        tooltip: "Photo",
-                        icon: new Icon(Icons.add_photo_alternate_outlined, color: Color(0xFF56BF54)),
+                        tooltip: "Add images",
+                        icon: new Icon(Icons.add_photo_alternate_outlined, color: green),
                         onPressed: () async{
                           if(imageReset){
                           selectPicture();
@@ -284,7 +298,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                           .of(context)
                                           .textTheme
                                           .bodyText1!
-                                          .copyWith(color: Colors.redAccent),),
+                                          .copyWith(color: Theme.of(context).primaryColorLight),),
                                       onPressed: () async {
                                         selectPicture();
                                         Navigator.of(context).pop();
@@ -295,7 +309,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                           .of(context)
                                           .textTheme
                                           .bodyText1!
-                                          .copyWith(color: Colors.redAccent),),
+                                          .copyWith(color: Theme.of(context).primaryColorLight),),
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
@@ -310,8 +324,8 @@ class _UpdatePostState extends State<UpdatePost> {
                       Text("Photo", style: Theme.of(context).textTheme.caption),
                       SizedBox(width: 20),
                       IconButton(
-                        tooltip: "Attachment",
-                        icon: new Icon(Icons.attach_file_outlined, color: Color(0xFF1E64EC)),
+                        tooltip: "Attach files",
+                        icon: new Icon(Icons.attach_file_outlined, color: darkBlue),
                         onPressed: () async{
                           if(fileReset){
                             selectFile();
@@ -325,17 +339,18 @@ class _UpdatePostState extends State<UpdatePost> {
                               builder: (BuildContext context) {
                                 return AlertDialog(
                                   title: Text("Caution" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.headline6,)),
-                                  content: Text("Selecting a new file will delete previously posted file. Are you sure you want to delete the previous file from your post?" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                                  content: Text("Selecting a new file will delete previously posted file. Are you sure you want to delete the previous file from your post?" ,
+                                      style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
                                   actions: [
                                     TextButton(
-                                      child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                      child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
                                       onPressed: () async {
                                         selectFile();
                                         Navigator.of(context).pop();
                                       },
                                     ),
                                     TextButton(
-                                      child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                      child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
@@ -350,14 +365,15 @@ class _UpdatePostState extends State<UpdatePost> {
                       Text("Attachment", style: Theme.of(context).textTheme.caption),
                       SizedBox(width: 20),
                       IconButton(
-                        tooltip: "Poll",
-                        icon: new Icon(Icons.poll_outlined, color: Color(0xFFFFB800)),
+                        tooltip: "Add a Poll",
+                        icon: new Icon(Icons.poll_outlined, color: yellow),
                         onPressed: () {
                           setState(() {
                             widget.post.isPoll = !widget.post.isPoll ;
                             if(widget.post.isPoll == false){
                               widget.post.options = null;
                               widget.post.numOptions = 0 ;
+                              widget.post.pollQuestion = null;
                               widget.post.alreadyVoted = [];
                             }
                             else{
@@ -384,14 +400,14 @@ class _UpdatePostState extends State<UpdatePost> {
                               content: Text("Are you sure you want to update this post? This action can not be undone." , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
                               actions: [
                                 TextButton(
-                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
                                   onPressed: () async {
                                     validate();
                                     Navigator.of(context).pop();
                                   },
                                 ),
                                 TextButton(
-                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },

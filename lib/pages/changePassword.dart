@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 
 
 class ChangePassword extends StatefulWidget {
@@ -22,7 +23,7 @@ class _ChangePasswordState extends State<ChangePassword> {
        content: Row(children: <Widget>[
           Icon(
             Icons.notification_important,
-            color: Colors.white,
+            color: secondary_color,
             semanticLabel: "Done",
           ),
           Text('  $result')
@@ -34,8 +35,6 @@ class _ChangePasswordState extends State<ChangePassword> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Change Password", style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 25))),
-        automaticallyImplyLeading: true,
-        backgroundColor: Colors.white,
       ),
       body: SafeArea(
         minimum: EdgeInsets.fromLTRB(30,10,30,30),
@@ -48,14 +47,14 @@ class _ChangePasswordState extends State<ChangePassword> {
                   Icon(
                     Icons.enhanced_encryption_outlined,
                     size: 100,
-                    color: Colors.black87,
+                    color: grey,
                   ),
                   SizedBox(height: 20),
                   Flexible(
                     fit: FlexFit.loose,
                     child: Text(
                       "Please validate your current password and provide a new valid password",
-                      style: Theme.of(context).textTheme.bodyText1,
+                      style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.bodyText2),
                     ),
                   ),
                   SizedBox(height: 30, width: 0),

@@ -25,10 +25,12 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         splashColor: primary_color,
         scaffoldBackgroundColor: Colors.white,
         primaryColor: primary_color,
+        primaryColorLight: primary_lighter,
         textTheme: createTextTheme(),
         appBarTheme: createAppBarTheme(),
         inputDecorationTheme: createInputDecorTheme(),
@@ -119,19 +121,24 @@ class _LandingPageState extends State<LandingPage> {
     return (!_initialized) ? LoadingScreen() : StreamBuilder<User?>(
       stream: _streamOfAuthChanges,
       builder: (context, snapshot){
-        if (snapshot.hasData){
-          print("Successful Authentication, Going to Home Screen");
-          print(snapshot.data) ;
-          if (snapshot.data!.emailVerified) {
-            return Home();
+        if (snapshot.connectionState == ConnectionState.active) {
+          if (snapshot.hasData) {
+            if (snapshot.data!.emailVerified) {
+              return Home();
+            }
+            else {
+              return VerifyAccount();
+            }
           }
           else{
-            return VerifyAccount();
+            return SignUpOrLogin();
           }
         }
-        else {
-          print ("Error During Authentication, Going to Authentication Section");
-          return SignUpOrLogin();
+        else if (snapshot.hasError) {
+          return Center(child: Text("Something went wrong! Please try later", style: Theme.of(context).textTheme.bodyText1,));
+        }
+        else{
+          return LoadingScreen();
         }
       },
 
