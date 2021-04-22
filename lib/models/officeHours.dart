@@ -26,11 +26,16 @@ class OfficeHoursModel {
 
   // Constructor:
   OfficeHoursModel(List<DocumentSnapshot?> snapshots, BuildContext context) {
-    this.snapshots = snapshots;
     this.context = context;
+    this.snapshots = snapshots;
+     
+    this.snapshots.sort( // sorting according to office hour times
+      (a, b) => a!['office_hours'] == null? '0' : (a['office_hours']['time'].compareTo(b!['office_hours'] == null? '0' : b['office_hours']['time']))
+    );
 
     snapshots.forEach((thisSCmember) {
       List<int> daysIndices = [];
+      
       try {
         if (thisSCmember!['office_hours']['days'] == 'Mondays and Wednesdays')
           daysIndices = [0, 2];
@@ -70,6 +75,10 @@ class OfficeHoursModel {
         }
       } catch (e) {}
     });
+
+    this.snapshots.sort( // sorting back according to name
+      (a, b) => a!["name"].toUpperCase().compareTo(b!["name"].toUpperCase())
+    );
   }
 
   List<String> daysOfTheWeek = [
