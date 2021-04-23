@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/complaint.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,26 +14,30 @@ class AddComplaint extends StatefulWidget {
 }
 
 class _AddComplaintState extends State<AddComplaint> {
-  Complaint newComplaint = Complaint(subject: '', complaint: '', email: '');
+  Complaint newComplaint = Complaint(subject: '', complaint: '', senderUid: '');
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   FirebaseFirestore _db = FirebaseFirestore.instance;
+  User? thisUser = FirebaseAuth.instance.currentUser;
+  String? uid;
   bool loading = false;
-  String? email;
+  List updateList = [];
 
   void initState() {
-    User? thisUser = FirebaseAuth.instance.currentUser;
-    email = thisUser!.email;
-    setState(() => newComplaint.email = email);
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => newComplaint.name = result.get("name"));
-      });
+    uid = thisUser!.uid;
+    setState(() => newComplaint.senderUid = uid);
+    _db.collection("Profiles").doc(uid).get().then((value) {
+      setState(() => newComplaint.name = value.get("name"));
     });
     super.initState();
+  }
+
+  Future<void> delegateTo() async {
+    return _db.collection("Chairs").doc(newComplaint.tag).get().then((value) {
+      updateList.add(value.get("uid"));
+      setState(() {
+        newComplaint.delegatedMembers = updateList;
+      });
+    });
   }
 
   // function to call when user pressed "Add Post" button
@@ -41,8 +46,10 @@ class _AddComplaintState extends State<AddComplaint> {
       setState(() {
         loading = true;
       });
+      await delegateTo();
       await newComplaint.addComplaintToDB();
       setState(() {
+        updateList.clear();
         loading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -52,7 +59,7 @@ class _AddComplaintState extends State<AddComplaint> {
           color: Colors.white,
           semanticLabel: "Done",
         ),
-        Text('Done')
+        Text('  Complaint Lodged')
       ])));
     }
   }
@@ -106,20 +113,22 @@ class _AddComplaintState extends State<AddComplaint> {
                     child: Form(
                   key: _formKey,
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Container(
-                      width: double.infinity,
-                      child: DropdownButton(
-                        hint: Text("Category"),
-                        isExpanded: true,
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: DropdownButtonFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        decoration: InputDecoration(
+                            hintText: "Select Category",
+                            fillColor: Colors.white),
+                        validator: (val) => dropDownValidator(val),
+                        isExpanded: false,
                         value: newComplaint.tag,
-                        focusColor: Colors.red[400],
-                        dropdownColor: Colors.red[400],
                         onChanged: (newVal) {
                           setState(() {
                             newComplaint.tag = newVal.toString();
                           });
                         },
-                        items: Complaint.categories.map((categoryItem) {
+                        items: Complaint.categories1.map((categoryItem) {
                           return DropdownMenuItem(
                             value: categoryItem,
                             child: Text(categoryItem),
@@ -137,7 +146,7 @@ class _AddComplaintState extends State<AddComplaint> {
                         labelText: "Add Subject",
                         fillColor: Colors.white,
                       ),
-                      validator: (val) => headingValidator(
+                      validator: (val) => subjectValidator(
                           newComplaint.subject), // check subjet lenght
                       onChanged: (val) {
                         setState(() => newComplaint.subject = val);
@@ -151,7 +160,7 @@ class _AddComplaintState extends State<AddComplaint> {
                         labelText: "Write Complaint",
                         fillColor: Colors.white,
                       ),
-                      maxLines: 10,
+                      maxLines: 9,
                       keyboardType: TextInputType.multiline,
                       validator: (val) =>
                           complaintValidator(newComplaint.complaint),

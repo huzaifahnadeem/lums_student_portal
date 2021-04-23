@@ -9,10 +9,7 @@ import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
-
-
 // check android ios file and image picker configs
-
 
 class AddPost extends StatefulWidget {
   @override
@@ -20,50 +17,46 @@ class AddPost extends StatefulWidget {
 }
 
 class _AddPostState extends State<AddPost> {
-
   // declaring state variables
   Post newPost = Post(subject: '', content: '');
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>() ;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final filePicker = FilePicker.platform;
-  bool loading =  false ;
+  bool loading = false;
 
   // prompt user to select a picture from gallery
-  void selectPicture() async{
+  void selectPicture() async {
     FilePickerResult? result = await filePicker.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: ['jpg', 'png']
-    );
+        allowedExtensions: ['jpg', 'png']);
     // ignore: unnecessary_null_comparison
-    if(result != null) {
+    if (result != null) {
       newPost.images = result.paths.map((path) => File(path!)).toList();
       setState(() {
         newPost.pictureChosen = true;
       });
     } else {
       setState(() {
-        newPost.pictureChosen = false ;
+        newPost.pictureChosen = false;
         newPost.images = [];
       });
     }
   }
 
   // prompt the user to pick file from device
-  void selectFile() async{
+  void selectFile() async {
     FilePickerResult? result = await filePicker.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'pdf', 'doc']
-    );
+        type: FileType.custom, allowedExtensions: ['jpg', 'pdf', 'doc']);
     // ignore: unnecessary_null_comparison
-    if(result != null) {
-       newPost.filename = (result.names[0]);
-       newPost.file = File(result.paths[0]!);
-       setState(() {
-         newPost.fileChosen = true;
-       });
+    if (result != null) {
+      newPost.filename = (result.names[0]);
+      newPost.file = File(result.paths[0]!);
+      setState(() {
+        newPost.fileChosen = true;
+      });
     } else {
       setState(() {
-        newPost.fileChosen = false ;
+        newPost.fileChosen = false;
       });
     }
   }
@@ -95,7 +88,11 @@ class _AddPostState extends State<AddPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Post", style: GoogleFonts.robotoSlab( textStyle: Theme.of(context).textTheme.headline6),),
+        title: Text(
+          "Add Post",
+          style: GoogleFonts.robotoSlab(
+              textStyle: Theme.of(context).textTheme.headline6),
+        ),
       ),
       body: loading? LoadingScreen(): SafeArea(
         minimum: EdgeInsets.fromLTRB(30,10,30,30),
@@ -260,7 +257,13 @@ class _AddPostState extends State<AddPost> {
                               newPost.addOption();
                             }
                           });
-                        } ,
+                        },
+                        items: Post.categories.map((categoryItem) {
+                          return DropdownMenuItem(
+                            value: categoryItem,
+                            child: Text(categoryItem),
+                          );
+                        }).toList(),
                       ),
                       Text("Poll", style: Theme.of(context).textTheme.caption),
                     ],
@@ -288,24 +291,127 @@ class _AddPostState extends State<AddPost> {
                                 TextButton(
                                   child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
                                   onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
+                                    setState(() {
+                                      newPost.addOption();
+                                    });
+                                  }),
+                              IconButton(
+                                  icon: new Icon(Icons.remove_circle_outline,
+                                      color: Colors.redAccent),
+                                  onPressed: () {
+                                    setState(() {
+                                      newPost.removeOption();
+                                    });
+                                  })
+                            ],
+                          )
+                        : Container(),
+                    newPost.pictureChosen
+                        ? Column(children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "Pictures",
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                )),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            GridView.count(
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                shrinkWrap: true,
+                                crossAxisCount: 3,
+                                children: newPost.images.map((image) {
+                                  return Image.file(
+                                    image,
+                                    fit: BoxFit.cover,
+                                  );
+                                }).toList())
+                          ])
+                        : Container(),
+                    SizedBox(height: 20),
+                    // display file if chosen
+                    newPost.fileChosen
+                        ? Column(
+                            children: [
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "File",
+                                    style:
+                                        Theme.of(context).textTheme.bodyText2,
+                                  )),
+                              SizedBox(height: 10),
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    " ${newPost.filename}",
+                                    style: Theme.of(context).textTheme.caption,
+                                  )),
+                            ],
+                          )
+                        : Container(),
+                    SizedBox(height: 20),
+                    // row of poll, picture and file upload buttons
+                    Row(
+                      children: [
+                        IconButton(
+                          tooltip: "Photo",
+                          icon: new Icon(Icons.add_photo_alternate_outlined,
+                              color: Color(0xFF56BF54)),
+                          onPressed: () => selectPicture(),
+                        ),
+                        Text("Photo",
+                            style: Theme.of(context).textTheme.caption),
+                        SizedBox(width: 20),
+                        IconButton(
+                          tooltip: "Attachment",
+                          icon: new Icon(Icons.attach_file_outlined,
+                              color: Color(0xFF1E64EC)),
+                          onPressed: () => selectFile(),
+                        ),
+                        Text("Attachment",
+                            style: Theme.of(context).textTheme.caption),
+                        SizedBox(width: 20),
+                        IconButton(
+                          tooltip: "Poll",
+                          icon: new Icon(Icons.poll_outlined,
+                              color: Color(0xFFFFB800)),
+                          onPressed: () {
+                            setState(() {
+                              newPost.isPoll = !newPost.isPoll;
+                              if (newPost.isPoll == false) {
+                                newPost.options = null;
+                                newPost.numOptions = 0;
+                                newPost.alreadyVoted = [];
+                              } else {
+                                newPost.addOption();
+                                newPost.addOption();
+                              }
+                            });
                           },
-                        );
-                      },
-                      child: Text('Add Post',
-                          style: Theme.of(context).textTheme.headline5),
+                        ),
+                        Text("Poll",
+                            style: Theme.of(context).textTheme.caption),
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ),
-            )
-        ),
-      ),
+                    SizedBox(height: 20),
+                    // submit button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () => validate(),
+                        child: Text('Add Post',
+                            style: Theme.of(context).textTheme.headline5),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              )),
+            ),
     );
   }
 }

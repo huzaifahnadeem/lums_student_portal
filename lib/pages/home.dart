@@ -89,23 +89,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void initState() {
     // to check role of user and display appropriate pages
     User? thisUser = FirebaseAuth.instance.currentUser;
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: thisUser!.email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => userRole = result.get("role"));
-        if (result.get("role") == "SC" || result.get("role") == "IT") {
-          _tabsEachScreen[1].add(Tab(
-            text: "Resolve",
-          ));
-        }
-      });
+
+    _db.collection("Profiles").doc(thisUser!.uid).get().then((value) {
+      setState(() => userRole = value.get("role"));
+      if (value.get("role") == "SC" || value.get("role") == "IT") {
+        _tabsEachScreen[1].add(Tab(
+          text: "Resolve",
+        ));
+      }
     });
     super.initState();
-     appBarTitle = "NewsFeed" ;
-    _selectedIndex = 0 ;
+    appBarTitle = "NewsFeed";
+    _selectedIndex = 0;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
     _tabController = TabController(length: _numTabs, vsync: this);
   }

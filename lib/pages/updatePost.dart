@@ -9,68 +9,62 @@ import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
-
 // check android ios file and image picker configs
 
-
 class UpdatePost extends StatefulWidget {
-  final Post post ;
-  UpdatePost({required this.post, Key? key}): super(key: key);
+  final Post post;
+  UpdatePost({required this.post, Key? key}) : super(key: key);
   @override
   _UpdatePostState createState() => _UpdatePostState();
 }
 
 class _UpdatePostState extends State<UpdatePost> {
-
   // declaring state variables
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>() ;
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final filePicker = FilePicker.platform;
-  bool loading =  false ;
+  bool loading = false;
   bool imageReset = false;
   bool fileReset = false;
 
   // prompt user to select a picture from gallery
-  void selectPicture() async{
-    if (imageReset == false){
+  void selectPicture() async {
+    if (imageReset == false) {
       print("About to delete pictures");
       bool result = await widget.post.deletePicture();
-      widget.post.pictureURL = [] ;
+      widget.post.pictureURL = [];
     }
     FilePickerResult? result = await filePicker.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: ['jpg', 'png']
-    );
+        allowedExtensions: ['jpg', 'png']);
     // ignore: unnecessary_null_comparison
-    if(result != null) {
+    if (result != null) {
       widget.post.images = result.paths.map((path) => File(path!)).toList();
       setState(() {
-        imageReset = true ;
+        imageReset = true;
         widget.post.pictureChosen = true;
       });
     } else {
       setState(() {
-        imageReset = true ;
-        widget.post.pictureChosen = false ;
+        imageReset = true;
+        widget.post.pictureChosen = false;
         widget.post.images = [];
       });
     }
   }
 
   // prompt the user to pick file from device
-  void selectFile() async{
-    if (fileReset == false){
+  void selectFile() async {
+    if (fileReset == false) {
       fileReset = true;
       bool result = await widget.post.deleteFile();
-      widget.post.filename = null ;
-      widget.post.fileURL = null ;
+      widget.post.filename = null;
+      widget.post.fileURL = null;
     }
     FilePickerResult? result = await filePicker.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['jpg', 'pdf', 'doc']
-    );
+        type: FileType.custom, allowedExtensions: ['jpg', 'pdf', 'doc']);
 
-    if(result != null) {
+    if (result != null) {
       widget.post.filename = (result.names[0]);
       widget.post.file = File(result.paths[0]!);
       setState(() {
@@ -78,7 +72,7 @@ class _UpdatePostState extends State<UpdatePost> {
       });
     } else {
       setState(() {
-        widget.post.fileChosen = false ;
+        widget.post.fileChosen = false;
       });
     }
   }
@@ -90,7 +84,7 @@ class _UpdatePostState extends State<UpdatePost> {
       setState(() {
         loading = true;
       });
-      String result = await widget.post.updateObjectToDb(fileReset,imageReset);
+      String result = await widget.post.updateObjectToDb(fileReset, imageReset);
       setState(() {
         loading = false;
       });
@@ -110,7 +104,11 @@ class _UpdatePostState extends State<UpdatePost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Update Post", style: GoogleFonts.robotoSlab( textStyle: Theme.of(context).textTheme.headline6),),
+        title: Text(
+          "Update Post",
+          style: GoogleFonts.robotoSlab(
+              textStyle: Theme.of(context).textTheme.headline6),
+        ),
       ),
       body: loading? LoadingScreen(): SafeArea(
         minimum: EdgeInsets.fromLTRB(30,10,30,30),
@@ -304,9 +302,15 @@ class _UpdatePostState extends State<UpdatePost> {
                                         Navigator.of(context).pop();
                                       },
                                     ),
-                                    TextButton(
-                                      child: Text('No', style: Theme
-                                          .of(context)
+                                    onPressed: () async {
+                                      validate();
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  TextButton(
+                                    child: Text(
+                                      'No',
+                                      style: Theme.of(context)
                                           .textTheme
                                           .bodyText1!
                                           .copyWith(color: Theme.of(context).primaryColorLight),),
@@ -355,12 +359,17 @@ class _UpdatePostState extends State<UpdatePost> {
                                         Navigator.of(context).pop();
                                       },
                                     ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
+                        child: Text('Update Post',
+                            style: Theme.of(context).textTheme.headline5),
                       ),
                       Text("Attachment", style: Theme.of(context).textTheme.caption),
                       SizedBox(width: 20),
@@ -420,13 +429,11 @@ class _UpdatePostState extends State<UpdatePost> {
                       child: Text('Update Post',
                           style: Theme.of(context).textTheme.headline5),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ),
-            )
-        ),
-      ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              )),
+            ),
     );
   }
 }

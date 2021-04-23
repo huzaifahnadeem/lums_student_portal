@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
@@ -11,7 +12,11 @@ class ViewResolve extends StatefulWidget {
   late final String name;
   late final String isResolved;
   late final String id;
+  late final String? resolvedByName;
   late final String? resolution;
+  late final List delegatedMembers;
+  late final List scMembers;
+  late final String senderUid;
 
   ViewResolve(
       {required this.subject,
@@ -20,7 +25,11 @@ class ViewResolve extends StatefulWidget {
       required this.name,
       required this.isResolved,
       required this.resolution,
-      required this.id});
+      required this.resolvedByName,
+      required this.id,
+      required this.delegatedMembers,
+      required this.scMembers,
+      required this.senderUid});
 
   @override
   _ViewResolveState createState() => _ViewResolveState(
@@ -30,7 +39,11 @@ class ViewResolve extends StatefulWidget {
       name: name,
       isResolved: isResolved,
       resolution: resolution,
-      id: id);
+      resolvedByName: resolvedByName,
+      id: id,
+      delegatedMembers: delegatedMembers,
+      scMembers: scMembers,
+      senderUid: senderUid);
 }
 
 class _ViewResolveState extends State<ViewResolve> {
@@ -40,9 +53,20 @@ class _ViewResolveState extends State<ViewResolve> {
   late final String name;
   late final String isResolved;
   late final String id;
+  late final String? resolvedByName;
   late final String? resolution;
   late String? newResolution;
-  String? email;
+  late final List delegatedMembers;
+  late final List scMembers;
+  late final String senderUid;
+  String? uid;
+  bool isChair = false;
+
+  var dictionary = new Map();
+  bool _toggled = false;
+
+  late String? newDelegate = "";
+
   String? resolvedBy;
 
   FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -55,23 +79,93 @@ class _ViewResolveState extends State<ViewResolve> {
       required this.complaint,
       required this.name,
       required this.isResolved,
+      required this.resolvedByName,
       required this.resolution,
-      required this.id});
+      required this.id,
+      required this.delegatedMembers,
+      required this.scMembers,
+      required this.senderUid});
 
   void initState() {
     User? thisUser = FirebaseAuth.instance.currentUser;
-    email = thisUser!.email;
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => resolvedBy = result.get("name"));
+    uid = thisUser!.uid;
+    _db.collection("Chairs").where("uid", isEqualTo: uid).get().then((value) {
+      value.docs.forEach((element) {
+        if (element.get("uid") == uid) {
+          setState(() {
+            isChair = true;
+          });
+        }
       });
     });
     newResolution = resolution;
+    scMembers.remove(senderUid);
+    scMembers.remove(uid);
+    for (var i = 0; i < scMembers.length; i++) {
+      _db.collection("Profiles").doc(scMembers[i]).get().then((value) {
+        setState(() {
+          dictionary[scMembers[i]] = value.get("name");
+        });
+      });
+    }
+    _db.collection("Profiles").doc(uid).get().then((value) {
+      setState(() => resolvedBy = value.get("name"));
+    });
     super.initState();
+  }
+
+  Future<void> resolvedByUser() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolvedBy": resolvedBy})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> updateResolution() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolution": newResolution})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> updateUnresolved() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"resolution": null})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> markResolved() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"isResolved": "Resolved"})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> markUnresolved() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"isResolved": "Unresolved"})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
+  }
+
+  Future<void> delegateToMember() {
+    return _db
+        .collection("Complaints")
+        .doc(id)
+        .update({"delegatedMembers": delegatedMembers})
+        .then((value) => print("Resolution Updated"))
+        .catchError((error) => print("Failed to update user: $error"));
   }
 
   String? resolutionValidator(String res) {
@@ -98,7 +192,7 @@ class _ViewResolveState extends State<ViewResolve> {
           color: Colors.white,
           semanticLabel: "Done",
         ),
-        Text('Done')
+        Text('  Resolution Updated')
       ])));
     }
   }
@@ -122,7 +216,7 @@ class _ViewResolveState extends State<ViewResolve> {
           color: Colors.white,
           semanticLabel: "Done",
         ),
-        Text('Done')
+        Text('  Resolved')
       ])));
     }
   }
@@ -132,6 +226,7 @@ class _ViewResolveState extends State<ViewResolve> {
       loading = true;
     });
     await markUnresolved();
+    await updateUnresolved();
     setState(() {
       loading = false;
     });
@@ -143,44 +238,31 @@ class _ViewResolveState extends State<ViewResolve> {
         color: Colors.white,
         semanticLabel: "Done",
       ),
-      Text('Done')
+      Text('  Unresolved')
     ])));
   }
 
-  Future<void> resolvedByUser() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"resolvedBy": resolvedBy})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> updateResolution() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"resolution": newResolution})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> markResolved() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"isResolved": "Resolved"})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
-  }
-
-  Future<void> markUnresolved() {
-    return _db
-        .collection("Complaints")
-        .doc(id)
-        .update({"isResolved": "Unresolved"})
-        .then((value) => print("Resolution Updated"))
-        .catchError((error) => print("Failed to update user: $error"));
+  void confirmDelegate() async {
+    if (_formKey.currentState!.validate()) {
+      delegatedMembers.add(newDelegate);
+      setState(() {
+        loading = true;
+      });
+      await delegateToMember();
+      setState(() {
+        loading = false;
+      });
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.done_all,
+          color: Colors.white,
+          semanticLabel: "Done",
+        ),
+        Text('  Delegation Successful')
+      ])));
+    }
   }
 
   Future<void> showMyDialog() async {
@@ -230,6 +312,44 @@ class _ViewResolveState extends State<ViewResolve> {
     );
   }
 
+  Future<void> delegateDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // titleTextStyle: ,
+          title: Text('Confirmation', textAlign: TextAlign.center),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delegate this complaint?',
+                    textAlign: TextAlign.center)
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(primary: Colors.redAccent),
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // setState(() {});
+              },
+            ),
+            TextButton(
+                style: TextButton.styleFrom(primary: Colors.redAccent),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  confirmDelegate();
+                },
+                child: Text('Yes'))
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -259,106 +379,419 @@ class _ViewResolveState extends State<ViewResolve> {
             : SingleChildScrollView(
                 padding: EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                      child: Text(subject,
-                          style: TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black54)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
-                      child: Text(category,
-                          style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black54)),
-                    ),
-                    Container(
-                        padding: EdgeInsets.fromLTRB(0, 20, 10, 20),
-                        child: Text("Submitted By: $name",
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                        child: Text(subject,
                             style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black45))),
-                    Container(
-                      // decoration: BoxDecoration(),
-                      padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                      child: Text("$complaint",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w300,
-                              color: Colors.black)),
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                      child: (isResolved == "Pending")
-                          ? Form(
-                              key: _formKey,
-                              child: Column(children: [
-                                TextFormField(
-                                  initialValue:
-                                      resolution == null ? "" : newResolution,
-                                  decoration: InputDecoration(
-                                      labelText: "Add Resolution",
-                                      fillColor: Colors.white,
-                                      enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(25.0),
-                                          borderSide: BorderSide(
-                                            color: Colors.black12,
-                                          ))),
-                                  maxLines: 5,
-                                  keyboardType: TextInputType.multiline,
-                                  validator: (val) =>
-                                      resolutionValidator(newResolution!),
-                                  onChanged: (val) {
-                                    setState(() => newResolution = val);
-                                  },
-                                ),
-                                Container(
-                                  padding: EdgeInsets.fromLTRB(0, 30, 0, 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                fontSize: 35,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black54)),
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 20, 10, 0),
+                        child: Text(category,
+                            style: TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black45)),
+                      ),
+                      Container(
+                          padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                          child: Text("Submitted by $name",
+                              style: TextStyle(
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.black45))),
+                      (isResolved == "Resolved")
+                          ? Container(
+                              alignment: Alignment.topLeft,
+                              padding: EdgeInsets.fromLTRB(0, 5, 10, 10),
+                              child: Text("Resolved by $resolvedByName",
+                                  style: TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.black45)),
+                            )
+                          : Text(""),
+                      Container(
+                          decoration: BoxDecoration(),
+                          padding: EdgeInsets.fromLTRB(0, 20, 5, 10),
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text("Complaint",
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.black45)),
+                              ),
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.fromLTRB(20, 15, 0, 0),
+                                child: Text("$complaint",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.black)),
+                              )
+                            ],
+                          )),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
+                        child: (isResolved == "Pending" &&
+                                senderUid == delegatedMembers.last &&
+                                isChair)
+                            ? Column(
+                                children: [
+                                  Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0, 20, 0, 20),
+                                            child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: DropdownButtonFormField(
+                                                  autovalidateMode:
+                                                      AutovalidateMode
+                                                          .onUserInteraction,
+                                                  decoration: InputDecoration(
+                                                      hintText:
+                                                          "Delegate Complaint to",
+                                                      fillColor: Colors.white),
+                                                  validator: (val) =>
+                                                      dropDownValidator(val),
+                                                  isExpanded: false,
+                                                  value: newDelegate!.isNotEmpty
+                                                      ? newDelegate
+                                                      : null,
+                                                  onChanged: (newVal) {
+                                                    setState(() {
+                                                      newDelegate =
+                                                          newVal.toString();
+                                                    });
+                                                  },
+                                                  items: dictionary.entries
+                                                      .map((mapEntry) =>
+                                                          DropdownMenuItem(
+                                                            value: mapEntry.key,
+                                                            child: Text(
+                                                                mapEntry.value),
+                                                          ))
+                                                      .toList(),
+                                                )),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0, 40, 0, 10),
+                                            child: SizedBox(
+                                              width: 150,
+                                              height: 40,
+                                              child: ElevatedButton(
+                                                onPressed: () =>
+                                                    delegateDialog(),
+                                                child: Text('Delegate',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline5),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ))
+                                ],
+                              )
+                            : (isResolved == "Pending" &&
+                                    isChair &&
+                                    uid == delegatedMembers.last)
+                                ? Column(
                                     children: [
-                                      SizedBox(
-                                        width: 150,
-                                        height: 40,
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            validateResolution();
-                                          },
-                                          child: Text('Update',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5),
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 150,
-                                        height: 40,
-                                        child: ElevatedButton(
-                                          onPressed: () => showMyDialog(),
-                                          child: Text('Resolve',
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headline5),
-                                        ),
-                                      ),
+                                      SwitchListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                          title: _toggled == false
+                                              ? Text("Press to Delegate")
+                                              : Text("Press to Resolve"),
+                                          value: _toggled,
+                                          onChanged: (bool value) {
+                                            setState(() {
+                                              _toggled = value;
+                                            });
+                                          }),
+                                      Container(
+                                        child: (_toggled == false)
+                                            ? Column(children: [
+                                                Form(
+                                                    key: _formKey,
+                                                    child: Column(children: [
+                                                      TextFormField(
+                                                        initialValue:
+                                                            resolution == null
+                                                                ? ""
+                                                                : newResolution,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          labelText:
+                                                              "Add Resolution Here...",
+                                                          fillColor:
+                                                              Colors.white,
+                                                        ),
+                                                        maxLines: 5,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .multiline,
+                                                        validator: (val) =>
+                                                            resolutionValidator(
+                                                                newResolution ==
+                                                                        null
+                                                                    ? ""
+                                                                    : newResolution!),
+                                                        onChanged: (val) {
+                                                          setState(() =>
+                                                              newResolution =
+                                                                  val);
+                                                        },
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 30, 0, 10),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 150,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () {
+                                                                  validateResolution();
+                                                                },
+                                                                child: Text(
+                                                                    'Update',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 150,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () =>
+                                                                    showMyDialog(),
+                                                                child: Text(
+                                                                    'Resolve',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ]))
+                                              ])
+                                            : Column(
+                                                children: [
+                                                  Form(
+                                                      key: _formKey,
+                                                      child: Column(
+                                                        children: [
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 20,
+                                                                    0, 20),
+                                                            child: Align(
+                                                                alignment: Alignment
+                                                                    .centerLeft,
+                                                                child:
+                                                                    DropdownButtonFormField(
+                                                                  autovalidateMode:
+                                                                      AutovalidateMode
+                                                                          .onUserInteraction,
+                                                                  decoration: InputDecoration(
+                                                                      hintText:
+                                                                          "Delegate Complaint to",
+                                                                      fillColor:
+                                                                          Colors
+                                                                              .white),
+                                                                  validator: (val) =>
+                                                                      dropDownValidator(
+                                                                          val),
+                                                                  isExpanded:
+                                                                      false,
+                                                                  value: newDelegate!
+                                                                          .isNotEmpty
+                                                                      ? newDelegate
+                                                                      : null,
+                                                                  onChanged:
+                                                                      (newVal) {
+                                                                    setState(
+                                                                        () {
+                                                                      newDelegate =
+                                                                          newVal
+                                                                              .toString();
+                                                                    });
+                                                                  },
+                                                                  items: dictionary
+                                                                      .entries
+                                                                      .map((mapEntry) =>
+                                                                          DropdownMenuItem(
+                                                                            value:
+                                                                                mapEntry.key,
+                                                                            child:
+                                                                                Text(mapEntry.value),
+                                                                          ))
+                                                                      .toList(),
+                                                                )),
+                                                          ),
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 40,
+                                                                    0, 10),
+                                                            child: SizedBox(
+                                                              width: 150,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () =>
+                                                                    delegateDialog(),
+                                                                child: Text(
+                                                                    'Delegate',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ))
+                                                ],
+                                              ),
+                                      )
                                     ],
-                                  ),
-                                )
-                              ]))
-                          : null,
-                    )
-                  ],
-                ),
+                                  )
+                                : (isResolved == "Pending" &&
+                                        uid == delegatedMembers.last)
+                                    ? Column(children: [
+                                        Form(
+                                            key: _formKey,
+                                            child: Column(children: [
+                                              TextFormField(
+                                                initialValue: resolution == null
+                                                    ? ""
+                                                    : newResolution,
+                                                decoration: InputDecoration(
+                                                  labelText:
+                                                      "Add Resolution Here...",
+                                                  fillColor: Colors.white,
+                                                ),
+                                                maxLines: 5,
+                                                keyboardType:
+                                                    TextInputType.multiline,
+                                                validator: (val) =>
+                                                    resolutionValidator(
+                                                        newResolution == null
+                                                            ? ""
+                                                            : newResolution!),
+                                                onChanged: (val) {
+                                                  setState(() =>
+                                                      newResolution = val);
+                                                },
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 30, 0, 10),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 150,
+                                                      height: 40,
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          validateResolution();
+                                                        },
+                                                        child: Text('Update',
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .headline5),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 150,
+                                                      height: 40,
+                                                      child: ElevatedButton(
+                                                        onPressed: () =>
+                                                            showMyDialog(),
+                                                        child: Text('Resolve',
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .headline5),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ]))
+                                      ])
+                                    : (isResolved == "Resolved")
+                                        ? Column(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text("Resolution",
+                                                    style: TextStyle(
+                                                        fontSize: 22,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: Colors.black45)),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                padding: EdgeInsets.fromLTRB(
+                                                    20, 15, 0, 0),
+                                                child: Text("$resolution",
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                        color: Colors.black)),
+                                              )
+                                            ],
+                                          )
+                                        : (isResolved == "Unresolved")
+                                            ? Container(
+                                                alignment: Alignment.topLeft,
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 5, 10, 10),
+                                                child: Text("Unresolved",
+                                                    style: TextStyle(
+                                                        fontSize: 26,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: Colors.black45)),
+                                              )
+                                            : Text(""),
+                      ),
+                    ]),
               ));
   }
 }

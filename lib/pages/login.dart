@@ -10,7 +10,8 @@ class Login extends StatefulWidget {
 
   final Function switchScreen2;
 
-  Login({required this.switchScreen1, required this.switchScreen2, Key? key}) : super(key: key);
+  Login({required this.switchScreen1, required this.switchScreen2, Key? key})
+      : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -41,7 +42,7 @@ class _LoginState extends State<Login> {
           ),
           Text('  $message')
         ])));
-        message = '' ;
+        message = '';
       }
     }
   }
@@ -68,7 +69,7 @@ class _LoginState extends State<Login> {
         key: _formKey,
         child: SingleChildScrollView(
           child: SafeArea(
-            minimum: EdgeInsets.fromLTRB(30,0,30,30),
+            minimum: EdgeInsets.fromLTRB(30, 0, 30, 30),
             child: Column(children: <Widget>[
               SizedBox(
                   height: 250,

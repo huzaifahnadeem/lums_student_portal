@@ -40,13 +40,17 @@ class _ProfileState extends State<Profile> {
         title: Text(
           'Profile',
           style: GoogleFonts.robotoSlab(
-              textStyle: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white)
-              ),
+              textStyle: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .copyWith(color: Colors.white)),
         ),
-          centerTitle: true,
-          elevation: 0,
-        backgroundColor: Color(0xFFEB5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
-        actions: <Widget>[ // settings button
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Color(
+            0xFFEB5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
+        actions: <Widget>[
+          // settings button
           if (who == "self")
             IconButton(
               icon: Icon(
@@ -66,13 +70,15 @@ class _ProfileState extends State<Profile> {
       ),
       body: ListView(
         children: [
-          Stack( // Profile Picture + Name
+          Stack(
+            // Profile Picture + Name
             children: <Widget>[
               Container(
                 color: Color(0xFFEA5757),
                 height: 120.0,
               ),
-              Container( // Profile Picture
+              Container(
+                  // Profile Picture
                   child: Container(
                 width: double.infinity,
                 height: 250.0,
@@ -104,14 +110,16 @@ class _ProfileState extends State<Profile> {
                                     radius: circleRadius,
                                   )
                                 : CircleAvatar(
-                                    backgroundImage: NetworkImage(_profile.pictureURL!),
+                                    backgroundImage:
+                                        NetworkImage(_profile.pictureURL!),
                                     radius: circleRadius,
                                   )),
                       ),
                       SizedBox(
                         height: 10.0,
                       ),
-                      Text( // Name
+                      Text(
+                        // Name
                         _profile.name,
                         style: GoogleFonts.robotoSlab(
                           color: Colors.black,
@@ -137,7 +145,8 @@ class _ProfileState extends State<Profile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _profile.email.substring(0, 8), // using substring to extract roll no from email
+                    _profile.email.substring(
+                        0, 8), // using substring to extract roll no from email
                     style: GoogleFonts.robotoSlab(
                       color: Color(0xFF808080),
                       fontSize: 18.0,
@@ -159,7 +168,7 @@ class _ProfileState extends State<Profile> {
                         fontSize: 18.0,
                       ),
                     ),
-                  if (_profile.school != null && _profile.major != null )
+                  if (_profile.school != null && _profile.major != null)
                     Text(
                       _profile.school! + ": " + _profile.major!,
                       style: GoogleFonts.robotoSlab(
@@ -170,7 +179,10 @@ class _ProfileState extends State<Profile> {
                   if (_profile.officeHours != null) SizedBox(height: 15.0),
                   if (_profile.officeHours != null)
                     Text(
-                      "Office Hours:\n" + _profile.officeHours!['days'] + " at " + _profile.officeHours!['time'],
+                      "Office Hours:\n" +
+                          _profile.officeHours!['days'] +
+                          " at " +
+                          _profile.officeHours!['time'],
                       style: GoogleFonts.robotoSlab(
                         color: Colors.black,
                         fontSize: 18.0,
@@ -217,9 +229,11 @@ class _ProfileState extends State<Profile> {
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();
           } else if (snapshot.hasData) {
+            _profile = ProfileModel(
+                name: snapshot.data!["name"],
+                role: snapshot.data!["role"],
+                email: snapshot.data!["email"]);
 
-            _profile = ProfileModel(name: snapshot.data!["name"], role: snapshot.data!["role"], email: snapshot.data!["email"]);
-            
             try {
               _profile.year = snapshot.data!["year"];
             } catch (e) {}
