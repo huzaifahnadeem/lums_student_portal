@@ -23,7 +23,7 @@ class Complaint {
     "Campus Development",
     "Mental Health",
     "Graduate Affairs",
-    "HR/PR"
+    "HR-PR"
   ];
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
