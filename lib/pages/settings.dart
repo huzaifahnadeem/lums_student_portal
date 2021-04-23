@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/profile.dart';
 
@@ -25,7 +26,8 @@ class About extends StatelessWidget {
             children: [
               Flexible(
                   child: Text(
-                      "TODO: About Sceen's styling etc.\n CS 360 Project: LUMS Student Portal\n By: Group 04\n For: LUMS Student Council\n App Version: v0.1.0")),
+                      "\nCS 360 Project: LUMS Student Portal\n\n By: Group 04\n\n For: LUMS Student Council\n\n App Version: v0.1.0",
+                  style: Theme.of(context).textTheme.bodyText2,)),
             ],
           ),
         ));
@@ -48,41 +50,35 @@ class AppSettings extends StatelessWidget {
     
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Theme.of(context)
-              .primaryColor, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
-        ),
         title: Text(
           'Settings', // TODO: looks off as compared to other screens (newsfeed etc) because it's centered and due to its font size/typeface. Need to discuss with others
           style: GoogleFonts.robotoSlab(
-              color: Colors.black,
               textStyle: Theme.of(context).textTheme.headline6),
         ),
-        backgroundColor: Colors.white,
       ),
       body: ListView(
         children: ListTile.divideTiles(
           context: context,
           tiles: [
             ListTile(
-              leading: Icon(Icons.privacy_tip_outlined, color: Colors.black),
-              title: Text('Change password', style: GoogleFonts.robotoSlab(
+              leading: Icon(Icons.privacy_tip_outlined, color: grey),
+              title: Text('Change password', style: GoogleFonts.roboto(
                   textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () {
                 Navigator.pushNamed(context, "/changePassword");
               },
             ),
             ListTile(
-              leading: Icon(Icons.edit, color: Colors.black),
-              title: Text('Edit profile', style: GoogleFonts.robotoSlab(
+              leading: Icon(Icons.edit, color: grey),
+              title: Text('Edit profile', style: GoogleFonts.roboto(
                   textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () {
                 Navigator.pushNamed(context,"/editProfile", arguments: EditProfileArgs(sc: true) );
               },
             ),
             (role == 'IT')? ListTile(
-              leading: Icon(Icons.update, color: Colors.black),
-              title: Text('Update Role', style: GoogleFonts.robotoSlab(
+              leading: Icon(Icons.update, color: grey),
+              title: Text('Update Role', style: GoogleFonts.roboto(
                   textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () {
                 Navigator.pushNamed(context,"/updateAccount");
@@ -90,8 +86,8 @@ class AppSettings extends StatelessWidget {
             ): Container(),
             (role == 'IT')?
               ListTile(
-                leading: Icon(Icons.how_to_vote, color: Colors.black),
-                title: Text('Initiate election process', style: GoogleFonts.robotoSlab(
+                leading: Icon(Icons.how_to_vote, color: grey),
+                title: Text('Initiate election process', style: GoogleFonts.roboto(
                     textStyle: Theme.of(context).textTheme.bodyText1)),
                 onTap: () {
                   FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":true});
@@ -99,16 +95,24 @@ class AppSettings extends StatelessWidget {
               ):Container(),
             if ((role == 'IT'))
               ListTile(
-                leading: Icon(Icons.cancel_outlined, color: Colors.black),
-                title: Text('End election process', style: GoogleFonts.robotoSlab(
+                leading: Icon(Icons.cancel_outlined, color: grey),
+                title: Text('End election process', style: GoogleFonts.roboto(
                     textStyle: Theme.of(context).textTheme.bodyText1)),
                 onTap: () {
                   FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":false});
                 },
               ),
             ListTile(
-              leading: Icon(Icons.logout, color: Colors.black),
-              title: Text('Log out', style: GoogleFonts.robotoSlab(
+              leading: Icon(Icons.info_outlined, color: grey),
+              title: Text('About', style: GoogleFonts.roboto(
+                  textStyle: Theme.of(context).textTheme.bodyText1)),
+              onTap: ()  {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => About()));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.logout, color: grey),
+              title: Text('Log out', style: GoogleFonts.roboto(
                   textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () async {
                 await Authentication().signOut();
@@ -163,7 +167,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
         content: Row(children: <Widget>[
       Icon(
         Icons.notification_important,
-        color: Colors.white,
+        color: secondary_color,
         semanticLabel: "Error",
       ),
       Text('  $progress')
@@ -195,7 +199,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
         content: Row(children: <Widget>[
       Icon(
         Icons.notification_important,
-        color: Colors.white,
+        color: secondary_color,
         semanticLabel: "Error",
       ),
       Text('  $progress')
@@ -211,7 +215,6 @@ class _UpdateAccountState extends State<UpdateAccount> {
           style: GoogleFonts.robotoSlab(
               textStyle: Theme.of(context).textTheme.headline6),
         ),
-        backgroundColor: Colors.white,
       ),
       body: Form(
         key: _formKey,
@@ -231,7 +234,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(hintText: "Select role"),
+                  decoration: InputDecoration(labelText: "Select role"),
                   value: role,
                   icon: const Icon(Icons.arrow_drop_down),
                   onChanged: (newVal) {
@@ -252,7 +255,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(hintText: "Select Category"),
+                  decoration: InputDecoration(labelText: "Select Category"),
                   value: category,
                   icon: const Icon(Icons.arrow_drop_down),
                   onChanged: (newVal) {

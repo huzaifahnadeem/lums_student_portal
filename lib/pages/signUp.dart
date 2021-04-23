@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 
 class SignUp extends StatefulWidget {
   final Function switchScreen;
@@ -29,7 +30,7 @@ class _SignUpState extends State<SignUp> {
             content: Row(children: <Widget>[
           Icon(
             Icons.error,
-            color: Colors.white,
+            color: secondary_color,
             semanticLabel: "Error",
           ),
           Text(' $message')
@@ -49,7 +50,6 @@ class _SignUpState extends State<SignUp> {
           style: GoogleFonts.robotoSlab(
               textStyle: Theme.of(context).textTheme.headline6),
         ),
-        backgroundColor: Colors.white,
       ),
       body: Form(
         key: _formKey,
@@ -58,6 +58,7 @@ class _SignUpState extends State<SignUp> {
             minimum: EdgeInsets.all(30),
             child: Column(children: <Widget>[
               TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(labelText: "Name"),
                 validator: (val) => emailValidator(val!, false),
                 onChanged: (val) {
@@ -66,14 +67,16 @@ class _SignUpState extends State<SignUp> {
               ),
               SizedBox(height: 25),
               TextFormField(
+                autovalidateMode: AutovalidateMode.disabled,
                 decoration: InputDecoration(labelText: "Email"),
-                validator: (val) => emailValidator(val!, false),
+                validator: (val) => emailValidator(val!, true),
                 onChanged: (val) {
                   setState(() => email = val);
                 },
               ),
               SizedBox(height: 25),
               TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
                   labelText: "Password",
                 ),
@@ -85,6 +88,7 @@ class _SignUpState extends State<SignUp> {
               ),
               SizedBox(height: 25),
               TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 decoration: InputDecoration(
                   labelText: "Confirm password",
                 ),
@@ -125,7 +129,7 @@ class _SignUpState extends State<SignUp> {
                     child: Text(
                       'Login',
                       style: Theme.of(context).textTheme.caption!.copyWith(
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).accentColor,
                           fontSize: 15,
                           fontWeight: FontWeight.bold),
                     ),

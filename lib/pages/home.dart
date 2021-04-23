@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/saved.dart';
 import 'newsfeed.dart';
@@ -38,7 +39,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   List<List<Widget>> _tabsEachScreen = [
     [
       Tab(
-        text: "Main",
+        text: "Feed",
       ),
       Tab(
         text: "Saved",
@@ -68,7 +69,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   List<BottomNavigationBarItem> _bottomBarButtons = <BottomNavigationBarItem>[
     BottomNavigationBarItem(
       icon: Icon(Icons.home),
-      label: 'Home',
+      label: 'Newsfeed',
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.error_outline),
@@ -102,7 +103,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _selectedIndex = 0;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
     _tabController = TabController(length: _numTabs, vsync: this);
-    //handleScroll();
   }
 
   void applyFilter(String value) {
@@ -113,33 +113,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   void dispose() {
-    //scrollController.removeListener(() {});
-    //scrollController.dispose();
     super.dispose();
   }
 
-  /*void showFloatingButton() {
-    if(mounted){setState(() {
-      _showFloatingActionButton = true;
-    });}
-  }
-  void hideFloatingButton() {
-    if (mounted){setState(() {
-      _showFloatingActionButton = false;
-    });}
-  }
-  void handleScroll() async {
-    scrollController.addListener(() {
-      if (scrollController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        hideFloatingButton();
-      }
-      if (scrollController.position.userScrollDirection ==
-          ScrollDirection.forward) {
-        showFloatingButton();
-      }
-    });
-  }*/
   // change state when an icon in bottom bar is tapped
   void navigate(int newIndex) {
     if (newIndex != _selectedIndex) {
@@ -155,7 +131,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     List<List<Widget>> views = [
       [
         // news feed subscreens
-        Newsfeed(filter: filter),
+        Newsfeed(filter: filter, role: userRole),
         Saved(filter: filter)
       ],
       [
@@ -185,7 +161,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     textStyle: Theme.of(context)
                         .textTheme
                         .headline6!
-                        .copyWith(color: Colors.white)),
+                        .copyWith(color: secondary_color)),
               ),
               backgroundColor: Theme.of(context).primaryColor,
               actions: [
@@ -196,7 +172,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           child: DropdownButton(
                             icon: new Icon(
                               Icons.filter_list,
-                              color: Colors.white,
+                              color: secondary_color,
                               size: 15,
                             ),
                             isExpanded: false,
@@ -212,7 +188,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyText1!
-                                      .copyWith(color: Colors.white),
+                                      .copyWith(color: secondary_color),
                                 ),
                               );
                             }).toList(),
@@ -226,7 +202,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 indicatorSize: TabBarIndicatorSize.tab,
                 controller: _tabController,
                 tabs: _tabsEachScreen[_selectedIndex],
-                indicatorColor: Colors.white,
+                indicatorColor: secondary_color,
               ),
             ),
       body: TabBarView(
@@ -237,21 +213,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       floatingActionButton: (_selectedIndex != 0)
           ? null
           : (userRole != "Student")
-              ? Visibility(
-                  visible: _showFloatingActionButton,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/AddPost');
-                      },
-                      child: Icon(
-                        Icons.add,
-                        color: Theme.of(context).primaryColor,
-                        size: 40,
-                      ),
-                      backgroundColor: Colors.white,
+              ? Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/AddPost');
+                    },
+                    child: Icon(
+                      Icons.add,
+                      color: Theme.of(context).primaryColor,
+                      size: 40,
                     ),
+                    backgroundColor: secondary_darker,
                   ),
                 )
               : null,
@@ -259,12 +232,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         selectedFontSize: 12,
         unselectedFontSize: 10,
         unselectedIconTheme: IconThemeData(
-          color: Colors.black,
+          color: grey,
         ),
         selectedIconTheme: IconThemeData(
           color: Theme.of(context).accentColor,
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: secondary_color,
         type: BottomNavigationBarType.fixed,
         items: _bottomBarButtons,
         currentIndex: _selectedIndex,

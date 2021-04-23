@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/profile.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
-import 'package:intl/date_symbol_data_file.dart'; // for DateFormat
 
 class EditProfile extends StatefulWidget {
   final bool showSC;
@@ -88,6 +86,14 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  String timeObjToString(TimeOfDay givenTime) {
+    return (givenTime.hourOfPeriod.toString() == '0' ? '12': givenTime.hourOfPeriod.toString()) +
+        ":" +
+        (givenTime.minute.toString().length == 1? "0"+givenTime.minute.toString(): givenTime.minute.toString()) +
+        " " +
+        givenTime.period.toString().substring(10).toUpperCase();
+  }
+
   void updateOfficeHoursInModel() {
     bool updateTime = true;
     if (selectedOfficeHours!.days == "MW") {
@@ -105,11 +111,7 @@ class _EditProfileState extends State<EditProfile> {
     }
     
     if (updateTime) {
-      selectedOfficeHours!.time = selectedTime!.hourOfPeriod.toString() +
-        ":" +
-        (selectedTime!.minute.toString().length == 1? "0"+selectedTime!.minute.toString(): selectedTime!.minute.toString()) +
-        " " +
-        selectedTime!.period.toString().substring(10).toUpperCase();
+      selectedOfficeHours!.time = timeObjToString(selectedTime!);
       _profile.officeHours = selectedOfficeHours!.toMap();
     }
     
@@ -468,18 +470,12 @@ class _EditProfileState extends State<EditProfile> {
                               SizedBox(
                                 width: double.infinity,
                                 height: 40,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Theme.of(context)
-                                        .inputDecorationTheme
-                                        .fillColor,
-                                    textStyle: Theme.of(context)
-                                        .inputDecorationTheme
-                                        .labelStyle,
-                                    elevation: 0,
+                                child: OutlinedButton(
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
                                   ),
                                   child: Text(
-                                    "Office hours timeslot",
+                                    "Office Hours Timeslot: " + (selectedTime != null ? timeObjToString(selectedTime!) : "Not Selected"),
                                     textAlign: TextAlign.left,
                                     style: TextStyle(color: Colors.black),
                                   ),

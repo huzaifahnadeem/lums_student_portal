@@ -69,3 +69,12 @@ String? subjectValidator(String subject) {
   }
   return null;
 }
+
+String? emptyNullValidator(String? str) {
+  if (str == null) {
+    return "Field can not be empty";
+  } else if (str.isEmpty) {
+    return "Field can not be empty.";
+  }
+  return null;
+}

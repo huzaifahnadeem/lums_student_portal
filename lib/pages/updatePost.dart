@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
@@ -90,8 +91,8 @@ class _UpdatePostState extends State<UpdatePost> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: <Widget>[
         Icon(
-          Icons.done_all,
-          color: Colors.white,
+          Icons.notification_important,
+          color: secondary_color,
           semanticLabel: "Done",
         ),
         Text('  $result')

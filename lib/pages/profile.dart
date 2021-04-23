@@ -33,7 +33,7 @@ class _ProfileState extends State<Profile> {
     super.initState();
   }
 
-  Widget ProfileBody() {
+  Widget profileBody() {
     final double circleRadius = 80;
     return Scaffold(
       appBar: AppBar(
@@ -259,7 +259,7 @@ class _ProfileState extends State<Profile> {
               _profile.pictureURL = snapshot.data!["picture"];
             } catch (e) {}
 
-            return ProfileBody();
+            return profileBody();
           } else {
             return Center(
               child: Text("Please try later"),
