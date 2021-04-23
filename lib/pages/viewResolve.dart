@@ -313,11 +313,46 @@ class _ViewResolveState extends State<ViewResolve> {
     );
   }
 
+  Future<void> delegateDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          // titleTextStyle: ,
+          title: Text('Confirmation', textAlign: TextAlign.center),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Are you sure you want to delegate this complaint?',
+                    textAlign: TextAlign.center)
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(primary: Colors.redAccent),
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // setState(() {});
+              },
+            ),
+            TextButton(
+                style: TextButton.styleFrom(primary: Colors.redAccent),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  confirmDelegate();
+                },
+                child: Text('Yes'))
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // print(scMembers);
-    // print(delegatedMembers);
-    // print(dictionary);
     return Scaffold(
         appBar: AppBar(
           toolbarHeight: 80,
@@ -461,7 +496,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                               height: 40,
                                               child: ElevatedButton(
                                                 onPressed: () =>
-                                                    confirmDelegate(),
+                                                    delegateDialog(),
                                                 child: Text('Delegate',
                                                     style: Theme.of(context)
                                                         .textTheme
@@ -503,21 +538,11 @@ class _ViewResolveState extends State<ViewResolve> {
                                                                 : newResolution,
                                                         decoration:
                                                             InputDecoration(
-                                                                labelText:
-                                                                    "Add Resolution",
-                                                                fillColor:
-                                                                    Colors
-                                                                        .white,
-                                                                enabledBorder:
-                                                                    OutlineInputBorder(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                                25.0),
-                                                                        borderSide:
-                                                                            BorderSide(
-                                                                          color:
-                                                                              Colors.black12,
-                                                                        ))),
+                                                          labelText:
+                                                              "Add Resolution Here...",
+                                                          fillColor:
+                                                              Colors.white,
+                                                        ),
                                                         maxLines: 5,
                                                         keyboardType:
                                                             TextInputType
@@ -640,7 +665,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                                               child:
                                                                   ElevatedButton(
                                                                 onPressed: () =>
-                                                                    confirmDelegate(),
+                                                                    delegateDialog(),
                                                                 child: Text(
                                                                     'Delegate',
                                                                     style: Theme.of(
@@ -668,19 +693,10 @@ class _ViewResolveState extends State<ViewResolve> {
                                                     ? ""
                                                     : newResolution,
                                                 decoration: InputDecoration(
-                                                    labelText: "Add Resolution",
-                                                    fillColor: Colors.white,
-                                                    enabledBorder:
-                                                        OutlineInputBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        25.0),
-                                                            borderSide:
-                                                                BorderSide(
-                                                              color: Colors
-                                                                  .black12,
-                                                            ))),
+                                                  labelText:
+                                                      "Add Resolution Here...",
+                                                  fillColor: Colors.white,
+                                                ),
                                                 maxLines: 5,
                                                 keyboardType:
                                                     TextInputType.multiline,
