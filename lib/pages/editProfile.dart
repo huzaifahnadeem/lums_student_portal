@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:lums_student_portal/backend/validators.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/profile.dart';
-import 'package:lums_student_portal/themes/progessIndicator.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:intl/date_symbol_data_file.dart'; // for DateFormat
 
 class EditProfile extends StatefulWidget {
@@ -161,7 +162,7 @@ class _EditProfileState extends State<EditProfile> {
                 .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
           ),
           title: Text('Edit Profile',
-              style: Theme.of(context).textTheme.headline6),
+              style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6)),
           backgroundColor: Colors.white,
         ),
         body: FutureBuilder<DocumentSnapshot?>(

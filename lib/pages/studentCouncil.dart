@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:lums_student_portal/pages/scDocuments.dart';
 import 'package:lums_student_portal/models/officeHours.dart'; // for profile screen
 

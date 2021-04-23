@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
 
 class VerifyAccount extends StatefulWidget {
@@ -43,23 +44,25 @@ class _VerifyAccountState extends State<VerifyAccount> {
             children: [
               Icon(
                 Icons.verified_user_outlined,
-                size: 200,
-                color: Colors.black87,
+                size: 100,
+                color: Colors.black,
               ),
               SizedBox(height: 10, width: 0),
               Flexible(
                 child: Text(
                   "Please Verify Your Account",
-                  style: Theme.of(context).textTheme.headline6 ,
+                  style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6),
+                  textAlign: TextAlign.center,
                 ),
               ),
-              SizedBox(height: 10, width: 0),
+              SizedBox(height: 15, width: 0),
               Flexible(
                 child: Text(
                   "We have emailed you a link for your account verification."
-                      " Please press the button below once you have verified and "
+                      " Please press the button below once you are done and "
                       "you will be redirected to the login page.",
-                  style: Theme.of(context).textTheme.caption,
+                  style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.caption),
+                  //textAlign: TextAlign.center,
                 ),
               ),
               SizedBox(height: 30, width: 0),
@@ -69,7 +72,7 @@ class _VerifyAccountState extends State<VerifyAccount> {
                 child: ElevatedButton(
                   onPressed: () => redirectToHome(),
                   child: Text('Done',
-                      style: Theme.of(context).textTheme.headline5),
+                      style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.headline5)),
                 ),
               ),
             ],

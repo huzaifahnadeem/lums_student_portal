@@ -1,8 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lums_student_portal/Backend/authentication.dart';
-import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/saved.dart';
 import 'newsfeed.dart';
@@ -12,8 +11,6 @@ import 'package:lums_student_portal/pages/studentCouncil.dart'; // for Student C
 import 'package:lums_student_portal/pages/addComplaint.dart'; // for adding complaint
 import 'package:lums_student_portal/pages/complaintHistory.dart'; // for complaint History
 import 'package:lums_student_portal/pages/complaintResolve.dart'; // for ressolving complaint
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
@@ -91,23 +88,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   void initState() {
     // to check role of user and display appropriate pages
     User? thisUser = FirebaseAuth.instance.currentUser;
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: thisUser!.email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => userRole = result.get("role"));
-        if (result.get("role") == "SC" || result.get("role") == "IT") {
-          _tabsEachScreen[1].add(Tab(
-            text: "Resolve",
-          ));
-        }
-      });
-    });
 
+    _db.collection("Profiles").doc(thisUser!.uid).get().then((value) {
+      setState(() => userRole = value.get("role"));
+      if (value.get("role") == "SC" || value.get("role") == "IT") {
+        _tabsEachScreen[1].add(Tab(
+          text: "Resolve",
+        ));
+      }
+    });
     super.initState();
-    //scrollController = new ScrollController();
     appBarTitle = "NewsFeed";
     _selectedIndex = 0;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
@@ -244,25 +234,27 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         children: returnBody(),
       ),
       // add a floating action button on the newsfeed screen
-      floatingActionButton: _selectedIndex != 0
+      floatingActionButton: (_selectedIndex != 0)
           ? null
-          : Visibility(
-              visible: _showFloatingActionButton,
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
-                child: FloatingActionButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/AddPost');
-                  },
-                  child: Icon(
-                    Icons.add,
-                    color: Theme.of(context).primaryColor,
-                    size: 40,
+          : (userRole != "Student")
+              ? Visibility(
+                  visible: _showFloatingActionButton,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/AddPost');
+                      },
+                      child: Icon(
+                        Icons.add,
+                        color: Theme.of(context).primaryColor,
+                        size: 40,
+                      ),
+                      backgroundColor: Colors.white,
+                    ),
                   ),
-                  backgroundColor: Colors.white,
-                ),
-              ),
-            ),
+                )
+              : null,
       bottomNavigationBar: BottomNavigationBar(
         selectedFontSize: 12,
         unselectedFontSize: 10,

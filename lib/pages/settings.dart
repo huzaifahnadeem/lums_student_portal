@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/authentication.dart';
-import 'package:lums_student_portal/backend/validators.dart';
+import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/profile.dart';
 
@@ -65,45 +65,51 @@ class AppSettings extends StatelessWidget {
           context: context,
           tiles: [
             ListTile(
-              leading: Icon(Icons.privacy_tip),
-              title: Text('Change password'),
+              leading: Icon(Icons.privacy_tip_outlined, color: Colors.black),
+              title: Text('Change password', style: GoogleFonts.robotoSlab(
+                  textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () {
                 Navigator.pushNamed(context, "/changePassword");
               },
             ),
             ListTile(
-              leading: Icon(Icons.edit),
-              title: Text('Edit profile'),
+              leading: Icon(Icons.edit, color: Colors.black),
+              title: Text('Edit profile', style: GoogleFonts.robotoSlab(
+                  textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () {
                 Navigator.pushNamed(context,"/editProfile", arguments: EditProfileArgs(sc: true) );
               },
             ),
             (role == 'IT')? ListTile(
-              leading: Icon(Icons.update),
-              title: Text('Update Role'),
+              leading: Icon(Icons.update, color: Colors.black),
+              title: Text('Update Role', style: GoogleFonts.robotoSlab(
+                  textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () {
                 Navigator.pushNamed(context,"/updateAccount");
               },
             ): Container(),
             (role == 'IT')?
               ListTile(
-                leading: Icon(Icons.how_to_vote),
-                title: Text('Initiate election process'),
+                leading: Icon(Icons.how_to_vote, color: Colors.black),
+                title: Text('Initiate election process', style: GoogleFonts.robotoSlab(
+                    textStyle: Theme.of(context).textTheme.bodyText1)),
                 onTap: () {
                   FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":true});
                 },
               ):Container(),
             if ((role == 'IT'))
               ListTile(
-                leading: Icon(Icons.cancel),
-                title: Text('End election process'),
+                leading: Icon(Icons.cancel_outlined, color: Colors.black),
+                title: Text('End election process', style: GoogleFonts.robotoSlab(
+                    textStyle: Theme.of(context).textTheme.bodyText1)),
                 onTap: () {
                   FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":false});
                 },
               ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text('Log out'),
+              leading: Icon(Icons.logout, color: Colors.black),
+              title: Text('Log out', style: GoogleFonts.robotoSlab(
+                  textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: () async {
                 await Authentication().signOut();
                 Navigator.pop(context);
@@ -273,7 +279,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
                       // onPressed: () => validate(),
                       onPressed: () => updateRole(),
                       child: Text('Update Role',
-                          style: Theme.of(context).textTheme.headline5),
+                          style: Theme.of(context).textTheme.headline5!.copyWith(fontSize: 17)),
                     ),
                   ),
                   SizedBox(
@@ -283,7 +289,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
                       // onPressed: () => validate(),
                       onPressed: () => updateChair(),
                       child: Text('Update Chair',
-                          style: Theme.of(context).textTheme.headline5),
+                          style: Theme.of(context).textTheme.headline5!.copyWith(fontSize: 17)),
                     ),
                   ),
                 ],

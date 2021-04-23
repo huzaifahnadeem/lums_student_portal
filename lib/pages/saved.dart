@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lums_student_portal/models/post.dart';
-import 'package:lums_student_portal/themes/progessIndicator.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:transparent_image/transparent_image.dart';
 import'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_auth/firebase_auth.dart';

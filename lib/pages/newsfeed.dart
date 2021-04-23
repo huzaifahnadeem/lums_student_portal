@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/models/post.dart';
-import 'package:lums_student_portal/themes/progessIndicator.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -105,7 +105,7 @@ class _PostItemState extends State<PostItem> {
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Text(
+                  child: SelectableText(
                     "${widget.post['content']}",
                     style: Theme.of(context).textTheme.bodyText1,
                   )),
@@ -172,9 +172,34 @@ class _PostItemState extends State<PostItem> {
                         : new Icon(Icons.favorite_outline_sharp),
                     onPressed: () => updateSaveStatus(),
                   ),
-                  IconButton(
-                    icon: new Icon(Icons.delete),
-                    onPressed: () => deletePost(),
+                  InkWell(
+                    child: new Icon(Icons.delete),
+                    onTap: () async {
+                      return showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Caution", textAlign: TextAlign.center, style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6,)),
+                              content: Text("Are you sure you want to delete this post? This can not be undone." , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                              actions: [
+                                TextButton(
+                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  onPressed: () async {
+                                      deletePost();
+                                      Navigator.of(context).pop();
+                                  },
+                                ),
+                                TextButton(
+                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Colors.redAccent),),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                        },
+                      );
+                    },
                   ),
                   IconButton(
                     icon: new Icon(Icons.edit),
