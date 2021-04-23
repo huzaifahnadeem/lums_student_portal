@@ -409,214 +409,367 @@ class _ViewResolveState extends State<ViewResolve> {
                           )),
                       Container(
                         padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
-                        child: (isResolved == "Pending")
+                        child: (isResolved == "Pending" &&
+                                senderUid == delegatedMembers.last &&
+                                isChair)
                             ? Column(
                                 children: [
-                                  SwitchListTile(
-                                      contentPadding:
-                                          EdgeInsets.fromLTRB(0, 20, 0, 20),
-                                      title: _toggled == false
-                                          ? Text("Press to Delegate")
-                                          : Text("Press to Resolve"),
-                                      value: _toggled,
-                                      onChanged: (bool value) {
-                                        setState(() {
-                                          _toggled = value;
-                                        });
-                                      }),
-                                  Container(
-                                    child: (_toggled == false)
-                                        ? Column(children: [
-                                            Form(
-                                                key: _formKey,
-                                                child: Column(children: [
-                                                  TextFormField(
-                                                    initialValue:
-                                                        resolution == null
-                                                            ? ""
-                                                            : newResolution,
-                                                    decoration: InputDecoration(
-                                                        labelText:
-                                                            "Add Resolution",
-                                                        fillColor: Colors.white,
-                                                        enabledBorder:
-                                                            OutlineInputBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            25.0),
-                                                                borderSide:
-                                                                    BorderSide(
-                                                                  color: Colors
-                                                                      .black12,
-                                                                ))),
-                                                    maxLines: 5,
-                                                    keyboardType:
-                                                        TextInputType.multiline,
-                                                    validator: (val) =>
-                                                        resolutionValidator(
-                                                            newResolution!),
-                                                    onChanged: (val) {
-                                                      setState(() =>
-                                                          newResolution = val);
-                                                    },
-                                                  ),
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 30, 0, 10),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceEvenly,
-                                                      children: [
-                                                        SizedBox(
-                                                          width: 150,
-                                                          height: 40,
-                                                          child: ElevatedButton(
-                                                            onPressed: () {
-                                                              validateResolution();
-                                                            },
+                                  Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0, 20, 0, 20),
+                                            child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: DropdownButtonFormField(
+                                                  autovalidateMode:
+                                                      AutovalidateMode
+                                                          .onUserInteraction,
+                                                  decoration: InputDecoration(
+                                                      hintText:
+                                                          "Delegate Complaint to",
+                                                      fillColor: Colors.white),
+                                                  validator: (val) =>
+                                                      dropDownValidator(val),
+                                                  isExpanded: false,
+                                                  value: newDelegate!.isNotEmpty
+                                                      ? newDelegate
+                                                      : null,
+                                                  onChanged: (newVal) {
+                                                    setState(() {
+                                                      newDelegate =
+                                                          newVal.toString();
+                                                    });
+                                                  },
+                                                  items: dictionary.entries
+                                                      .map((mapEntry) =>
+                                                          DropdownMenuItem(
+                                                            value: mapEntry.key,
                                                             child: Text(
-                                                                'Update',
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .headline5),
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 150,
-                                                          height: 40,
-                                                          child: ElevatedButton(
-                                                            onPressed: () =>
-                                                                showMyDialog(),
-                                                            child: Text(
-                                                                'Resolve',
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .headline5),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ]))
-                                          ])
-                                        : Column(
-                                            children: [
-                                              Form(
-                                                  key: _formKey,
-                                                  child: Column(
-                                                    children: [
-                                                      Container(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                0, 20, 0, 20),
-                                                        child: Align(
-                                                            alignment: Alignment
-                                                                .centerLeft,
-                                                            child:
-                                                                DropdownButtonFormField(
-                                                              autovalidateMode:
-                                                                  AutovalidateMode
-                                                                      .onUserInteraction,
-                                                              decoration: InputDecoration(
-                                                                  hintText:
-                                                                      "Delegate Complaint to",
-                                                                  fillColor:
-                                                                      Colors
-                                                                          .white),
-                                                              validator: (val) =>
-                                                                  dropDownValidator(
-                                                                      val),
-                                                              isExpanded: false,
-                                                              value: newDelegate!
-                                                                      .isNotEmpty
-                                                                  ? newDelegate
-                                                                  : null,
-                                                              onChanged:
-                                                                  (newVal) {
-                                                                setState(() {
-                                                                  newDelegate =
-                                                                      newVal
-                                                                          .toString();
-                                                                });
-                                                              },
-                                                              items: dictionary
-                                                                  .entries
-                                                                  .map((mapEntry) =>
-                                                                      DropdownMenuItem(
-                                                                        value: mapEntry
-                                                                            .key,
-                                                                        child: Text(
-                                                                            mapEntry.value),
-                                                                      ))
-                                                                  .toList(),
-                                                            )),
-                                                      ),
-                                                      Container(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                0, 40, 0, 10),
-                                                        child: SizedBox(
-                                                          width: 150,
-                                                          height: 40,
-                                                          child: ElevatedButton(
-                                                            onPressed: () =>
-                                                                confirmDelegate(),
-                                                            child: Text(
-                                                                'Delegate',
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .headline5),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ))
-                                            ],
+                                                                mapEntry.value),
+                                                          ))
+                                                      .toList(),
+                                                )),
                                           ),
-                                  )
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0, 40, 0, 10),
+                                            child: SizedBox(
+                                              width: 150,
+                                              height: 40,
+                                              child: ElevatedButton(
+                                                onPressed: () =>
+                                                    confirmDelegate(),
+                                                child: Text('Delegate',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline5),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ))
                                 ],
                               )
-                            : (isResolved == "Resolved")
+                            : (isResolved == "Pending" &&
+                                    isChair &&
+                                    uid == delegatedMembers.last)
                                 ? Column(
                                     children: [
+                                      SwitchListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(0, 20, 0, 20),
+                                          title: _toggled == false
+                                              ? Text("Press to Delegate")
+                                              : Text("Press to Resolve"),
+                                          value: _toggled,
+                                          onChanged: (bool value) {
+                                            setState(() {
+                                              _toggled = value;
+                                            });
+                                          }),
                                       Container(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text("Resolution",
-                                            style: TextStyle(
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black45)),
-                                      ),
-                                      Container(
-                                        alignment: Alignment.centerLeft,
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 15, 0, 0),
-                                        child: Text("$resolution",
-                                            style: TextStyle(
-                                                fontSize: 20,
-                                                fontWeight: FontWeight.w300,
-                                                color: Colors.black)),
+                                        child: (_toggled == false)
+                                            ? Column(children: [
+                                                Form(
+                                                    key: _formKey,
+                                                    child: Column(children: [
+                                                      TextFormField(
+                                                        initialValue:
+                                                            resolution == null
+                                                                ? ""
+                                                                : newResolution,
+                                                        decoration:
+                                                            InputDecoration(
+                                                                labelText:
+                                                                    "Add Resolution",
+                                                                fillColor:
+                                                                    Colors
+                                                                        .white,
+                                                                enabledBorder:
+                                                                    OutlineInputBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                                25.0),
+                                                                        borderSide:
+                                                                            BorderSide(
+                                                                          color:
+                                                                              Colors.black12,
+                                                                        ))),
+                                                        maxLines: 5,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .multiline,
+                                                        validator: (val) =>
+                                                            resolutionValidator(
+                                                                newResolution!),
+                                                        onChanged: (val) {
+                                                          setState(() =>
+                                                              newResolution =
+                                                                  val);
+                                                        },
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 30, 0, 10),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 150,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () {
+                                                                  validateResolution();
+                                                                },
+                                                                child: Text(
+                                                                    'Update',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 150,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () =>
+                                                                    showMyDialog(),
+                                                                child: Text(
+                                                                    'Resolve',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ]))
+                                              ])
+                                            : Column(
+                                                children: [
+                                                  Form(
+                                                      key: _formKey,
+                                                      child: Column(
+                                                        children: [
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 20,
+                                                                    0, 20),
+                                                            child: Align(
+                                                                alignment: Alignment
+                                                                    .centerLeft,
+                                                                child:
+                                                                    DropdownButtonFormField(
+                                                                  autovalidateMode:
+                                                                      AutovalidateMode
+                                                                          .onUserInteraction,
+                                                                  decoration: InputDecoration(
+                                                                      hintText:
+                                                                          "Delegate Complaint to",
+                                                                      fillColor:
+                                                                          Colors
+                                                                              .white),
+                                                                  validator: (val) =>
+                                                                      dropDownValidator(
+                                                                          val),
+                                                                  isExpanded:
+                                                                      false,
+                                                                  value: newDelegate!
+                                                                          .isNotEmpty
+                                                                      ? newDelegate
+                                                                      : null,
+                                                                  onChanged:
+                                                                      (newVal) {
+                                                                    setState(
+                                                                        () {
+                                                                      newDelegate =
+                                                                          newVal
+                                                                              .toString();
+                                                                    });
+                                                                  },
+                                                                  items: dictionary
+                                                                      .entries
+                                                                      .map((mapEntry) =>
+                                                                          DropdownMenuItem(
+                                                                            value:
+                                                                                mapEntry.key,
+                                                                            child:
+                                                                                Text(mapEntry.value),
+                                                                          ))
+                                                                      .toList(),
+                                                                )),
+                                                          ),
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 40,
+                                                                    0, 10),
+                                                            child: SizedBox(
+                                                              width: 150,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () =>
+                                                                    confirmDelegate(),
+                                                                child: Text(
+                                                                    'Delegate',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ))
+                                                ],
+                                              ),
                                       )
                                     ],
                                   )
-                                : (isResolved == "Unresolved")
-                                    ? Container(
-                                        alignment: Alignment.topLeft,
-                                        padding:
-                                            EdgeInsets.fromLTRB(0, 5, 10, 10),
-                                        child: Text("Unresolved",
-                                            style: TextStyle(
-                                                fontSize: 26,
-                                                fontWeight: FontWeight.w400,
-                                                color: Colors.black45)),
-                                      )
-                                    : Text(""),
+                                : (isResolved == "Pending" &&
+                                        uid == delegatedMembers.last)
+                                    ? Column(children: [
+                                        Form(
+                                            key: _formKey,
+                                            child: Column(children: [
+                                              TextFormField(
+                                                initialValue: resolution == null
+                                                    ? ""
+                                                    : newResolution,
+                                                decoration: InputDecoration(
+                                                    labelText: "Add Resolution",
+                                                    fillColor: Colors.white,
+                                                    enabledBorder:
+                                                        OutlineInputBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        25.0),
+                                                            borderSide:
+                                                                BorderSide(
+                                                              color: Colors
+                                                                  .black12,
+                                                            ))),
+                                                maxLines: 5,
+                                                keyboardType:
+                                                    TextInputType.multiline,
+                                                validator: (val) =>
+                                                    resolutionValidator(
+                                                        newResolution!),
+                                                onChanged: (val) {
+                                                  setState(() =>
+                                                      newResolution = val);
+                                                },
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 30, 0, 10),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 150,
+                                                      height: 40,
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          validateResolution();
+                                                        },
+                                                        child: Text('Update',
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .headline5),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 150,
+                                                      height: 40,
+                                                      child: ElevatedButton(
+                                                        onPressed: () =>
+                                                            showMyDialog(),
+                                                        child: Text('Resolve',
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .headline5),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            ]))
+                                      ])
+                                    : (isResolved == "Resolved")
+                                        ? Column(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text("Resolution",
+                                                    style: TextStyle(
+                                                        fontSize: 22,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: Colors.black45)),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                padding: EdgeInsets.fromLTRB(
+                                                    20, 15, 0, 0),
+                                                child: Text("$resolution",
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w300,
+                                                        color: Colors.black)),
+                                              )
+                                            ],
+                                          )
+                                        : (isResolved == "Unresolved")
+                                            ? Container(
+                                                alignment: Alignment.topLeft,
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 5, 10, 10),
+                                                child: Text("Unresolved",
+                                                    style: TextStyle(
+                                                        fontSize: 26,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        color: Colors.black45)),
+                                              )
+                                            : Text(""),
                       ),
                     ]),
               ));
