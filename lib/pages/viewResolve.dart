@@ -549,7 +549,10 @@ class _ViewResolveState extends State<ViewResolve> {
                                                                 .multiline,
                                                         validator: (val) =>
                                                             resolutionValidator(
-                                                                newResolution!),
+                                                                newResolution ==
+                                                                        null
+                                                                    ? ""
+                                                                    : newResolution!),
                                                         onChanged: (val) {
                                                           setState(() =>
                                                               newResolution =
@@ -702,7 +705,9 @@ class _ViewResolveState extends State<ViewResolve> {
                                                     TextInputType.multiline,
                                                 validator: (val) =>
                                                     resolutionValidator(
-                                                        newResolution!),
+                                                        newResolution == null
+                                                            ? ""
+                                                            : newResolution!),
                                                 onChanged: (val) {
                                                   setState(() =>
                                                       newResolution = val);
