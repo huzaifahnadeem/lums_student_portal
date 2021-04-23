@@ -62,15 +62,13 @@ String? dropDownValidator(Object? choice) {
 }
 
 String? emptyNullValidator(String? str) {
-  if (str == null){
+  if (str == null) {
     return "Field can not be empty";
-  }
-  else if (str.isEmpty) {
+  } else if (str.isEmpty) {
     return "Field can not be empty.";
   }
   return null;
 }
-
 
 String? subjectValidator(String subject) {
   if (subject.isEmpty) {

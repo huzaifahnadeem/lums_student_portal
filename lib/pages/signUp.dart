@@ -28,13 +28,13 @@ class _SignUpState extends State<SignUp> {
       if (message != "") {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Row(children: <Widget>[
-              Icon(
-                Icons.error,
-                color: secondary_color,
-                semanticLabel: "Error",
-              ),
-              Text(' $message')
-            ])));
+          Icon(
+            Icons.error,
+            color: secondary_color,
+            semanticLabel: "Error",
+          ),
+          Text(' $message')
+        ])));
         message = "";
       }
     }

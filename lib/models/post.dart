@@ -4,27 +4,43 @@ import 'package:path/path.dart' as Path;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:core';
 
-
 class Post {
-  String? id ;
-  String subject ;
-  String content ;
-  String? tag ;
-  bool isPoll = false , pictureChosen = false, fileChosen = false;
+  String? id;
+  String subject;
+  String content;
+  String? tag;
+  bool isPoll = false, pictureChosen = false, fileChosen = false;
   int numOptions = 0;
-  List<dynamic> pictureURL = [] ;
-  List<dynamic> images = [] ;
-  File? image, file ;
-  String? filename ;
-  String? fileURL ;
+  List<dynamic> pictureURL = [];
+  List<dynamic> images = [];
+  File? image, file;
+  String? filename;
+  String? fileURL;
   Timestamp? time;
-  String? pollQuestion ;
-  List? options ;
+  String? pollQuestion;
+  List? options;
   List<dynamic> savedPosts = [];
   List<dynamic> alreadyVoted = [];
-  static List categories = ["General", "Disciplinary Committee", "Academic", "Campus Development",
-                            "Mental Health", "Graduate Affairs", "HR/PR", "Others"];
-  static List categories1 = ["General", "DC", "Academic", "Camp Dev", "Health", "Graduates", "HR/PR", "Others"] ;
+  static List categories = [
+    "General",
+    "Disciplinary Committee",
+    "Academic",
+    "Campus Development",
+    "Mental Health",
+    "Graduate Affairs",
+    "HR-PR",
+    "Others"
+  ];
+  static List categories1 = [
+    "General",
+    "DC",
+    "Academic",
+    "Camp Dev",
+    "Health",
+    "Graduates",
+    "HR/PR",
+    "Others"
+  ];
   static var categoryMap = {
     'General': 'General',
     'DC': 'Disciplinary Committee',
@@ -32,10 +48,10 @@ class Post {
     'Camp Dev': 'Campus Development',
     "Health": "Mental Health",
     "Graduates": "Graduate Affairs",
-    "HR/PR": "HR/PR",
+    "HR/PR": "HR-PR",
     'Others': "Others"
   };
-  List chooseNumOptions = [2,3,4] ;
+  List chooseNumOptions = [2, 3, 4];
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
   // Constructor
@@ -63,7 +79,7 @@ class Post {
     };
   }
 
-  void convertToObject(DocumentSnapshot doc) async{
+  void convertToObject(DocumentSnapshot doc) async {
     //print(doc['options']);
     this.subject = doc['subject'];
     this.content = doc['content'];
@@ -77,39 +93,41 @@ class Post {
     this.fileURL = doc['file_url'];
     this.options = doc['options'];
     this.pollQuestion = doc['poll_question'];
-    this.time = doc['time'] ;
+    this.time = doc['time'];
     this.savedPosts = doc['saved_posts'];
     this.alreadyVoted = doc['already_voted'];
   }
+
   // add a single option
-  void addOption(){
+  void addOption() {
     if (isPoll) {
-      if(options == null){
+      if (options == null) {
         options = [];
       }
       Map<String, dynamic> temp = PollOption("", 0).toMap();
       options!.insert(numOptions, temp);
-      numOptions += 1 ;
+      numOptions += 1;
     }
   }
-  void removeOption(){
+
+  void removeOption() {
     print(numOptions);
     print(options);
     if (isPoll) {
-      if(numOptions==2){
+      if (numOptions == 2) {
         return;
-      }
-      else{
+      } else {
         print("removing");
         options!.removeLast();
         numOptions -= 1;
       }
     }
   }
+
   // add n number of options to options list
-  void addOptions(){
+  void addOptions() {
     if (isPoll) {
-      if(options != null) {
+      if (options != null) {
         options!.clear();
       }
       options = [];
@@ -117,19 +135,19 @@ class Post {
         Map<String, dynamic> temp = PollOption("", 0).toMap();
         options!.insert(i, temp);
       }
-
     }
   }
 
   // upload picture
-  Future uploadPicture() async{
+  Future uploadPicture() async {
     try {
       await Future.wait(images.map((image) async {
-        FirebaseStorage _storage = FirebaseStorage.instance ;
-        var ref =  _storage.ref().child("postImages/${Path.basename(image!.path)}") ;
+        FirebaseStorage _storage = FirebaseStorage.instance;
+        var ref =
+            _storage.ref().child("postImages/${Path.basename(image!.path)}");
         await ref.putFile(image!).whenComplete(() async {
           await ref.getDownloadURL().then((value) {
-            pictureURL.add(value) ;
+            pictureURL.add(value);
           });
         });
       }));
@@ -140,99 +158,89 @@ class Post {
       return false;
     }
   }
+
   // upload a file to firebase storage
-  Future uploadFile() async{
+  Future uploadFile() async {
     FirebaseStorage _storage = FirebaseStorage.instance;
     try {
-      var ref =  _storage.ref().child("postAttachments/${(Path.basename(file!.path)).replaceAll(" ", "").replaceAll("(", "")
-      .replaceAll(")", "")}") ;
+      var ref = _storage.ref().child(
+          "postAttachments/${(Path.basename(file!.path)).replaceAll(" ", "").replaceAll("(", "").replaceAll(")", "")}");
       await ref.putFile(file!).whenComplete(() async {
         await ref.getDownloadURL().then((value) {
-          fileURL = value ;
+          fileURL = value;
         });
       });
       return true;
-    }
-    catch (err){
+    } catch (err) {
       return false;
     }
-
   }
 
   // add the object to firebase
-  Future addObjectToDb () async {
+  Future addObjectToDb() async {
     bool progress = true;
-    if(progress){
+    if (progress) {
       if (pictureChosen) {
         progress = await uploadPicture();
       }
     }
-    if(progress){
+    if (progress) {
       if (fileChosen) {
         progress = await uploadFile();
       }
-    }
-    else{
-      return "Error during picture upload!" ;
+    } else {
+      return "Error during picture upload!";
     }
     CollectionReference posts = _db.collection('Posts');
     if (progress) {
       try {
-        await posts.add(
-            toMap()
-        );
+        await posts.add(toMap());
         print('post uploaded');
         return "Post Uploaded";
-      }
-      catch (err){
+      } catch (err) {
         return "Error during post upload!";
       }
-    }
-    else{
-      if (pictureChosen){
+    } else {
+      if (pictureChosen) {
         deletePicture();
       }
-      return "Error during file Upload!" ;
+      return "Error during file Upload!";
     }
   }
 
   // update object to firebase
-  Future updateObjectToDb (bool fileReset, bool pictureReset) async {
+  Future updateObjectToDb(bool fileReset, bool pictureReset) async {
     bool progress = true;
-    if(progress){
+    if (progress) {
       if (pictureChosen && pictureReset) {
         progress = await uploadPicture();
       }
     }
-    if(progress){
+    if (progress) {
       if (fileChosen && fileReset) {
         progress = await uploadFile();
       }
-    }
-    else{
-      return "Error during picture upload!" ;
+    } else {
+      return "Error during picture upload!";
     }
     CollectionReference posts = _db.collection('Posts');
     if (progress) {
       try {
-        await posts.doc(id).set(
-            toMap()
-        );
+        await posts.doc(id).set(toMap());
         return "Post Updated";
-      }
-      catch (err){
+      } catch (err) {
         return "Error during post upload!";
       }
-    }
-    else{
-      if (pictureChosen){
+    } else {
+      if (pictureChosen) {
         deletePicture();
       }
-      return "Error during file Upload!" ;
+      return "Error during file Upload!";
     }
   }
+
   // delete image from storage
-  Future deletePicture() async{
+  Future deletePicture() async {
     FirebaseStorage _storage = FirebaseStorage.instance;
     try {
       await Future.wait(pictureURL.map((url) async {
@@ -240,76 +248,80 @@ class Post {
         Reference ref = _storage.refFromURL(url);
         await ref.delete();
       }));
-      if(id != null){
+      if (id != null) {
         DocumentReference post = _db.collection('Posts').doc(id);
         post.update({'picture_url': [], 'picture_chosen': false});
       }
       print("All pictures deleted");
       return true;
-    }
-    catch(err){
+    } catch (err) {
       print("error deleting pictures");
       return false;
     }
   }
+
   // delete file from storage
-  Future deleteFile() async{
+  Future deleteFile() async {
     try {
       FirebaseStorage _storage = FirebaseStorage.instance;
       Reference ref = _storage.refFromURL(fileURL!);
       await ref.delete();
-      if(id != null){
+      if (id != null) {
         DocumentReference post = _db.collection('Posts').doc(id);
-        post.update({'file_url': null, 'file_chosen': false,  'filename': null});
+        post.update({'file_url': null, 'file_chosen': false, 'filename': null});
       }
       print("file deleted");
       return true;
-    }
-    catch(err){
+    } catch (err) {
       print("error deleting file");
       return false;
     }
   }
+
   // delete post
   Future deletePost(String postID) async {
     CollectionReference posts = _db.collection('Posts');
     bool progress = true;
     try {
-      if (pictureChosen && progress){
+      if (pictureChosen && progress) {
         progress = await deletePicture();
       }
-      if(progress) {
+      if (progress) {
         if (fileChosen) {
           progress = await deleteFile();
         }
+      } else {
+        return "Error during picture deletions";
       }
-      else{ return "Error during picture deletions";}
-      if(progress){
+      if (progress) {
         await posts.doc(postID).delete();
         return "Post Deleted";
+      } else {
+        return "Error during file deletion";
       }
-      else{return "Error during file deletion";}
-    }
-    catch (err){
+    } catch (err) {
       print(err);
       return "Error Deleting Post";
     }
   }
 
-  Future addSavedPosts(String postID, String userID) async{
+  Future addSavedPosts(String postID, String userID) async {
     DocumentReference postref = _db.collection('Posts').doc(postID);
-    if (this.savedPosts.contains(userID)){
-      postref.update({'saved_posts': FieldValue.arrayRemove([userID])});
-    }
-    else{
-      postref.update({'saved_posts': FieldValue.arrayUnion([userID])});
+    if (this.savedPosts.contains(userID)) {
+      postref.update({
+        'saved_posts': FieldValue.arrayRemove([userID])
+      });
+    } else {
+      postref.update({
+        'saved_posts': FieldValue.arrayUnion([userID])
+      });
     }
   }
 }
 
 class PollOption {
   String option = "";
-  int votes = 0 ;
+  int votes = 0;
   PollOption(this.option, this.votes);
 
   Map<String, dynamic> toMap() {

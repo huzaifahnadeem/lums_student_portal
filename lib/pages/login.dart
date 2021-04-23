@@ -90,7 +90,11 @@ class _LoginState extends State<Login> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.lock_sharp, color: grey, size: 20,),
+                    icon: Icon(
+                      Icons.lock_sharp,
+                      color: grey,
+                      size: 20,
+                    ),
                     onPressed: () => _toggle(),
                   ),
                 ),
@@ -117,7 +121,10 @@ class _LoginState extends State<Login> {
                 children: <Widget>[
                   Text(
                     "Don't have an account?",
-                    style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
                   TextButton(

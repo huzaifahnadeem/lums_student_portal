@@ -90,13 +90,13 @@ class _UpdatePostState extends State<UpdatePost> {
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Row(children: <Widget>[
-            Icon(
-              Icons.notification_important,
-              color: secondary_color,
-              semanticLabel: "Done",
-            ),
-            Text('  $result')
-          ])));
+        Icon(
+          Icons.notification_important,
+          color: secondary_color,
+          semanticLabel: "Done",
+        ),
+        Text('  $result')
+      ])));
     }
   }
 
@@ -110,197 +110,391 @@ class _UpdatePostState extends State<UpdatePost> {
               textStyle: Theme.of(context).textTheme.headline6),
         ),
       ),
-      body: loading? LoadingScreen(): SafeArea(
-        minimum: EdgeInsets.fromLTRB(30,10,30,30),
-        child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // heading input field
-                  SizedBox(height: 10,),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    initialValue: widget.post.subject,
-                    decoration: InputDecoration(labelText: "Heading"),
-                    validator: (val) => headingValidator(widget.post.subject),
-                    onChanged: (val) {
-                      setState(() => widget.post.subject = val);
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  // content input field
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    initialValue: widget.post.content,
-                    decoration: InputDecoration(labelText: "Content"),
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    validator: (val) => postValidator(widget.post.content),
-                    onChanged: (val) {
-                      setState(() => widget.post.content = val);
-                    },
-                  ),
-                  SizedBox(height: 20),
-                  // category input dropdown
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: DropdownButtonFormField(
+      body: loading
+          ? LoadingScreen()
+          : SafeArea(
+              minimum: EdgeInsets.fromLTRB(30, 10, 30, 30),
+              child: SingleChildScrollView(
+                  child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // heading input field
+                    TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
-                      decoration:  InputDecoration(labelText: "Category"),
-                      validator: (val) => dropDownValidator(val),
-                      isExpanded: false,
-                      value: widget.post.tag,
-                      onChanged: (newVal) {setState(() {widget.post.tag = newVal.toString() ;});},
-                      items: Post.categories.map((categoryItem) {
-                        return DropdownMenuItem(
-                          value: categoryItem ,
-                          child: Text(categoryItem),
-                        );
-                      }).toList(),
+                      initialValue: widget.post.subject,
+                      decoration: InputDecoration(
+                          labelText: "Heading...", fillColor: Colors.white),
+                      validator: (val) => headingValidator(widget.post.subject),
+                      onChanged: (val) {
+                        setState(() => widget.post.subject = val);
+                      },
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  // fill in poll options input fields
-                  (widget.post.isPoll && widget.post.numOptions > 1 && widget.post.options != null)? Column(
-                    children: [
-                      Align(alignment: Alignment.centerLeft,child: Text("Poll",
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color: grey),)),
-                      SizedBox(height: 20,),
-                      TextFormField(
+                    SizedBox(height: 20),
+                    // content input field
+                    TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      initialValue: widget.post.content,
+                      decoration: InputDecoration(
+                          labelText: "Write your post here...",
+                          fillColor: Colors.white),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      validator: (val) => postValidator(widget.post.content),
+                      onChanged: (val) {
+                        setState(() => widget.post.content = val);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    // category input dropdown
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: DropdownButtonFormField(
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        initialValue: widget.post.pollQuestion,
-                        decoration: InputDecoration(labelText: "Poll Question"),
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        validator: (val) => emptyNullValidator(widget.post.pollQuestion),
-                        onChanged: (val) {
-                          setState(() => widget.post.pollQuestion = val);
+                        decoration: InputDecoration(
+                            hintText: "Select Category",
+                            fillColor: Colors.white),
+                        validator: (val) => dropDownValidator(val),
+                        isExpanded: false,
+                        value: widget.post.tag,
+                        onChanged: (newVal) {
+                          setState(() {
+                            widget.post.tag = newVal.toString();
+                          });
                         },
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: widget.post.options!.asMap().entries.map((e) {
-                          return Padding(
-                            padding: EdgeInsets.fromLTRB(0,10,0,10),
-                            child: TextFormField(
-                              initialValue: e.value['option'],
-                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                              decoration: InputDecoration(labelText: "Option ${e.key.toInt()+1}"),
-                              validator: (val) => headingValidator(e.value['option']),
-                              onChanged: (val) {
-                                setState(() {
-                                  e.value['option'] = val;
-                                });
-                              },
-                            ),
+                        items: Post.categories.map((categoryItem) {
+                          return DropdownMenuItem(
+                            value: categoryItem,
+                            child: Text(categoryItem),
                           );
                         }).toList(),
                       ),
-                    ],
-                  ): Container(),
-                  SizedBox(height: 20),
-                  (widget.post.isPoll && widget.post.numOptions > 1 && widget.post.options != null)? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButton(tooltip: "Add an option", icon: new Icon(Icons.add_circle_outline, color: lightBlue),
-                          onPressed: () {setState(() {widget.post.addOption();});
-                      }),
-                      IconButton(tooltip: "Remove an option", icon: new Icon(Icons.remove_circle_outline, color: Theme.of(context).primaryColorLight),
-                          onPressed: (){setState(() {widget.post.removeOption();});
-                      })
-                    ],
-                  ): Container(),
-                  SizedBox(height: 20),
-                  // display picture if chosen
-                  (widget.post.pictureChosen && imageReset) ? Column(
-                      children:[
-                        Align(alignment: Alignment.centerLeft,child: Text("Pictures",
-                          style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color: grey),)),
-                        SizedBox(height: 10,),
-                        GridView.count(
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            shrinkWrap: true,
-                            crossAxisCount: 3,
-                            children: widget.post.images.map((image) {
-                              return Image.file(image,
-                                fit: BoxFit.cover,
+                    ),
+                    SizedBox(height: 20),
+                    // fill in poll options input fields
+                    (widget.post.isPoll &&
+                            widget.post.numOptions > 1 &&
+                            widget.post.options != null)
+                        ? Column(
+                            children: [
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Poll",
+                                    style:
+                                        Theme.of(context).textTheme.bodyText2,
+                                  )),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: widget.post.options!
+                                    .asMap()
+                                    .entries
+                                    .map((e) {
+                                  return Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                    child: TextFormField(
+                                      initialValue: e.value['option'],
+                                      autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
+                                      decoration: InputDecoration(
+                                          hintText: "Option ${e.key} ",
+                                          fillColor: Color(0xFFE8E8E8)),
+                                      validator: (val) =>
+                                          headingValidator(e.value['option']),
+                                      onChanged: (val) {
+                                        setState(() {
+                                          e.value['option'] = val;
+                                        });
+                                      },
+                                    ),
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          )
+                        : Container(),
+                    SizedBox(height: 20),
+                    (widget.post.isPoll &&
+                            widget.post.numOptions > 1 &&
+                            widget.post.options != null)
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              IconButton(
+                                  icon: new Icon(Icons.add_circle_outline,
+                                      color: Color(0xFF48D1E3)),
+                                  onPressed: () {
+                                    setState(() {
+                                      widget.post.addOption();
+                                    });
+                                  }),
+                              IconButton(
+                                  icon: new Icon(Icons.remove_circle_outline,
+                                      color: Colors.redAccent),
+                                  onPressed: () {
+                                    setState(() {
+                                      widget.post.removeOption();
+                                    });
+                                  })
+                            ],
+                          )
+                        : Container(),
+                    SizedBox(height: 20),
+                    // display picture if chosen
+                    (widget.post.pictureChosen && imageReset)
+                        ? Column(children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "Pictures",
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                )),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            GridView.count(
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                shrinkWrap: true,
+                                crossAxisCount: 3,
+                                children: widget.post.images.map((image) {
+                                  return Image.file(
+                                    image,
+                                    fit: BoxFit.cover,
+                                  );
+                                }).toList())
+                          ])
+                        : Container(),
+                    (widget.post.pictureChosen && imageReset == false)
+                        ? Column(children: [
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "Pictures",
+                                  style: Theme.of(context).textTheme.bodyText2,
+                                )),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            GridView.count(
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                shrinkWrap: true,
+                                crossAxisCount: 3,
+                                children: widget.post.pictureURL.map((url) {
+                                  return Image.network(
+                                    url,
+                                    fit: BoxFit.cover,
+                                  );
+                                }).toList())
+                          ])
+                        : Container(),
+                    SizedBox(height: 20),
+                    // display file if chosen
+                    (widget.post.fileChosen)
+                        ? Column(
+                            children: [
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "Files",
+                                    style:
+                                        Theme.of(context).textTheme.bodyText2,
+                                  )),
+                              SizedBox(height: 10),
+                              Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    " ${widget.post.filename}",
+                                    style: Theme.of(context).textTheme.caption,
+                                  )),
+                            ],
+                          )
+                        : Container(),
+                    SizedBox(height: 20),
+                    // row of poll, picture and file upload buttons
+                    Row(
+                      children: [
+                        IconButton(
+                          tooltip: "Photo",
+                          icon: new Icon(Icons.add_photo_alternate_outlined,
+                              color: Color(0xFF56BF54)),
+                          onPressed: () async {
+                            if (imageReset) {
+                              selectPicture();
+                            } else if (!imageReset &&
+                                !widget.post.pictureChosen) {
+                              selectPicture();
+                            } else {
+                              return showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Caution",
+                                        style: GoogleFonts.roboto(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .headline6,
+                                        )),
+                                    content: Text(
+                                        "Selecting a new picture will delete previously posted images. Are you sure you want to delete the previous images from your post?",
+                                        style: GoogleFonts.roboto(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyText2,
+                                        )),
+                                    actions: [
+                                      TextButton(
+                                        child: Text(
+                                          'Yes',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  color: Colors.redAccent),
+                                        ),
+                                        onPressed: () async {
+                                          selectPicture();
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text(
+                                          'No',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  color: Colors.redAccent),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
-                            }).toList()
-                        )
-                      ]
-                  ) : Container(),
-                  (widget.post.pictureChosen && imageReset == false) ? Column(
-                      children:[
-                        Align(alignment: Alignment.centerLeft,child: Text("Pictures",
-                          style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color: grey),)),
-                        SizedBox(height: 10,),
-                        GridView.count(
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            shrinkWrap: true,
-                            crossAxisCount: 3,
-                            children: widget.post.pictureURL.map((url) {
-                              return Image.network(url,
-                                fit: BoxFit.cover,
+                            }
+                          },
+                        ),
+                        Text("Photo",
+                            style: Theme.of(context).textTheme.caption),
+                        SizedBox(width: 20),
+                        IconButton(
+                          tooltip: "Attachment",
+                          icon: new Icon(Icons.attach_file_outlined,
+                              color: Color(0xFF1E64EC)),
+                          onPressed: () async {
+                            if (fileReset) {
+                              selectFile();
+                            } else if (!fileReset && !widget.post.fileChosen) {
+                              selectFile();
+                            } else {
+                              return showDialog<void>(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text("Caution",
+                                        style: GoogleFonts.roboto(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .headline6,
+                                        )),
+                                    content: Text(
+                                        "Selecting a new file will delete previously posted file. Are you sure you want to delete the previous file from your post?",
+                                        style: GoogleFonts.roboto(
+                                          textStyle: Theme.of(context)
+                                              .textTheme
+                                              .bodyText2,
+                                        )),
+                                    actions: [
+                                      TextButton(
+                                        child: Text(
+                                          'Yes',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  color: Colors.redAccent),
+                                        ),
+                                        onPressed: () async {
+                                          selectFile();
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                      TextButton(
+                                        child: Text(
+                                          'No',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                  color: Colors.redAccent),
+                                        ),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
                               );
-                            }).toList()
-                        )
-                      ]
-                  ) : Container(),
-                  SizedBox(height: 20),
-                  // display file if chosen
-                  (widget.post.fileChosen) ? Column(
-                    children: [
-                      Align(alignment: Alignment.centerLeft ,child: Text("Files",
-                        style: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400, color:grey),)),
-                      SizedBox(height: 10),
-                      Align(alignment:Alignment.centerLeft,child: Text(" ${widget.post.filename}", style: Theme.of(context).textTheme.caption,)),
-                    ],
-                  )  : Container(),
-                  SizedBox(height: 20),
-                  // row of poll, picture and file upload buttons
-                  Row(
-                    children: [
-                      IconButton(
-                        tooltip: "Add images",
-                        icon: new Icon(Icons.add_photo_alternate_outlined, color: green),
-                        onPressed: () async{
-                          if(imageReset){
-                          selectPicture();
-                          }
-                          else if(!imageReset && !widget.post.pictureChosen){
-                          selectPicture();
-                          }
-                          else {
-                            return showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text("Caution",
-                                      style: GoogleFonts.roboto(textStyle: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .headline6,)),
-                                  content: Text(
-                                      "Selecting a new picture will delete previously posted images. Are you sure you want to delete the previous images from your post?",
-                                      style: GoogleFonts.roboto(textStyle: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodyText2,)),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Yes', style: Theme
-                                          .of(context)
+                            }
+                          },
+                        ),
+                        Text("Attachment",
+                            style: Theme.of(context).textTheme.caption),
+                        SizedBox(width: 20),
+                        IconButton(
+                          tooltip: "Poll",
+                          icon: new Icon(Icons.poll_outlined,
+                              color: Color(0xFFFFB800)),
+                          onPressed: () {
+                            setState(() {
+                              widget.post.isPoll = !widget.post.isPoll;
+                              if (widget.post.isPoll == false) {
+                                widget.post.options = null;
+                                widget.post.numOptions = 0;
+                                widget.post.alreadyVoted = [];
+                              } else {
+                                widget.post.addOption();
+                                widget.post.addOption();
+                              }
+                            });
+                          },
+                        ),
+                        Text("Poll",
+                            style: Theme.of(context).textTheme.caption),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    // submit button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 40,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          return showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: Text(
+                                    "Are you sure you want to update this post? This action can not be undone.",
+                                    style: GoogleFonts.roboto(
+                                      textStyle:
+                                          Theme.of(context).textTheme.bodyText2,
+                                    )),
+                                actions: [
+                                  TextButton(
+                                    child: Text(
+                                      'Yes',
+                                      style: Theme.of(context)
                                           .textTheme
                                           .bodyText1!
-                                          .copyWith(color: Theme.of(context).primaryColorLight),),
-                                      onPressed: () async {
-                                        selectPicture();
-                                        Navigator.of(context).pop();
-                                      },
+                                          .copyWith(color: Colors.redAccent),
                                     ),
                                     onPressed: () async {
                                       validate();
@@ -313,51 +507,7 @@ class _UpdatePostState extends State<UpdatePost> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyText1!
-                                          .copyWith(color: Theme.of(context).primaryColorLight),),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          }
-                        },
-                      ),
-                      Text("Photo", style: Theme.of(context).textTheme.caption),
-                      SizedBox(width: 20),
-                      IconButton(
-                        tooltip: "Attach files",
-                        icon: new Icon(Icons.attach_file_outlined, color: darkBlue),
-                        onPressed: () async{
-                          if(fileReset){
-                            selectFile();
-                          }
-                          else if(!fileReset && !widget.post.fileChosen){
-                            selectFile();
-                          }
-                          else{
-                            return showDialog<void>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text("Caution" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.headline6,)),
-                                  content: Text("Selecting a new file will delete previously posted file. Are you sure you want to delete the previous file from your post?" ,
-                                      style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
-                                      onPressed: () async {
-                                        selectFile();
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                    TextButton(
-                                      child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
+                                          .copyWith(color: Colors.redAccent),
                                     ),
                                     onPressed: () {
                                       Navigator.of(context).pop();
@@ -371,63 +521,6 @@ class _UpdatePostState extends State<UpdatePost> {
                         child: Text('Update Post',
                             style: Theme.of(context).textTheme.headline5),
                       ),
-                      Text("Attachment", style: Theme.of(context).textTheme.caption),
-                      SizedBox(width: 20),
-                      IconButton(
-                        tooltip: "Add a Poll",
-                        icon: new Icon(Icons.poll_outlined, color: yellow),
-                        onPressed: () {
-                          setState(() {
-                            widget.post.isPoll = !widget.post.isPoll ;
-                            if(widget.post.isPoll == false){
-                              widget.post.options = null;
-                              widget.post.numOptions = 0 ;
-                              widget.post.pollQuestion = null;
-                              widget.post.alreadyVoted = [];
-                            }
-                            else{
-                              widget.post.addOption();
-                              widget.post.addOption();
-                            }
-                          });
-                        } ,
-                      ),
-                      Text("Poll", style: Theme.of(context).textTheme.caption),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  // submit button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 40,
-                    child: ElevatedButton(
-                      onPressed: () async{
-                        return showDialog<void>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              content: Text("Are you sure you want to update this post? This action can not be undone." , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
-                              actions: [
-                                TextButton(
-                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
-                                  onPressed: () async {
-                                    validate();
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                                TextButton(
-                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: Text('Update Post',
-                          style: Theme.of(context).textTheme.headline5),
                     ),
                     SizedBox(height: 20),
                   ],
