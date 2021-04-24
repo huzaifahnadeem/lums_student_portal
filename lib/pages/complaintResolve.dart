@@ -37,8 +37,6 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
     super.initState();
   }
 
-  Future<void> senderUid() async {}
-
   // calculate days ago
   void calcDaysAgo(Timestamp complaintTime) {
     int difference = (Timestamp.now().seconds - complaintTime.seconds);
@@ -79,6 +77,7 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                                 (documentSnaps[index]!["delegatedMembers"]),
                             scMembers: forwardList,
                             senderUid: (documentSnaps[index]!["senderUid"]),
+                            time: (documentSnaps[index]!["time"]),
                           ); // function returns a widget
                         }));
                       },
