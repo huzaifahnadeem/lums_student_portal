@@ -62,7 +62,9 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                             resolvedBy: (documentSnaps[index]!["resolvedBy"]),
                             isResolved: (documentSnaps[index]!["isResolved"]),
                             resolution: (documentSnaps[index]!["resolution"]),
-                            timeDaysAgo: timeDaysAgo,
+                            time: (documentSnaps[index]!["time"]),
+                            delegatedMembers:
+                                (documentSnaps[index]!["delegatedMembers"]),
                           ); // function returns a widget
                         }));
                       },

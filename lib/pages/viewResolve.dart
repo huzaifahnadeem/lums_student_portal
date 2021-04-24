@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:intl/intl.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
+import 'package:lums_student_portal/pages/profile.dart';
 
 class ViewResolve extends StatefulWidget {
   late final String subject;
@@ -19,7 +21,7 @@ class ViewResolve extends StatefulWidget {
   late final List delegatedMembers;
   late final List scMembers;
   late final String senderUid;
-  late final String timeDaysAgo;
+  late final Timestamp time;
 
   ViewResolve({
     required this.subject,
@@ -33,7 +35,7 @@ class ViewResolve extends StatefulWidget {
     required this.delegatedMembers,
     required this.scMembers,
     required this.senderUid,
-    required this.timeDaysAgo,
+    required this.time,
   });
 
   @override
@@ -49,7 +51,7 @@ class ViewResolve extends StatefulWidget {
       delegatedMembers: delegatedMembers,
       scMembers: scMembers,
       senderUid: senderUid,
-      timeDaysAgo: timeDaysAgo);
+      time: time);
 }
 
 class _ViewResolveState extends State<ViewResolve> {
@@ -65,7 +67,7 @@ class _ViewResolveState extends State<ViewResolve> {
   late final List delegatedMembers;
   late final List scMembers;
   late final String senderUid;
-  late final String timeDaysAgo;
+  late final Timestamp time;
 
   String? uid;
   bool isChair = false;
@@ -77,6 +79,10 @@ class _ViewResolveState extends State<ViewResolve> {
   late String? newDelegate = "";
 
   String? resolvedBy;
+
+  late DateTime date;
+  late String formatedDate;
+  late String formatedTime;
 
   FirebaseFirestore _db = FirebaseFirestore.instance;
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -94,13 +100,16 @@ class _ViewResolveState extends State<ViewResolve> {
     required this.delegatedMembers,
     required this.scMembers,
     required this.senderUid,
-    required this.timeDaysAgo,
+    required this.time,
   });
 
   void initState() {
     setState(() {
       loading = true;
     });
+    date = DateTime.fromMillisecondsSinceEpoch(time.millisecondsSinceEpoch);
+    formatedTime = DateFormat('HH:mm a').format(date);
+    formatedDate = DateFormat.yMMMd().format(date);
     User? thisUser = FirebaseAuth.instance.currentUser;
     uid = thisUser!.uid;
     _db.collection("Chairs").doc(category).get().then((value) {
@@ -430,20 +439,69 @@ class _ViewResolveState extends State<ViewResolve> {
                           ),
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
-                            child: Text("Submitted $timeDaysAgo",
+                            child: Text(
+                                "Submitted on $formatedDate at $formatedTime",
                                 style: Theme.of(context).textTheme.caption),
                           ),
                           Container(
                               padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
-                              child: Text("Submitted by $name",
-                                  style: Theme.of(context).textTheme.caption)),
+                              child: Row(
+                                children: [
+                                  Text("Submitted by ",
+                                      style:
+                                          Theme.of(context).textTheme.caption),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return Profile(who: senderUid);
+                                      }));
+                                    },
+                                    child: Text(
+                                      '$name',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .caption!
+                                          .copyWith(
+                                              color:
+                                                  Theme.of(context).accentColor,
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                  )
+                                ],
+                              )),
                           (isResolved == "Resolved")
                               ? Container(
                                   alignment: Alignment.topLeft,
                                   padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
-                                  child: Text("Resolved by $resolvedByName",
-                                      style:
-                                          Theme.of(context).textTheme.caption),
+                                  child: Row(
+                                    children: [
+                                      Text("Resolved by ",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .caption),
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(context,
+                                              MaterialPageRoute(
+                                                  builder: (context) {
+                                            return Profile(
+                                                who: delegatedMembers.last);
+                                          }));
+                                        },
+                                        child: Text(
+                                          '$resolvedByName',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .caption!
+                                              .copyWith(
+                                                  color: Theme.of(context)
+                                                      .accentColor,
+                                                  fontWeight: FontWeight.bold),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 )
                               : Container(),
                           Container(

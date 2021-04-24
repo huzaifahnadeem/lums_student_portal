@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Themes/Theme.dart';
+import 'package:lums_student_portal/pages/profile.dart';
+import 'package:intl/intl.dart';
 
 class ViewComplaint extends StatefulWidget {
   late final String subject;
@@ -10,6 +13,8 @@ class ViewComplaint extends StatefulWidget {
   late final String? resolvedBy;
   late final String? resolution;
   late final String timeDaysAgo;
+  late final Timestamp time;
+  late final List delegatedMembers;
 
   ViewComplaint(
       {required this.subject,
@@ -18,7 +23,8 @@ class ViewComplaint extends StatefulWidget {
       required this.resolvedBy,
       required this.isResolved,
       required this.resolution,
-      required this.timeDaysAgo});
+      required this.time,
+      required this.delegatedMembers});
   @override
   _ViewComplaintState createState() => _ViewComplaintState(
       subject: subject,
@@ -27,7 +33,8 @@ class ViewComplaint extends StatefulWidget {
       resolvedBy: resolvedBy,
       isResolved: isResolved,
       resolution: resolution,
-      timeDaysAgo: timeDaysAgo);
+      time: time,
+      delegatedMembers: delegatedMembers);
 }
 
 class _ViewComplaintState extends State<ViewComplaint> {
@@ -37,7 +44,12 @@ class _ViewComplaintState extends State<ViewComplaint> {
   late final String isResolved;
   late final String? resolvedBy;
   late final String? resolution;
-  late final String timeDaysAgo;
+  late final Timestamp time;
+  late final List delegatedMembers;
+
+  late DateTime date;
+  late String formatedDate;
+  late String formatedTime;
 
   _ViewComplaintState(
       {required this.subject,
@@ -46,7 +58,17 @@ class _ViewComplaintState extends State<ViewComplaint> {
       required this.resolvedBy,
       required this.isResolved,
       required this.resolution,
-      required this.timeDaysAgo});
+      required this.time,
+      required this.delegatedMembers});
+
+  void initState() {
+    date = DateTime.fromMillisecondsSinceEpoch(time.millisecondsSinceEpoch);
+    formatedTime = DateFormat('HH:mm a').format(date);
+    formatedDate = DateFormat.yMMMd().format(date);
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,7 +114,9 @@ class _ViewComplaintState extends State<ViewComplaint> {
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
-                child: Text("Submitted $timeDaysAgo",
+                child: Text("Submitted on $formatedDate at $formatedTime",
+
+                    // "Submitted on ${time.toDate().day}-${time.toDate().month}-${time.toDate().year} at ${time.toDate().hour}:${time.toDate().minute}",
                     style: Theme.of(context).textTheme.caption),
               ),
               Container(
@@ -101,8 +125,29 @@ class _ViewComplaintState extends State<ViewComplaint> {
                     ? Text("Unresolved",
                         style: Theme.of(context).textTheme.caption)
                     : (isResolved == "Resolved")
-                        ? Text("Resolved by $resolvedBy",
-                            style: Theme.of(context).textTheme.caption)
+                        ? Row(
+                            children: [
+                              Text("Resolved by ",
+                                  style: Theme.of(context).textTheme.caption),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return Profile(who: delegatedMembers.last);
+                                  }));
+                                },
+                                child: Text(
+                                  '$resolvedBy',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .caption!
+                                      .copyWith(
+                                          color: Theme.of(context).accentColor,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            ],
+                          )
                         : (isResolved == "Pending")
                             ? Text("Pending",
                                 style: Theme.of(context).textTheme.caption)
