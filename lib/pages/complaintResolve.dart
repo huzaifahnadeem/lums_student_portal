@@ -80,6 +80,7 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                                 (documentSnaps[index]!["delegatedMembers"]),
                             scMembers: forwardList,
                             senderUid: (documentSnaps[index]!["senderUid"]),
+                            timeDaysAgo: timeDaysAgo,
                           ); // function returns a widget
                         }));
                       },

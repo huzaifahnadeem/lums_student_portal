@@ -56,13 +56,14 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
                           return ViewComplaint(
-                              subject: (documentSnaps[index]!["subject"]),
-                              complaint: (documentSnaps[index]!["complaint"]),
-                              category: (documentSnaps[index]!["category"]),
-                              resolvedBy: (documentSnaps[index]!["resolvedBy"]),
-                              isResolved: (documentSnaps[index]!["isResolved"]),
-                              resolution: (documentSnaps[index]![
-                                  "resolution"])); // function returns a widget
+                            subject: (documentSnaps[index]!["subject"]),
+                            complaint: (documentSnaps[index]!["complaint"]),
+                            category: (documentSnaps[index]!["category"]),
+                            resolvedBy: (documentSnaps[index]!["resolvedBy"]),
+                            isResolved: (documentSnaps[index]!["isResolved"]),
+                            resolution: (documentSnaps[index]!["resolution"]),
+                            timeDaysAgo: timeDaysAgo,
+                          ); // function returns a widget
                         }));
                       },
                       child: Column(
