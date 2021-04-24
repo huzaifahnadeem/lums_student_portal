@@ -99,14 +99,14 @@ class _PostItemState extends State<PostItem> {
             ),
           ),
           SizedBox(
-            height: 10,
+            height: 5,
           ),
           Column(children: [
             // post content
             Padding(
               padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
               child: Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: Alignment.bottomLeft,
                   child: SelectableText(
                     "${widget.post['content']}",
                     style: Theme.of(context).textTheme.bodyText1,
@@ -143,6 +143,8 @@ class _PostItemState extends State<PostItem> {
                 : Container(),
           ]),
           ListTile(
+            dense: true,
+            contentPadding: EdgeInsets.symmetric(vertical:0, horizontal:10),
             subtitle: widget.post['file_chosen']
                 ? FittedBox(
                     alignment: Alignment.topLeft,
@@ -163,14 +165,15 @@ class _PostItemState extends State<PostItem> {
             trailing: FittedBox(
               child: ButtonBar(
                 children: [
-                  postModel.isPoll
-                      ? IconButton(
+                  if (postModel.isPoll) IconButton(
+                          visualDensity: VisualDensity.compact,
                           tooltip: "Open the poll",
                           icon: new Icon(Icons.poll_outlined,
                               color: yellow), //FFFD5E05
                           onPressed: () => openPoll(),
-                        ) : Container(),
+                        ) else Container(),
                   IconButton(
+                    visualDensity: VisualDensity.compact,
                     tooltip: "Save this post",
                     icon: isSaved
                         ? new Icon(Icons.favorite, color: Theme.of(context).primaryColor)
@@ -207,6 +210,7 @@ class _PostItemState extends State<PostItem> {
                       },
                   ): Container(),
                   (widget.role != "Student" && widget.role != null) ? IconButton(
+                    visualDensity: VisualDensity.compact,
                     tooltip: "Edit this post",
                     icon: new Icon(Icons.edit),
                     onPressed: () => updatePost(),
@@ -218,7 +222,7 @@ class _PostItemState extends State<PostItem> {
         ],
       ),
     );
-    ;
+
   }
 }
 
