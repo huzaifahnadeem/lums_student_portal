@@ -270,7 +270,7 @@ class _NewsfeedState extends State<Newsfeed> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
-              child: Text("An Error Occured"),
+              child: Text("An Error Occurred"),
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();

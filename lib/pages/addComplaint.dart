@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/complaint.dart';
@@ -72,31 +74,33 @@ class _AddComplaintState extends State<AddComplaint> {
       builder: (BuildContext context) {
         return AlertDialog(
           // titleTextStyle: ,
-          title: Text('Confirmation', textAlign: TextAlign.center),
+          //title: Text('Confirmation', textAlign: TextAlign.center, style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Would you like to lodge this complaint?',
+                Text('Are you sure you want to lodge this complaint?',
                     textAlign: TextAlign.center)
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(primary: Colors.redAccent),
+                style: TextButton.styleFrom(primary: primary_color),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  validate();
+                },
+                child: Text('Yes')
+            ),
+
+            TextButton(
+              style: TextButton.styleFrom(primary: primary_color),
               child: Text('No'),
               onPressed: () {
                 Navigator.of(context).pop();
                 // setState(() {});
               },
             ),
-            TextButton(
-                style: TextButton.styleFrom(primary: Colors.redAccent),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  validate();
-                },
-                child: Text('Yes'))
           ],
         );
       },
@@ -109,7 +113,7 @@ class _AddComplaintState extends State<AddComplaint> {
         body: loading
             ? LoadingScreen()
             : SafeArea(
-                minimum: EdgeInsets.fromLTRB(30, 50, 30, 30),
+                minimum: EdgeInsets.fromLTRB(30, 30, 30, 30),
                 child: SingleChildScrollView(
                     child: Form(
                   key: _formKey,
@@ -137,28 +141,26 @@ class _AddComplaintState extends State<AddComplaint> {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(
-                      height: 30,
-                    ),
+                    SizedBox(height: 10),
 
                     // heading input field
                     TextFormField(
+                      cursorColor: primary_color,
                       decoration: InputDecoration(
-                        labelText: "Add Subject",
+                        hintText: "Add Subject...",
                         fillColor: Colors.white,
                       ),
                       validator: (val) => subjectValidator(
-                          newComplaint.subject), // check subjet lenght
+                          newComplaint.subject), // check subject length
                       onChanged: (val) {
                         setState(() => newComplaint.subject = val);
                       },
                     ),
-
-                    SizedBox(height: 20),
                     // complaint input field
                     TextFormField(
+                      cursorColor: primary_color,
                       decoration: InputDecoration(
-                        labelText: "Write Complaint",
+                        hintText: "Write your complaint here...",
                         fillColor: Colors.white,
                       ),
                       maxLines: 9,
@@ -169,16 +171,17 @@ class _AddComplaintState extends State<AddComplaint> {
                         setState(() => newComplaint.complaint = val);
                       },
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       height: 40,
                       child: ElevatedButton(
                         onPressed: () => showMyDialog(),
-                        child: Text('Lodge Complaint',
+                        child: Text('Submit',
                             style: Theme.of(context).textTheme.headline5),
                       ),
                     ),
+                    SizedBox(height: 10),
                   ]),
                 ))));
   }

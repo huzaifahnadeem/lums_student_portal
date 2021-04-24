@@ -73,25 +73,10 @@ class _ViewComplaintState extends State<ViewComplaint> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          toolbarHeight: 80,
-          iconTheme: IconThemeData(
-            color: Colors
-                .redAccent, //Changing back button's color to black so that its visible.
+          title: Text("View",
+              style: GoogleFonts.robotoSlab(textStyle:Theme.of(context).textTheme.headline6)
           ),
-          backgroundColor: Colors.white,
-          title: Container(
-            padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-            child: Text(
-              "View",
-              style: GoogleFonts.robotoSlab(
-                color: Colors.black87,
-                fontSize: 30.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          centerTitle: false,
-          elevation: 3,
+          elevation: 1,
         ),
         body: SingleChildScrollView(
           padding: EdgeInsets.all(20),
@@ -114,7 +99,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
               ),
               Container(
                 padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
-                child: Text("Submitted on $formatedDate at $formatedTime",
+                child: Text("Time: $formatedDate at $formatedTime",
 
                     // "Submitted on ${time.toDate().day}-${time.toDate().month}-${time.toDate().year} at ${time.toDate().hour}:${time.toDate().minute}",
                     style: Theme.of(context).textTheme.caption),
@@ -127,7 +112,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
                     : (isResolved == "Resolved")
                         ? Row(
                             children: [
-                              Text("Resolved by ",
+                              Text("Resolved by: ",
                                   style: Theme.of(context).textTheme.caption),
                               InkWell(
                                 onTap: () {

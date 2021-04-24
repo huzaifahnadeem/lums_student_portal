@@ -395,25 +395,10 @@ class _ViewResolveState extends State<ViewResolve> {
         ? LoadingScreen()
         : Scaffold(
             appBar: AppBar(
-              toolbarHeight: 80,
-              iconTheme: IconThemeData(
-                color: Colors
-                    .redAccent, //Changing back button's color to black so that its visible.
+              title: Text("Resolve",
+                style: GoogleFonts.robotoSlab(textStyle:Theme.of(context).textTheme.headline6)
               ),
-              backgroundColor: Colors.white,
-              title: Container(
-                padding: EdgeInsets.fromLTRB(0, 10, 10, 10),
-                child: Text(
-                  "Resolve",
-                  style: GoogleFonts.robotoSlab(
-                    color: Colors.black87,
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              centerTitle: false,
-              elevation: 3,
+              elevation: 1,
             ),
             body: loading
                 ? LoadingScreen()
@@ -440,14 +425,14 @@ class _ViewResolveState extends State<ViewResolve> {
                           Container(
                             padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                             child: Text(
-                                "Submitted on $formatedDate at $formatedTime",
+                                "Time: $formatedDate at $formatedTime",
                                 style: Theme.of(context).textTheme.caption),
                           ),
                           Container(
                               padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                               child: Row(
                                 children: [
-                                  Text("Submitted by ",
+                                  Text("Submitted by: ",
                                       style:
                                           Theme.of(context).textTheme.caption),
                                   InkWell(
@@ -476,7 +461,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                   padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                                   child: Row(
                                     children: [
-                                      Text("Resolved by ",
+                                      Text("Resolved by: ",
                                           style: Theme.of(context)
                                               .textTheme
                                               .caption),
@@ -515,7 +500,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                         style: GoogleFonts.roboto(
                                             textStyle: Theme.of(context)
                                                 .textTheme
-                                                .bodyText2!
+                                                .bodyText1!
                                                 .copyWith(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -884,16 +869,8 @@ class _ViewResolveState extends State<ViewResolve> {
                                                         Alignment.centerLeft,
                                                     child: Text("Resolution",
                                                         style: GoogleFonts.roboto(
-                                                            textStyle: Theme.of(
-                                                                    context)
-                                                                .textTheme
-                                                                .bodyText2!
-                                                                .copyWith(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                            color:
-                                                                primary_color)),
+                                                            textStyle: Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold),
+                                                            color: primary_color)),
                                                   ),
                                                   Container(
                                                     alignment:

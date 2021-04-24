@@ -76,7 +76,7 @@ class _LoginState extends State<Login> {
                   width: 300,
                   child: Image(
                     image: AssetImage("assets/sclogo.png"),
-                    color: Theme.of(context).accentColor,
+                    color: Theme.of(context).primaryColor,
                   )),
               TextFormField(
                 decoration: InputDecoration(labelText: "Email"),

@@ -127,11 +127,12 @@ class _AddPostState extends State<AddPost> {
                   TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     cursorColor: primary_color,
-                    decoration: InputDecoration(hintText: "Write your post here..."),
-                    maxLines: null,
-                    keyboardType: TextInputType.multiline,
-                    validator: (val) => postValidator(newPost.content),
-                    onChanged: (val) {
+                    decoration: InputDecoration(
+                        hintText: "Write your post here..."),
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
+                      validator: (val) => postValidator(newPost.content),
+                      onChanged: (val) {
                       setState(() => newPost.content = val);
                     },
                   ),
@@ -286,7 +287,7 @@ class _AddPostState extends State<AddPost> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              content: Text("Are you sure you want to add this post?" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                              content: Text("Are you sure you want to add this post?", style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText1)),
                               actions: [
                                 TextButton(
                                   child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
