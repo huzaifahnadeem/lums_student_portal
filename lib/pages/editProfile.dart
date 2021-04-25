@@ -491,21 +491,22 @@ class _EditProfileState extends State<EditProfile> {
                                     style: TextStyle(color: Colors.black),
                                   ),
                                   onPressed: () async {
-                                    setState(() async {
-                                      selectedTime = await showTimePicker(
-                                      context: context,
-                                      initialTime: selectedTime != null? selectedTime!: TimeOfDay.now(),
-                                      builder: (BuildContext? context,
-                                          Widget? child) {
-                                        return MediaQuery(
-                                          data: MediaQuery.of(context!)
-                                              .copyWith(
-                                                  alwaysUse24HourFormat: false),
-                                          child: child!,
-                                        );
-                                      },
-                                    );
-                                    });
+                                    TimeOfDay? temp = await showTimePicker(
+                                    context: context,
+                                    initialTime: selectedTime != null? selectedTime!: TimeOfDay.now(),
+                                    builder: (BuildContext? context,
+                                        Widget? child) {
+                                      return MediaQuery(
+                                        data: MediaQuery.of(context!)
+                                            .copyWith(
+                                                alwaysUse24HourFormat: false),
+                                        child: child!,
+                                      );
+                                    },
+                                  );  
+                                  setState(() {
+                                    selectedTime = temp;
+                                  });
                                   },
                                 ),
                               ),
@@ -518,7 +519,6 @@ class _EditProfileState extends State<EditProfile> {
                                 maxLines: null,
                                 decoration:
                                     InputDecoration(labelText: "Manifesto"),
-                                // validator: (val) => headingValidator(val!), // 30 characters limit not needed for manifesto
                                 onChanged: (val) {
                                   setState(() => _profile.manifesto = val);
                                 },
