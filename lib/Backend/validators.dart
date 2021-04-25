@@ -37,6 +37,15 @@ String? headingValidator(String heading) {
   return null;
 }
 
+String? generalFieldValidator(String field) {
+  if (field.isEmpty) {
+    return "Field can not be empty.";
+  } else if (field.length > 30) {
+    return "Field cannot exceed 30 characters.";
+  }
+  return null;
+}
+
 String? postValidator(String post) {
   if (post.isEmpty) {
     return "Field can not be empty.";

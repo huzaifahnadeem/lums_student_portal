@@ -4,6 +4,7 @@ import 'package:lums_student_portal/pages/settings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/profile.dart';
 
 class Profile extends StatefulWidget {
@@ -16,7 +17,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   late final String who;
-  _ProfileState({required this.who});
+  _ProfileState({required this.who,});
 
   // member variables
   FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -33,7 +34,7 @@ class _ProfileState extends State<Profile> {
     super.initState();
   }
 
-  Widget profileBody() {
+  Widget profileBody(BuildContext context) {
     final double circleRadius = 80;
     return Scaffold(
       appBar: AppBar(
@@ -47,8 +48,7 @@ class _ProfileState extends State<Profile> {
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Color(
-            0xFFEB5757), // Theme.of(context).primaryColor = Color(0xFFEA5757)
+        backgroundColor: primary_color,
         actions: <Widget>[
           // settings button
           if (who == "self")
@@ -259,7 +259,7 @@ class _ProfileState extends State<Profile> {
               _profile.pictureURL = snapshot.data!["picture"];
             } catch (e) {}
 
-            return profileBody();
+            return profileBody(context);
           } else {
             return Center(
               child: Text("Please try later"),
