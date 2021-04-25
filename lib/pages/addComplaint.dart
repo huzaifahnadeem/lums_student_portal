@@ -22,12 +22,20 @@ class _AddComplaintState extends State<AddComplaint> {
   String? uid;
   bool loading = false;
   List updateList = [];
+  List chairsList = [];
 
   void initState() {
     uid = thisUser!.uid;
     setState(() => newComplaint.senderUid = uid);
     _db.collection("Profiles").doc(uid).get().then((value) {
       setState(() => newComplaint.name = value.get("name"));
+    });
+    _db.collection("Chairs").get().then((value) {
+      value.docs.forEach((result) {
+        if (result.get("uid").toString() != "" && result.get("uid") != null) {
+          chairsList.add(result.id);
+        }
+      });
     });
     super.initState();
   }
@@ -41,13 +49,28 @@ class _AddComplaintState extends State<AddComplaint> {
     });
   }
 
+  Future<void> delagateToGenral() async {
+    return _db.collection("Chairs").doc("General").get().then((value) {
+      updateList.add(value.get("uid"));
+      setState(() {
+        newComplaint.delegatedMembers = updateList;
+      });
+    });
+  }
+
   // function to call when user pressed "Add Post" button
   void validate() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         loading = true;
       });
-      await delegateTo();
+      if (chairsList.contains(newComplaint.tag)) {
+        print("here");
+        await delegateTo();
+      } else {
+        print("delagating to genral");
+        await delagateToGenral();
+      }
       await newComplaint.addComplaintToDB();
       setState(() {
         updateList.clear();

@@ -116,11 +116,6 @@ class _ViewResolveState extends State<ViewResolve> {
       if (value.get("uid") == uid) {
         setState(() {
           isCategoryChair = true;
-          loading = false;
-        });
-      } else {
-        setState(() {
-          loading = false;
         });
       }
     });
@@ -129,7 +124,6 @@ class _ViewResolveState extends State<ViewResolve> {
         if (element.get("uid") == uid) {
           setState(() {
             isChair = true;
-            loading = false;
           });
         }
       });
