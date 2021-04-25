@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Themes/Theme.dart';
+import 'package:lums_student_portal/Themes/progessIndicator.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/pages/saved.dart';
 import 'newsfeed.dart';
@@ -13,6 +14,7 @@ import 'package:lums_student_portal/pages/addComplaint.dart'; // for adding comp
 import 'package:lums_student_portal/pages/complaintHistory.dart'; // for complaint History
 import 'package:lums_student_portal/pages/complaintResolve.dart'; // for ressolving complaint
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -24,6 +26,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   static String filter = "General";
   //late ScrollController scrollController ;
   bool _showFloatingActionButton = true;
+  bool loading = false;
   late int _selectedIndex; // current index of the bottom bar button selected
   late int
       _numTabs; // number of tabs to display on each screen - for example 3 for Complaints
@@ -88,26 +91,26 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   // member functions
   void initState() {
     // to check role of user and display appropriate pages
+    setState(() {
+      loading = true;
+    });
     User? thisUser = FirebaseAuth.instance.currentUser;
-    _db
-        .collection("Profiles")
-        .where("email", isEqualTo: thisUser!.email)
-        .get()
-        .then((value) {
-      value.docs.forEach((result) {
-        setState(() => userRole = result.get("role"));
-        if (result.get("role") == "SC" || result.get("role") == "IT") {
-          _tabsEachScreen[1].add(Tab(
-            text: "Resolve",
-          ));
-        }
+    _db.collection("Profiles").doc(thisUser!.uid).get().then((value) {
+      setState(() => userRole = value.get("role"));
+      if (value.get("role") == "SC" || value.get("role") == "IT") {
+        _tabsEachScreen[1].add(Tab(
+          text: "Resolve",
+        ));
+      }
+      setState(() {
+        loading = false;
       });
     });
-    super.initState();
-     appBarTitle = "NewsFeed" ;
-    _selectedIndex = 0 ;
+    appBarTitle = "NewsFeed";
+    _selectedIndex = 0;
     _numTabs = _tabsEachScreen[_selectedIndex].length;
     _tabController = TabController(length: _numTabs, vsync: this);
+    super.initState();
   }
 
   void applyFilter(String value) {
@@ -135,7 +138,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   List<Widget> returnBody() {
     List<List<Widget>> views = [
       [
-        // news feed subscreens
+        // news feed sub screens
         Newsfeed(filter: filter, role: userRole),
         Saved(filter: filter)
       ],
@@ -146,106 +149,110 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       ],
       [StudentCouncil()],
       [
-        Profile(who: "self")
+        Profile(who: "self",)
       ], // who is used to specify whose profile you want to see. "self" keyword is used for own profile. For SC members pass their UID in who field as string
     ];
     return views[_selectedIndex];
   }
 
   // function to apply filter to home screen
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _selectedIndex >= 2
-          ? null
-          : AppBar(
-              title: Text(
-                appBarTitles[_selectedIndex],
-                style: GoogleFonts.robotoSlab(
-                    textStyle: Theme.of(context)
-                        .textTheme
-                        .headline6!
-                        .copyWith(color: secondary_color)),
-              ),
-              backgroundColor: Theme.of(context).primaryColor,
-              actions: [
-                _selectedIndex == 0
-                    ? Padding(
-                        padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            icon: new Icon(
-                              Icons.filter_list,
-                              color: secondary_color,
-                              size: 15,
-                            ),
-                            isExpanded: false,
-                            value: filter,
-                            dropdownColor: Theme.of(context).accentColor,
-                            onChanged: (newVal) =>
-                                applyFilter(newVal.toString()),
-                            items: Post.categories1.map((categoryItem) {
-                              return DropdownMenuItem(
-                                value: categoryItem,
-                                child: Text(
-                                  categoryItem,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(color: secondary_color),
+    return loading
+        ? LoadingScreen()
+        : Scaffold(
+            appBar: _selectedIndex >= 2
+                ? null
+                : AppBar(
+                    title: Text(
+                      appBarTitles[_selectedIndex],
+                      style: GoogleFonts.robotoSlab(
+                          textStyle: Theme.of(context)
+                              .textTheme
+                              .headline6!
+                              .copyWith(color: secondary_color)),
+                    ),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    actions: [
+                      _selectedIndex == 0
+                          ? Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton(
+                                  icon: new Icon(
+                                    Icons.filter_list,
+                                    color: secondary_color,
+                                    size: 15,
+                                  ),
+                                  isExpanded: false,
+                                  value: filter,
+                                  dropdownColor: Theme.of(context).accentColor,
+                                  onChanged: (newVal) =>
+                                      applyFilter(newVal.toString()),
+                                  items: Post.categories1.map((categoryItem) {
+                                    return DropdownMenuItem(
+                                      value: categoryItem,
+                                      child: Text(
+                                        categoryItem,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1!
+                                            .copyWith(color: secondary_color),
+                                      ),
+                                    );
+                                  }).toList(),
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                            )
+                          : Container(),
+                    ],
+                    bottom: TabBar(
+                      indicatorWeight: 3,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      controller: _tabController,
+                      tabs: _tabsEachScreen[_selectedIndex],
+                      indicatorColor: secondary_color,
+                    ),
+                  ),
+            body: TabBarView(
+              controller: _tabController,
+              children: returnBody(),
+            ),
+            // add a floating action button on the News feed screen
+            floatingActionButton: (_selectedIndex != 0)
+                ? null
+                : (userRole != "Student")
+                    ? Padding(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/AddPost');
+                          },
+                          child: Icon(
+                            Icons.add,
+                            color: Theme.of(context).primaryColor,
+                            size: 40,
                           ),
+                          backgroundColor: secondary_color,
                         ),
                       )
-                    : Container(),
-              ],
-              bottom: TabBar(
-                indicatorWeight: 3,
-                indicatorSize: TabBarIndicatorSize.tab,
-                controller: _tabController,
-                tabs: _tabsEachScreen[_selectedIndex],
-                indicatorColor: secondary_color,
+                    : null,
+            bottomNavigationBar: BottomNavigationBar(
+              selectedFontSize: 12,
+              //showUnselectedLabels: false,
+              unselectedFontSize: 10,
+              unselectedIconTheme: IconThemeData(
+                color: grey,
               ),
-            ),
-      body: TabBarView(
-        controller: _tabController,
-        children: returnBody(),
-      ),
-      // add a floating action button on the newsfeed screen
-      floatingActionButton: (_selectedIndex != 0)
-          ? null
-          : (userRole != "Student")? Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/AddPost');
-              },
-              child: Icon(
-                Icons.add,
-                color: Theme.of(context).primaryColor,
-                size: 40,
+              selectedIconTheme: IconThemeData(
+                color: Theme.of(context).accentColor,
               ),
-              backgroundColor: secondary_darker,
+              backgroundColor: secondary_color,
+              type: BottomNavigationBarType.fixed,
+              items: _bottomBarButtons,
+              currentIndex: _selectedIndex,
+              onTap: (index) => navigate(index),
             ),
-          ): null,
-      bottomNavigationBar: BottomNavigationBar(
-        selectedFontSize: 12,
-        unselectedFontSize: 10,
-        unselectedIconTheme: IconThemeData(
-          color: grey,
-        ),
-        selectedIconTheme: IconThemeData(
-          color: Theme.of(context).accentColor,
-        ),
-        backgroundColor: secondary_color,
-        type: BottomNavigationBarType.fixed,
-        items: _bottomBarButtons,
-        currentIndex: _selectedIndex,
-        onTap: (index) => navigate(index),
-      ),
-    );
+          );
   }
 }

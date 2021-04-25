@@ -5,7 +5,7 @@ import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/Themes/Theme.dart';
 
 class ResetPassword extends StatefulWidget {
-  final Function switchScreen ;
+  final Function switchScreen;
 
   const ResetPassword({Key? key, required this.switchScreen}) : super(key: key);
 
@@ -14,79 +14,79 @@ class ResetPassword extends StatefulWidget {
 }
 
 class _ResetPasswordState extends State<ResetPassword> {
-
   final _formKey = GlobalKey<FormState>();
   String email = "";
-  String message = "" ;
+  String message = "";
 
   // Function to trigger firebase reset email
-  void resetPassword () async {
+  void resetPassword() async {
     message = await Authentication().resetPassword(email);
     print(message);
     widget.switchScreen();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
         leading: TextButton(
-          onPressed:() => widget.switchScreen(),
+          onPressed: () => widget.switchScreen(),
           child: Text("Back",
-              style: Theme.of(context).textTheme.caption!.copyWith(color: Theme.of(context).primaryColor, fontSize: 16)),
+              style: Theme.of(context).textTheme.caption!.copyWith(
+                  color: Theme.of(context).primaryColor, fontSize: 16)),
         ),
       ),
       body: SafeArea(
-        minimum: EdgeInsets.fromLTRB(30,10,30,30),
+        minimum: EdgeInsets.fromLTRB(30, 10, 30, 30),
         child: SingleChildScrollView(
-          child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                    Icon(
-                      Icons.lock_open_sharp,
-                      size: 200,
-                      color: grey,
-                    ),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: Text(
-                        "Forgot Your Password?",
-                        style: Theme.of(context).textTheme.headline6 ,
-                      ),
-                    ),
-                    SizedBox(height: 10, width: 0),
-                    Flexible(
-                      fit: FlexFit.loose,
-                      child: Text(
-                        "Enter your email and we’ll send you a link to reset your "
-                            "password. You will be redirected to the Login screen after this.",
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    ),
-                    SizedBox(height: 30, width: 0),
-                    TextFormField(
-                      decoration: InputDecoration(labelText: "Email"),
-                      validator: (val) => emailValidator(val!, false),
-                      onChanged: (val) {
-                        setState(() => email = val);
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () => resetPassword(),
-                        child: Text('Email Me',
-                            style: Theme.of(context).textTheme.headline5),
-                      ),
-                    ),
-                  ],
+            child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.lock_open_sharp,
+                size: 200,
+                color: Colors.black87,
+              ),
+              Flexible(
+                fit: FlexFit.loose,
+                child: Text(
+                  "Forgot Your Password?",
+                  style: Theme.of(context).textTheme.headline6,
                 ),
-          )
-        ),
+              ),
+              SizedBox(height: 10, width: 0),
+              Flexible(
+                fit: FlexFit.loose,
+                child: Text(
+                  "Enter your email and we’ll send you a link to reset your "
+                  "password. You will be redirected to the Login screen after this.",
+                  style: Theme.of(context).textTheme.caption,
+                ),
+              ),
+              SizedBox(height: 30, width: 0),
+              TextFormField(
+                decoration: InputDecoration(labelText: "Email"),
+                validator: (val) => emailValidator(val!, false),
+                onChanged: (val) {
+                  setState(() => email = val);
+                },
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: () => resetPassword(),
+                  child: Text('Email Me',
+                      style: Theme.of(context).textTheme.headline5),
+                ),
+              ),
+            ],
+          ),
+        )),
       ),
     );
   }

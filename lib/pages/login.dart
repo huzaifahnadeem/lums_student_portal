@@ -10,7 +10,8 @@ class Login extends StatefulWidget {
 
   final Function switchScreen2;
 
-  Login({required this.switchScreen1, required this.switchScreen2, Key? key}) : super(key: key);
+  Login({required this.switchScreen1, required this.switchScreen2, Key? key})
+      : super(key: key);
 
   @override
   _LoginState createState() => _LoginState();
@@ -41,7 +42,7 @@ class _LoginState extends State<Login> {
           ),
           Text('  $message')
         ])));
-        message = '' ;
+        message = '';
       }
     }
   }
@@ -68,7 +69,7 @@ class _LoginState extends State<Login> {
         key: _formKey,
         child: SingleChildScrollView(
           child: SafeArea(
-            minimum: EdgeInsets.fromLTRB(30,0,30,30),
+            minimum: EdgeInsets.fromLTRB(30, 0, 30, 30),
             child: Column(children: <Widget>[
               SizedBox(
                   height: 250,
@@ -89,7 +90,11 @@ class _LoginState extends State<Login> {
                 decoration: InputDecoration(
                   labelText: "Password",
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.lock_sharp, color: grey, size: 20,),
+                    icon: Icon(
+                      Icons.lock_sharp,
+                      color: grey,
+                      size: 20,
+                    ),
                     onPressed: () => _toggle(),
                   ),
                 ),
@@ -116,7 +121,10 @@ class _LoginState extends State<Login> {
                 children: <Widget>[
                   Text(
                     "Don't have an account?",
-                    style: Theme.of(context).textTheme.caption!.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context)
+                        .textTheme
+                        .caption!
+                        .copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.end,
                   ),
                   TextButton(

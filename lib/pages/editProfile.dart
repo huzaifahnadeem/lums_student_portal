@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/models/profile.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
-import 'package:intl/date_symbol_data_file.dart'; // for DateFormat
 
 class EditProfile extends StatefulWidget {
   final bool showSC;
@@ -25,14 +23,7 @@ class _EditProfileState extends State<EditProfile> {
   FirebaseFirestore _db = FirebaseFirestore.instance;
   final filePicker = FilePicker.platform;
   final _formKey = GlobalKey<FormState>();
-
-  void initState() {
-    _future = _db.collection("Profiles").doc(widget.userId).get();
-    _profile = ProfileModel(name: '', role: 'Student', email: '');
-    objectInitialized = false;
-    super.initState();
-  }
-
+  
   TimeOfDay? selectedTime;
   OfficeHours? selectedOfficeHours;
 
@@ -40,6 +31,9 @@ class _EditProfileState extends State<EditProfile> {
     String result = '';
     if (_profile.pictureURL != null) {
       result = await _profile.deletePicture(docID);
+      setState(() {
+        _profile.pictureURL = null;
+      });
     } else {
       result = "You currently don't have a profile picture!";
     }
@@ -157,13 +151,20 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  void initState() {
+    _future = _db.collection("Profiles").doc(widget.userId).get();
+    _profile = ProfileModel(name: '', role: 'Student', email: ''); 
+    objectInitialized = false;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(
             color: Colors
-                .black, //Changing back button's color to black so that its visible. TODO: text button instead of <- icon?
+                .black, //Changing back button's color to black so that its visible.
           ),
           title: Text('Edit Profile',
               style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6)),
@@ -243,7 +244,6 @@ class _EditProfileState extends State<EditProfile> {
                                             child: Text('Cancel'),
                                             onPressed: () {
                                               Navigator.of(context).pop();
-                                              // setState(() {});
                                             },
                                           ),
                                         ],
@@ -325,7 +325,7 @@ class _EditProfileState extends State<EditProfile> {
                             TextFormField(
                               initialValue: _profile.name,
                               decoration: InputDecoration(labelText: "Name"),
-                              validator: (val) => headingValidator(val!),
+                              validator: (val) => generalFieldValidator(val!),
                               onChanged: (val) {
                                 setState(() => _profile.name = val);
                               },
@@ -334,12 +334,15 @@ class _EditProfileState extends State<EditProfile> {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: DropdownButtonFormField<String>(
-                                hint: Text("Hostel Status"),
+                                hint: Text("Hostel Status",),
+                                decoration: InputDecoration(labelText: 'Hostel Status'),
+                                validator: (val) => dropDownValidator(val),
                                 value: _profile.hostel,
                                 icon: const Icon(Icons.arrow_drop_down),
                                 style: Theme.of(context)
                                     .inputDecorationTheme
-                                    .labelStyle, // to match the style with textfields
+                                    .labelStyle!
+                                    .copyWith(color: Colors.black),
                                 onChanged: (newVal) {
                                   setState(() {
                                     _profile.hostel = newVal.toString();
@@ -359,11 +362,14 @@ class _EditProfileState extends State<EditProfile> {
                               alignment: Alignment.centerLeft,
                               child: DropdownButtonFormField<String>(
                                 hint: Text("Year"),
+                                decoration: InputDecoration(labelText: 'Year'),
+                                validator: (val) => dropDownValidator(val),
                                 value: _profile.year,
                                 icon: const Icon(Icons.arrow_drop_down),
                                 style: Theme.of(context)
                                     .inputDecorationTheme
-                                    .labelStyle, // to match the style with textfields
+                                    .labelStyle!
+                                    .copyWith(color: Colors.black),
                                 onChanged: (newVal) {
                                   setState(() {
                                     _profile.year = newVal.toString();
@@ -382,12 +388,15 @@ class _EditProfileState extends State<EditProfile> {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: DropdownButtonFormField<String>(
-                                hint: Text("School"),
+                                hint: Text("School",),
+                                decoration: InputDecoration(labelText: 'School'),
+                                validator: (val) => dropDownValidator(val),
                                 value: _profile.school,
                                 icon: const Icon(Icons.arrow_drop_down),
                                 style: Theme.of(context)
                                     .inputDecorationTheme
-                                    .labelStyle, // to match the style with textfields
+                                    .labelStyle!
+                                    .copyWith(color: Colors.black),
                                 onChanged: (newVal) {
                                   setState(() {
                                     _profile.school = newVal.toString();
@@ -406,7 +415,7 @@ class _EditProfileState extends State<EditProfile> {
                             TextFormField(
                               initialValue: _profile.major,
                               decoration: InputDecoration(labelText: "Major"),
-                              validator: (val) => headingValidator(val!),
+                              validator: (val) => generalFieldValidator(val!),
                               onChanged: (val) {
                                 setState(() => _profile.major = val);
                               },
@@ -482,19 +491,22 @@ class _EditProfileState extends State<EditProfile> {
                                     style: TextStyle(color: Colors.black),
                                   ),
                                   onPressed: () async {
-                                    selectedTime = await showTimePicker(
-                                      context: context,
-                                      initialTime: selectedTime != null? selectedTime!: TimeOfDay.now(),
-                                      builder: (BuildContext? context,
-                                          Widget? child) {
-                                        return MediaQuery(
-                                          data: MediaQuery.of(context!)
-                                              .copyWith(
-                                                  alwaysUse24HourFormat: false),
-                                          child: child!,
-                                        );
-                                      },
-                                    );
+                                    TimeOfDay? temp = await showTimePicker(
+                                    context: context,
+                                    initialTime: selectedTime != null? selectedTime!: TimeOfDay.now(),
+                                    builder: (BuildContext? context,
+                                        Widget? child) {
+                                      return MediaQuery(
+                                        data: MediaQuery.of(context!)
+                                            .copyWith(
+                                                alwaysUse24HourFormat: false),
+                                        child: child!,
+                                      );
+                                    },
+                                  );  
+                                  setState(() {
+                                    selectedTime = temp;
+                                  });
                                   },
                                 ),
                               ),
@@ -507,7 +519,6 @@ class _EditProfileState extends State<EditProfile> {
                                 maxLines: null,
                                 decoration:
                                     InputDecoration(labelText: "Manifesto"),
-                                // validator: (val) => headingValidator(val!), // 30 characters limit not needed for manifesto
                                 onChanged: (val) {
                                   setState(() => _profile.manifesto = val);
                                 },

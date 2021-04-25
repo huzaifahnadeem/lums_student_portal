@@ -37,39 +37,53 @@ String? headingValidator(String heading) {
   return null;
 }
 
+String? generalFieldValidator(String field) {
+  if (field.isEmpty) {
+    return "Field can not be empty.";
+  } else if (field.length > 30) {
+    return "Field cannot exceed 30 characters.";
+  }
+  return null;
+}
+
 String? postValidator(String post) {
   if (post.isEmpty) {
     return "Field can not be empty.";
   }
   return null;
 }
-String? complaintValidator(String complaint){
+
+String? complaintValidator(String complaint) {
   if (complaint.isEmpty) {
     return "Field can not be empty.";
   }
   return null;
 }
 
-String? dropDownValidator(Object? choice){
-  if (choice == null){
-     return "Please choose an option";
-   }
-   else if(choice.toString().isEmpty){
-     return "Please choose an option";
-   }
-   else{
-     return null;
-   }
+String? dropDownValidator(Object? choice) {
+  if (choice == null) {
+    return "Please choose an option";
+  } else if (choice.toString().isEmpty) {
+    return "Please choose an option";
+  } else {
+    return null;
+  }
 }
 
 String? emptyNullValidator(String? str) {
-  if (str == null){
+  if (str == null) {
     return "Field can not be empty";
-  }
-  else if (str.isEmpty) {
+  } else if (str.isEmpty) {
     return "Field can not be empty.";
   }
   return null;
 }
 
-
+String? subjectValidator(String subject) {
+  if (subject.isEmpty) {
+    return "Subject can not be empty.";
+  } else if (subject.length > 30) {
+    return "Subject cannot exceed 30 characters.";
+  }
+  return null;
+}

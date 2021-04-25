@@ -108,7 +108,15 @@ class _AddPostState extends State<AddPost> {
                   // heading input field
                   TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
-                    decoration: InputDecoration(hintText: "Heading..."),
+                    cursorColor: primary_color,
+                    decoration: InputDecoration(
+                        hintText: "Heading...",
+                        // border: OutlineInputBorder(
+                        //   borderRadius: new BorderRadius.circular(5.0),
+                        //   borderSide: new BorderSide(),
+                        // ),
+                        //fillColor: secondary_lighter
+                    ),
                     validator: (val) => headingValidator(newPost.subject),
                     onChanged: (val) {
                       setState(() => newPost.subject = val);
@@ -118,6 +126,7 @@ class _AddPostState extends State<AddPost> {
                   // content input field
                   TextFormField(
                     autovalidateMode: AutovalidateMode.onUserInteraction,
+                    cursorColor: primary_color,
                     decoration: InputDecoration(hintText: "Write your post here..."),
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
@@ -153,6 +162,7 @@ class _AddPostState extends State<AddPost> {
                           style: GoogleFonts.roboto( textStyle: Theme.of(context).textTheme.bodyText2!.copyWith(fontWeight: FontWeight.w400),))),
                       TextFormField(
                         autovalidateMode: AutovalidateMode.onUserInteraction,
+                        cursorColor: primary_color,
                         decoration: InputDecoration(hintText: "Poll Question"),
                         maxLines: null,
                         keyboardType: TextInputType.multiline,
@@ -186,7 +196,7 @@ class _AddPostState extends State<AddPost> {
                   (newPost.isPoll && newPost.numOptions > 1 && newPost.options != null)? Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      IconButton(icon: new Icon(Icons.add_circle_outline, color: lightBlue), onPressed: () {
+                      IconButton(icon: new Icon(Icons.add_circle_outline, color: primary_lighter), onPressed: () {
                         setState(() {
                           newPost.addOption();
                         });

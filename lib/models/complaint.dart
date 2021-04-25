@@ -9,29 +9,34 @@ class Complaint {
   String subject;
   String complaint;
   String? tag;
-  String? email;
+  String? senderUid;
   String? isResolved = "Pending";
   String? name;
   String? resolution;
   String? resolvedBy;
+  List delegatedMembers = [];
 
-  static List categories = [
+  static List categories1 = [
     "General",
     "Disciplinary Committee",
-    "Academic Policy",
+    "Academic",
     "Campus Development",
-    "Others"
+    "Mental Health",
+    "Graduate Affairs",
+    "HR-PR"
   ];
-  static List categories1 = ["General", "DC", "Academic", "Campus", "Others"];
   FirebaseFirestore _db = FirebaseFirestore.instance;
 
   //class constructor
   Complaint(
-      {required this.subject, required this.complaint, required this.email});
+      {required this.subject,
+      required this.complaint,
+      required this.senderUid});
 
   // create json object to add to database
   Map<String, dynamic> toMap() {
     return {
+      "delegatedMembers": this.delegatedMembers,
       "resolvedBy": this.resolvedBy,
       "resolution": this.resolution,
       "name": this.name,
@@ -39,7 +44,7 @@ class Complaint {
       "category": this.tag,
       "subject": this.subject,
       "complaint": this.complaint,
-      "email": this.email,
+      "senderUid": this.senderUid,
       "time": Timestamp.now()
     };
   }

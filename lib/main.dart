@@ -15,7 +15,6 @@ import 'package:lums_student_portal/pages/updatePost.dart';
 import 'package:lums_student_portal/pages/verifyAccount.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(App());
@@ -25,7 +24,6 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.red,
         primaryColorDark: primary_color,
@@ -33,6 +31,7 @@ class App extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
         primaryColor: primary_color,
         primaryColorLight: primary_lighter,
+        accentColor: primary_accent,
         textTheme: createTextTheme(),
         appBarTheme: createAppBarTheme(),
         inputDecorationTheme: createInputDecorTheme(),
@@ -40,49 +39,55 @@ class App extends StatelessWidget {
         brightness: Brightness.light,
         snackBarTheme: createSnackBarTheme(),
         buttonTheme: createButtonTheme(),
-        accentColor: primary_accent,
         iconTheme: createIconTheme(),
-
       ),
       initialRoute: '/',
       onGenerateRoute: (settings) {
         // If you push the PassArguments route
         if (settings.name == '/') {
           return MaterialPageRoute(
-            builder: (context) { return LandingPage();},
+            builder: (context) {
+              return LandingPage();
+            },
           );
-        }
-        else if (settings.name == '/AddPost') {
+        } else if (settings.name == '/AddPost') {
           return MaterialPageRoute(
-            builder: (context) { return AddPost();},
+            builder: (context) {
+              return AddPost();
+            },
           );
-        }
-        else if (settings.name == '/UpdatePost') {
+        } else if (settings.name == '/UpdatePost') {
           final Post post = settings.arguments as Post;
           return MaterialPageRoute(
-            builder: (context) { return UpdatePost(post: post);},
+            builder: (context) {
+              return UpdatePost(post: post);
+            },
           );
-        }
-        else if (settings.name == '/poll') {
+        } else if (settings.name == '/poll') {
           final String id = settings.arguments as String;
           return MaterialPageRoute(
-            builder: (context) { return Poll(id: id);},
+            builder: (context) {
+              return Poll(id: id);
+            },
           );
-        }
-        else if (settings.name == '/changePassword') {
+        } else if (settings.name == '/changePassword') {
           return MaterialPageRoute(
-            builder: (context) { return ChangePassword();},
+            builder: (context) {
+              return ChangePassword();
+            },
           );
-        }
-        else if (settings.name == '/editProfile') {
+        } else if (settings.name == '/editProfile') {
           final EditProfileArgs args = settings.arguments as EditProfileArgs;
           return MaterialPageRoute(
-            builder: (context) { return EditProfile(showSC: args.sc, userId: args.uID);},
+            builder: (context) {
+              return EditProfile(showSC: args.sc, userId: args.uID);
+            },
           );
-        }
-        else if (settings.name == '/updateAccount') {
+        } else if (settings.name == '/updateAccount') {
           return MaterialPageRoute(
-            builder: (context) { return UpdateAccount();},
+            builder: (context) {
+              return UpdateAccount();
+            },
           );
         }
       },
@@ -96,23 +101,22 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-
-  late bool _initialized ;
-  late Stream<User?> _streamOfAuthChanges ;
+  late bool _initialized;
+  late Stream<User?> _streamOfAuthChanges;
 
   Future initializeFlutterFire() async {
-    try{
+    try {
       await Firebase.initializeApp();
       setState(() {
-        _initialized = true ;
-        _streamOfAuthChanges = Authentication().user ;
+        _initialized = true;
+        _streamOfAuthChanges = Authentication().user;
       });
-    }
-    catch (err){
+    } catch (err) {
       print(err);
     }
   }
-  void initState()  {
+
+  void initState() {
     _initialized = false;
     initializeFlutterFire();
     super.initState();
@@ -120,30 +124,31 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return (!_initialized) ? LoadingScreen() : StreamBuilder<User?>(
-      stream: _streamOfAuthChanges,
-      builder: (context, snapshot){
-        if (snapshot.connectionState == ConnectionState.active) {
-          if (snapshot.hasData) {
-            if (snapshot.data!.emailVerified) {
-              return Home();
-            }
-            else {
-              return VerifyAccount();
-            }
-          }
-          else{
-            return SignUpOrLogin();
-          }
-        }
-        else if (snapshot.hasError) {
-          return Center(child: Text("Something went wrong! Please try later", style: Theme.of(context).textTheme.bodyText1,));
-        }
-        else{
-          return LoadingScreen();
-        }
-      },
-
-    );
+    return (!_initialized)
+        ? LoadingScreen()
+        : StreamBuilder<User?>(
+            stream: _streamOfAuthChanges,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasData) {
+                  if (snapshot.data!.emailVerified) {
+                    return Home();
+                  } else {
+                    return VerifyAccount();
+                  }
+                } else {
+                  return SignUpOrLogin();
+                }
+              } else if (snapshot.hasError) {
+                return Center(
+                    child: Text(
+                  "Something went wrong! Please try later",
+                  style: Theme.of(context).textTheme.bodyText1,
+                ));
+              } else {
+                return LoadingScreen();
+              }
+            },
+          );
   }
 }
