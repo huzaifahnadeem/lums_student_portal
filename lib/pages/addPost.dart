@@ -95,6 +95,7 @@ class _AddPostState extends State<AddPost> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
         title: Text("Add Post", style: GoogleFonts.robotoSlab( textStyle: Theme.of(context).textTheme.headline6),),
       ),
       body: loading? LoadingScreen(): SafeArea(

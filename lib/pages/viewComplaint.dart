@@ -149,7 +149,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
                             style: GoogleFonts.roboto(
                                 textStyle: Theme.of(context)
                                     .textTheme
-                                    .bodyText2!
+                                    .bodyText1!
                                     .copyWith(fontWeight: FontWeight.bold),
                                 color: primary_color)),
                       ),

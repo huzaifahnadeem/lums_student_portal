@@ -73,33 +73,30 @@ class _AddComplaintState extends State<AddComplaint> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          // titleTextStyle: ,
-          //title: Text('Confirmation', textAlign: TextAlign.center, style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2)),
+          title: Text('Lodge Complaint?', textAlign: TextAlign.center, style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want to lodge this complaint?',
-                    textAlign: TextAlign.center)
+                Text('Once you submit, your complaint will be sent to the Student Council')
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-                style: TextButton.styleFrom(primary: primary_color),
+              style: TextButton.styleFrom(primary: primary_color),
+              child: Text('Cancel', textAlign: TextAlign.left),
+              onPressed: () {
+                Navigator.of(context).pop();
+                // setState(() {});
+              },
+            ),
+            TextButton(
+                style: TextButton.styleFrom(primary: black),
                 onPressed: () {
                   Navigator.of(context).pop();
                   validate();
                 },
                 child: Text('Yes')
-            ),
-
-            TextButton(
-              style: TextButton.styleFrom(primary: primary_color),
-              child: Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                // setState(() {});
-              },
             ),
           ],
         );

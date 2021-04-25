@@ -27,9 +27,14 @@ class Post {
     "Academic",
     "Campus Development",
     "Mental Health",
-    "Graduate Affairs",
+    "Diversity & Inclusion",
+    "Student Action",
+    "Welfare",
     "HR-PR",
-    "Others"
+    "Food & Pricing",
+    "Graduate Affairs",
+    "Alumni Relations",
+    "CSO"
   ];
   static List categories1 = [
     "General",
@@ -37,9 +42,14 @@ class Post {
     "Academic",
     "Camp Dev",
     "Health",
-    "Graduates",
+    "Diversity",
+    "Action",
+    "Welfare",
     "HR/PR",
-    "Others"
+    "Food",
+    "Graduates",
+    "Alumni",
+    "CSO"
   ];
   static var categoryMap = {
     'General': 'General',
@@ -47,9 +57,14 @@ class Post {
     'Academic': 'Academic',
     'Camp Dev': 'Campus Development',
     "Health": "Mental Health",
-    "Graduates": "Graduate Affairs",
+    "Diversity": "Diversity & Inclusion",
+    "Action": "Student Action",
+    "Welfare": "Welfare",
     "HR/PR": "HR-PR",
-    'Others': "Others"
+    "Food": "Food & Pricing",
+    "Graduates": "Graduate Affairs",
+    "Alumni": "Alumni Relations",
+    'CSO': "CSO"
   };
   List chooseNumOptions = [2, 3, 4];
   FirebaseFirestore _db = FirebaseFirestore.instance;

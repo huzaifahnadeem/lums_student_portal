@@ -106,7 +106,7 @@ class _LoginState extends State<Login> {
               ),
               SizedBox(height: 25),
               SizedBox(
-                width: double.infinity,
+                width: double.infinity, //250
                 height: 40,
                 child: ElevatedButton(
                   onPressed: () => validate(),

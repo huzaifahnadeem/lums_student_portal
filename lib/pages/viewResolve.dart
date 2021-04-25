@@ -228,7 +228,7 @@ class _ViewResolveState extends State<ViewResolve> {
           content: Row(children: <Widget>[
         Icon(
           Icons.done_all,
-          color: Colors.white,
+          color: secondary_color,
           semanticLabel: "Done",
         ),
         Text('  Resolution Updated')
@@ -252,7 +252,7 @@ class _ViewResolveState extends State<ViewResolve> {
           content: Row(children: <Widget>[
         Icon(
           Icons.done_all,
-          color: Colors.white,
+          color: secondary_color,
           semanticLabel: "Done",
         ),
         Text('  Resolved')
@@ -274,7 +274,7 @@ class _ViewResolveState extends State<ViewResolve> {
         content: Row(children: <Widget>[
       Icon(
         Icons.done_all,
-        color: Colors.white,
+        color: secondary_color,
         semanticLabel: "Done",
       ),
       Text('  Unresolved')
@@ -449,7 +449,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                           .caption!
                                           .copyWith(
                                               color:
-                                                  Theme.of(context).accentColor,
+                                                  Theme.of(context).primaryColor,
                                               fontWeight: FontWeight.bold),
                                     ),
                                   )
@@ -480,8 +480,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                               .textTheme
                                               .caption!
                                               .copyWith(
-                                                  color: Theme.of(context)
-                                                      .accentColor,
+                                                  color: Theme.of(context).primaryColor,
                                                   fontWeight: FontWeight.bold),
                                         ),
                                       )
@@ -759,25 +758,11 @@ class _ViewResolveState extends State<ViewResolve> {
                                                                     )),
                                                               ),
                                                               Container(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .fromLTRB(
-                                                                            0,
-                                                                            40,
-                                                                            0,
-                                                                            10),
-                                                                child: SizedBox(
-                                                                  width: 150,
-                                                                  height: 40,
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    onPressed: () =>
-                                                                        delegateDialog(),
-                                                                    child: Text(
-                                                                        'Delegate',
-                                                                        style: Theme.of(context)
-                                                                            .textTheme
-                                                                            .headline5),
+                                                                padding: EdgeInsets.fromLTRB(0, 40, 0, 10),
+                                                                child: SizedBox(width: double.infinity, height: 40,
+                                                                  child: ElevatedButton(onPressed: () => delegateDialog(),
+                                                                        child: Text('Delegate', style: Theme.of(context).textTheme.headline5),
+
                                                                   ),
                                                                 ),
                                                               ),
