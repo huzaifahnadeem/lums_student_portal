@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 import 'package:lums_student_portal/Themes/Theme.dart';
-
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/complaint.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
@@ -24,12 +23,20 @@ class _AddComplaintState extends State<AddComplaint> {
   String? uid;
   bool loading = false;
   List updateList = [];
+  List chairsList = [];
 
   void initState() {
     uid = thisUser!.uid;
     setState(() => newComplaint.senderUid = uid);
     _db.collection("Profiles").doc(uid).get().then((value) {
       setState(() => newComplaint.name = value.get("name"));
+    });
+    _db.collection("Chairs").get().then((value) {
+      value.docs.forEach((result) {
+        if (result.get("uid").toString() != "" && result.get("uid") != null) {
+          chairsList.add(result.id);
+        }
+      });
     });
     super.initState();
   }
@@ -43,13 +50,28 @@ class _AddComplaintState extends State<AddComplaint> {
     });
   }
 
+  Future<void> delagateToGenral() async {
+    return _db.collection("Chairs").doc("General").get().then((value) {
+      updateList.add(value.get("uid"));
+      setState(() {
+        newComplaint.delegatedMembers = updateList;
+      });
+    });
+  }
+
   // function to call when user pressed "Add Post" button
   void validate() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         loading = true;
       });
-      await delegateTo();
+      if (chairsList.contains(newComplaint.tag)) {
+        print("here");
+        await delegateTo();
+      } else {
+        print("delagating to genral");
+        await delagateToGenral();
+      }
       await newComplaint.addComplaintToDB();
       setState(() {
         updateList.clear();
@@ -73,11 +95,15 @@ class _AddComplaintState extends State<AddComplaint> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Lodge Complaint?', textAlign: TextAlign.center, style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2)),
+          title: Text('Lodge Complaint?',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                  textStyle: Theme.of(context).textTheme.bodyText2)),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Once you submit, your complaint will be sent to the Student Council')
+                Text(
+                    'Once you submit, your complaint will be sent to the Student Council')
               ],
             ),
           ),
@@ -96,8 +122,7 @@ class _AddComplaintState extends State<AddComplaint> {
                   Navigator.of(context).pop();
                   validate();
                 },
-                child: Text('Yes')
-            ),
+                child: Text('Yes')),
           ],
         );
       },
@@ -120,8 +145,8 @@ class _AddComplaintState extends State<AddComplaint> {
                       child: DropdownButtonFormField(
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
-                            hintText: "Select Category",
-                            fillColor: Colors.white),
+                          hintText: "Select Category",
+                        ),
                         validator: (val) => dropDownValidator(val),
                         isExpanded: false,
                         value: newComplaint.tag,
@@ -160,8 +185,7 @@ class _AddComplaintState extends State<AddComplaint> {
                         hintText: "Write your complaint here...",
                         fillColor: Colors.white,
                       ),
-                      maxLines: 9,
-                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
                       validator: (val) =>
                           complaintValidator(newComplaint.complaint),
                       onChanged: (val) {

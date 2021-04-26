@@ -26,7 +26,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
     super.initState();
   }
 
-  Widget councilProfilesBody() {
+  Widget councilProfilesBody(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
         length: 3,
@@ -78,7 +78,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
                             ),
                       title: Text(documentSnaps[index]!["name"]),
                       // subtitle: Text('Dept etc'),
-                      subtitle: Text(' '),
+                      subtitle: Text(' '),                      
                       onTap: () {
                         Navigator.push(
                           context,
@@ -154,7 +154,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
               (a, b) => a!["name"].toUpperCase().compareTo(b!["name"].toUpperCase()) // uppercase because otherwise compareTo thinks that uppercase letters come before lowercase
             );
             officeHours = new OfficeHoursModel(documentSnaps, context);
-            return councilProfilesBody();
+            return councilProfilesBody(context);
           } else {
             return Center(
               child: Text("Please try later"),

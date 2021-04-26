@@ -54,9 +54,9 @@ class Complaint {
     CollectionReference complaint = _db.collection('Complaints');
     try {
       await complaint.add(toMap());
-      print("Complaint added to database");
+      return "Complaint added to database";
     } catch (err) {
-      print("An error occurred while adding complaint to the database");
+      return "Error";
     }
   }
 

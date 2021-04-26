@@ -14,7 +14,7 @@ String? emailValidator(String email, bool signUp) {
 
 String? passwordValidator(String password) {
   if (password.isEmpty) {
-    return "Password can not be empty.";
+    return "Field can not be empty.";
   }
   return null;
 }
@@ -30,9 +30,18 @@ String? confirmPasswordValidator(String password1, password2) {
 
 String? headingValidator(String heading) {
   if (heading.isEmpty) {
-    return "Heading can not be empty.";
+    return "Field can not be empty.";
   } else if (heading.length > 30) {
     return "Heading cannot exceed 30 characters.";
+  }
+  return null;
+}
+
+String? generalFieldValidator(String field) {
+  if (field.isEmpty) {
+    return "Field can not be empty.";
+  } else if (field.length > 30) {
+    return "Field cannot exceed 30 characters.";
   }
   return null;
 }
