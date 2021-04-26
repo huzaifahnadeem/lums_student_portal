@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
 
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/complaint.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
@@ -166,9 +167,11 @@ class _AddComplaintState extends State<AddComplaint> {
 
                     // heading input field
                     TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      cursorColor: primary_color,
+                      keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
-                        labelText: "Add Subject",
-                        fillColor: Colors.white,
+                        hintText: "Add Subject...",
                       ),
                       validator: (val) => subjectValidator(
                           newComplaint.subject), // check subjet lenght
@@ -180,12 +183,13 @@ class _AddComplaintState extends State<AddComplaint> {
                     SizedBox(height: 20),
                     // complaint input field
                     TextFormField(
-                      decoration: InputDecoration(
-                        labelText: "Write Complaint",
-                        fillColor: Colors.white,
-                      ),
-                      maxLines: 9,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      cursorColor: primary_color,
                       keyboardType: TextInputType.multiline,
+                      decoration: InputDecoration(
+                        hintText: "Write Complaint...",
+                      ),
+                      maxLines: 3,
                       validator: (val) =>
                           complaintValidator(newComplaint.complaint),
                       onChanged: (val) {

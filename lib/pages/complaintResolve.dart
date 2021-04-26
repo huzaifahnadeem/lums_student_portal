@@ -16,7 +16,6 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
   FirebaseFirestore _db = FirebaseFirestore.instance;
   User? thisUser = FirebaseAuth.instance.currentUser;
   String? uid;
-  List forwardList = [];
   String timeDaysAgo = '';
 
   // setting initial state
@@ -27,13 +26,6 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
         .orderBy("time", descending: true)
         .snapshots();
 
-    _db.collection("Profiles").get().then((value) {
-      value.docs.forEach((result) {
-        if (result.get("role") == "SC" || result.get("role") == "IT") {
-          forwardList.add(result.id);
-        }
-      });
-    });
     super.initState();
   }
 
@@ -75,7 +67,6 @@ class _ComplaintResolveState extends State<ComplaintResolve> {
                             id: (documentSnaps[index]!.id),
                             delegatedMembers:
                                 (documentSnaps[index]!["delegatedMembers"]),
-                            scMembers: forwardList,
                             senderUid: (documentSnaps[index]!["senderUid"]),
                             time: (documentSnaps[index]!["time"]),
                           ); // function returns a widget
