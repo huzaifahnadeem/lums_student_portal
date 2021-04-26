@@ -30,9 +30,9 @@ class OfficeHoursModel {
     this.snapshots = snapshots;
      
     this.snapshots.sort( // sorting according to office hour times
-      (a, b) => a!['office_hours'] == null? '0' : (a['office_hours']['time'].compareTo(b!['office_hours'] == null? '0' : b['office_hours']['time']))
+      (a, b) => a!['office_hours'] != null? (a['office_hours']['time'].compareTo(b!['office_hours'] == null? '0' : b['office_hours']['time'])) : 0
     );
-
+        
     snapshots.forEach((thisSCmember) {
       List<int> daysIndices = [];
       

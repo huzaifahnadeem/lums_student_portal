@@ -26,7 +26,7 @@ class About extends StatelessWidget {
             children: [
               Flexible(
                   child: Text(
-                      "\nCS 360 Project: LUMS Student Portal\n\n By: Group 04\n\n For: LUMS Student Council\n\n App Version: v0.1.0",
+                      "\nCS 360 Project: LUMS Student Portal\n\n By: Group 04\n\n For: LUMS Student Council\n\n App Version: v0.2.0",
                   style: Theme.of(context).textTheme.bodyText2,)),
             ],
           ),
