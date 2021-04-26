@@ -423,58 +423,84 @@ class _ViewResolveState extends State<ViewResolve> {
 
   @override
   Widget build(BuildContext context) {
-    return loading
-        ? LoadingScreen()
-        : Scaffold(
-            appBar: AppBar(
-              title: Text("Resolve",
-                  style: GoogleFonts.robotoSlab(
-                      textStyle: Theme.of(context).textTheme.headline6)),
-              elevation: 1,
-            ),
-            body: loading
-                ? LoadingScreen()
-                : SingleChildScrollView(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
-                            child: Text(subject,
-                                style: GoogleFonts.roboto(
-                                    textStyle:
-                                        Theme.of(context).textTheme.headline4,
-                                    color: black)),
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
-                            child: Text(category,
-                                style: Theme.of(context).textTheme.caption),
-                          ),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
-                            child: Text("Time: $formatedDate at $formatedTime",
-                                style: Theme.of(context).textTheme.caption),
-                          ),
-                          Container(
+    return Scaffold(
+        appBar: AppBar(
+          title: Text("Resolve",
+              style: GoogleFonts.robotoSlab(
+                  textStyle: Theme.of(context).textTheme.headline6)),
+          elevation: 1,
+        ),
+        body: loading
+            ? LoadingScreen()
+            : SingleChildScrollView(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
+                        child: Text(subject,
+                            style: GoogleFonts.roboto(
+                                textStyle:
+                                    Theme.of(context).textTheme.headline4,
+                                color: black)),
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
+                        child: Text(category,
+                            style: Theme.of(context).textTheme.caption),
+                      ),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                        child: Text("Time: $formatedDate at $formatedTime",
+                            style: Theme.of(context).textTheme.caption),
+                      ),
+                      Container(
+                          padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                          child: Row(
+                            children: [
+                              Text("Submitted by: ",
+                                  style: Theme.of(context).textTheme.caption),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return Profile(who: senderUid);
+                                  }));
+                                },
+                                child: Text(
+                                  '$name',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .caption!
+                                      .copyWith(
+                                          color: Theme.of(context).primaryColor,
+                                          fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            ],
+                          )),
+                      (isResolved == "Resolved")
+                          ? Container(
+                              alignment: Alignment.topLeft,
                               padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                               child: Row(
                                 children: [
-                                  Text("Submitted by: ",
+                                  Text("Resolved by: ",
                                       style:
                                           Theme.of(context).textTheme.caption),
                                   InkWell(
                                     onTap: () {
                                       Navigator.push(context,
                                           MaterialPageRoute(builder: (context) {
-                                        return Profile(who: senderUid);
+                                        return Profile(
+                                            who: delegatedMembers.last);
                                       }));
                                     },
                                     child: Text(
-                                      '$name',
+                                      '$resolvedByName',
                                       style: Theme.of(context)
                                           .textTheme
                                           .caption!
@@ -485,14 +511,15 @@ class _ViewResolveState extends State<ViewResolve> {
                                     ),
                                   )
                                 ],
-                              )),
-                          (isResolved == "Resolved")
+                              ),
+                            )
+                          : (isResolved == "Unresolved")
                               ? Container(
                                   alignment: Alignment.topLeft,
                                   padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                                   child: Row(
                                     children: [
-                                      Text("Resolved by: ",
+                                      Text("Unresolved by ",
                                           style: Theme.of(context)
                                               .textTheme
                                               .caption),
@@ -519,13 +546,13 @@ class _ViewResolveState extends State<ViewResolve> {
                                     ],
                                   ),
                                 )
-                              : (isResolved == "Unresolved")
+                              : (isResolved == "Pending" &&
+                                      uid != delegatedMembers.last)
                                   ? Container(
-                                      alignment: Alignment.topLeft,
                                       padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                                       child: Row(
                                         children: [
-                                          Text("Unresolved by ",
+                                          Text("Delegated to ",
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .caption),
@@ -539,7 +566,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                               }));
                                             },
                                             child: Text(
-                                              '$resolvedByName',
+                                              '$resolvedBy',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .caption!
@@ -551,478 +578,413 @@ class _ViewResolveState extends State<ViewResolve> {
                                             ),
                                           )
                                         ],
-                                      ),
-                                    )
-                                  : (isResolved == "Pending" &&
-                                          uid != delegatedMembers.last)
-                                      ? Container(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 5, 10, 0),
-                                          child: Row(
-                                            children: [
-                                              Text("Delegated to ",
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .caption),
-                                              InkWell(
-                                                onTap: () {
-                                                  Navigator.push(context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) {
-                                                    return Profile(
-                                                        who: delegatedMembers
-                                                            .last);
-                                                  }));
-                                                },
-                                                child: Text(
-                                                  '$resolvedBy',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .caption!
-                                                      .copyWith(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .primaryColor,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                ),
-                                              )
-                                            ],
-                                          ))
-                                      : Container(),
-                          Container(
-                              decoration: BoxDecoration(),
-                              padding: EdgeInsets.fromLTRB(0, 34, 5, 10),
-                              child: Column(
+                                      ))
+                                  : Container(),
+                      Container(
+                          decoration: BoxDecoration(),
+                          padding: EdgeInsets.fromLTRB(0, 34, 5, 10),
+                          child: Column(
+                            children: [
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text("Complaint",
+                                    style: GoogleFonts.roboto(
+                                        textStyle: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1!
+                                            .copyWith(
+                                                fontWeight: FontWeight.bold),
+                                        color: primary_color)),
+                              ),
+                              Container(
+                                alignment: Alignment.centerLeft,
+                                padding: EdgeInsets.fromLTRB(20, 15, 0, 0),
+                                child: Text("$complaint",
+                                    style: GoogleFonts.roboto(
+                                      textStyle:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    )),
+                              )
+                            ],
+                          )),
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 15, 10, 10),
+                        child: (isResolved == "Pending" &&
+                                senderUid == delegatedMembers.last &&
+                                isCategoryChair)
+                            ? Column(
                                 children: [
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Complaint",
-                                        style: GoogleFonts.roboto(
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1!
-                                                .copyWith(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                            color: primary_color)),
-                                  ),
-                                  Container(
-                                    alignment: Alignment.centerLeft,
-                                    padding: EdgeInsets.fromLTRB(20, 15, 0, 0),
-                                    child: Text("$complaint",
-                                        style: GoogleFonts.roboto(
-                                          textStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1,
-                                        )),
-                                  )
+                                  Form(
+                                      key: _formKey,
+                                      child: Column(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0, 20, 0, 20),
+                                            child: Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: DropdownButtonFormField(
+                                                  autovalidateMode:
+                                                      AutovalidateMode
+                                                          .onUserInteraction,
+                                                  decoration: InputDecoration(
+                                                      hintText:
+                                                          "Delegate Complaint to",
+                                                      fillColor: Colors.white),
+                                                  validator: (val) =>
+                                                      dropDownValidator(val),
+                                                  isExpanded: false,
+                                                  value: newDelegate!.isNotEmpty
+                                                      ? newDelegate
+                                                      : null,
+                                                  onChanged: (newVal) {
+                                                    setState(() {
+                                                      newDelegate =
+                                                          newVal.toString();
+                                                    });
+                                                  },
+                                                  items: dictionary.entries
+                                                      .map((mapEntry) =>
+                                                          DropdownMenuItem(
+                                                            value: mapEntry.key,
+                                                            child: Text(
+                                                                mapEntry.value),
+                                                          ))
+                                                      .toList(),
+                                                )),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(
+                                                0, 30, 0, 20),
+                                            child: SizedBox(
+                                              width: 150,
+                                              height: 40,
+                                              child: ElevatedButton(
+                                                onPressed: () =>
+                                                    delegateDialog(),
+                                                child: Text('Delegate',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headline5),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ))
                                 ],
-                              )),
-                          Container(
-                            padding: EdgeInsets.fromLTRB(0, 15, 10, 10),
-                            child: (isResolved == "Pending" &&
-                                    senderUid == delegatedMembers.last &&
-                                    isCategoryChair)
+                              )
+                            : (isResolved == "Pending" &&
+                                    isChair &&
+                                    uid == delegatedMembers.last)
                                 ? Column(
                                     children: [
-                                      Form(
-                                          key: _formKey,
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 20, 0, 20),
-                                                child: Align(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child:
-                                                        DropdownButtonFormField(
-                                                      autovalidateMode:
-                                                          AutovalidateMode
-                                                              .onUserInteraction,
-                                                      decoration: InputDecoration(
-                                                          hintText:
-                                                              "Delegate Complaint to",
-                                                          fillColor:
-                                                              Colors.white),
-                                                      validator: (val) =>
-                                                          dropDownValidator(
-                                                              val),
-                                                      isExpanded: false,
-                                                      value: newDelegate!
-                                                              .isNotEmpty
-                                                          ? newDelegate
-                                                          : null,
-                                                      onChanged: (newVal) {
-                                                        setState(() {
-                                                          newDelegate =
-                                                              newVal.toString();
-                                                        });
-                                                      },
-                                                      items: dictionary.entries
-                                                          .map((mapEntry) =>
-                                                              DropdownMenuItem(
-                                                                value: mapEntry
-                                                                    .key,
+                                      SwitchListTile(
+                                          contentPadding:
+                                              EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                          title: _toggled == false
+                                              ? Text("Press to Delegate",
+                                                  style: GoogleFonts.roboto(
+                                                      textStyle: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle1!
+                                                          .copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
+                                                      color: primary_color))
+                                              : Text("Press to Resolve",
+                                                  style: GoogleFonts.roboto(
+                                                      textStyle: Theme.of(context)
+                                                          .textTheme
+                                                          .subtitle1!
+                                                          .copyWith(
+                                                              fontWeight: FontWeight.bold),
+                                                      color: primary_color)),
+                                          value: _toggled,
+                                          onChanged: (bool value) {
+                                            setState(() {
+                                              _toggled = value;
+                                            });
+                                          }),
+                                      Container(
+                                        child: (_toggled == false)
+                                            ? Column(children: [
+                                                Form(
+                                                    key: _formKey,
+                                                    child: Column(children: [
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 25, 0, 20),
+                                                        child: TextFormField(
+                                                          autovalidateMode:
+                                                              AutovalidateMode
+                                                                  .onUserInteraction,
+                                                          cursorColor:
+                                                              primary_color,
+                                                          initialValue:
+                                                              resolution == null
+                                                                  ? ""
+                                                                  : newResolution,
+                                                          decoration:
+                                                              InputDecoration(
+                                                            labelText:
+                                                                "Add Resolution...",
+                                                          ),
+                                                          maxLines: null,
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .multiline,
+                                                          validator: (val) =>
+                                                              resolutionValidator(
+                                                                  newResolution ==
+                                                                          null
+                                                                      ? ""
+                                                                      : newResolution!),
+                                                          onChanged: (val) {
+                                                            setState(() =>
+                                                                newResolution =
+                                                                    val);
+                                                          },
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 25, 0, 20),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            SizedBox(
+                                                              width: 135,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () {
+                                                                  validateResolution();
+                                                                },
                                                                 child: Text(
-                                                                    mapEntry
-                                                                        .value),
-                                                              ))
-                                                          .toList(),
-                                                    )),
+                                                                    'Update',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                            SizedBox(
+                                                              width: 135,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () =>
+                                                                    showMyDialog(),
+                                                                child: Text(
+                                                                    'Resolve',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ]))
+                                              ])
+                                            : Column(
+                                                children: [
+                                                  Form(
+                                                      key: _formKey,
+                                                      child: Column(
+                                                        children: [
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 20,
+                                                                    0, 20),
+                                                            child: Align(
+                                                                alignment: Alignment
+                                                                    .centerLeft,
+                                                                child:
+                                                                    DropdownButtonFormField(
+                                                                  autovalidateMode:
+                                                                      AutovalidateMode
+                                                                          .onUserInteraction,
+                                                                  decoration: InputDecoration(
+                                                                      hintText:
+                                                                          "Delegate Complaint to",
+                                                                      fillColor:
+                                                                          Colors
+                                                                              .white),
+                                                                  validator: (val) =>
+                                                                      dropDownValidator(
+                                                                          val),
+                                                                  isExpanded:
+                                                                      false,
+                                                                  value: newDelegate!
+                                                                          .isNotEmpty
+                                                                      ? newDelegate
+                                                                      : null,
+                                                                  onChanged:
+                                                                      (newVal) {
+                                                                    setState(
+                                                                        () {
+                                                                      newDelegate =
+                                                                          newVal
+                                                                              .toString();
+                                                                    });
+                                                                  },
+                                                                  items: dictionary
+                                                                      .entries
+                                                                      .map((mapEntry) =>
+                                                                          DropdownMenuItem(
+                                                                            value:
+                                                                                mapEntry.key,
+                                                                            child:
+                                                                                Text(mapEntry.value),
+                                                                          ))
+                                                                      .toList(),
+                                                                )),
+                                                          ),
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 30,
+                                                                    0, 20),
+                                                            child: SizedBox(
+                                                              width: 150,
+                                                              height: 40,
+                                                              child:
+                                                                  ElevatedButton(
+                                                                onPressed: () =>
+                                                                    delegateDialog(),
+                                                                child: Text(
+                                                                    'Delegate',
+                                                                    style: Theme.of(
+                                                                            context)
+                                                                        .textTheme
+                                                                        .headline5),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ))
+                                                ],
                                               ),
-                                              Container(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 30, 0, 20),
-                                                child: SizedBox(
-                                                  width: 150,
-                                                  height: 40,
-                                                  child: ElevatedButton(
-                                                    onPressed: () =>
-                                                        delegateDialog(),
-                                                    child: Text('Delegate',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .headline5),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ))
+                                      )
                                     ],
                                   )
                                 : (isResolved == "Pending" &&
-                                        isChair &&
                                         uid == delegatedMembers.last)
-                                    ? Column(
-                                        children: [
-                                          SwitchListTile(
-                                              contentPadding: EdgeInsets.fromLTRB(
-                                                  0, 5, 0, 0),
-                                              title: _toggled == false
-                                                  ? Text("Press to Delegate",
-                                                      style: GoogleFonts.roboto(
-                                                          textStyle: Theme.of(context)
-                                                              .textTheme
-                                                              .subtitle1!
-                                                              .copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                          color: primary_color))
-                                                  : Text("Press to Resolve",
-                                                      style: GoogleFonts.roboto(
-                                                          textStyle: Theme.of(context)
-                                                              .textTheme
-                                                              .subtitle1!
-                                                              .copyWith(fontWeight: FontWeight.bold),
-                                                          color: primary_color)),
-                                              value: _toggled,
-                                              onChanged: (bool value) {
-                                                setState(() {
-                                                  _toggled = value;
-                                                });
-                                              }),
-                                          Container(
-                                            child: (_toggled == false)
-                                                ? Column(children: [
-                                                    Form(
-                                                        key: _formKey,
-                                                        child:
-                                                            Column(children: [
-                                                          Container(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(0, 25,
-                                                                    0, 20),
-                                                            child:
-                                                                TextFormField(
-                                                              autovalidateMode:
-                                                                  AutovalidateMode
-                                                                      .onUserInteraction,
-                                                              cursorColor:
-                                                                  primary_color,
-                                                              initialValue:
-                                                                  resolution ==
-                                                                          null
-                                                                      ? ""
-                                                                      : newResolution,
-                                                              decoration:
-                                                                  InputDecoration(
-                                                                labelText:
-                                                                    "Add Resolution...",
-                                                              ),
-                                                              maxLines: null,
-                                                              keyboardType:
-                                                                  TextInputType
-                                                                      .multiline,
-                                                              validator: (val) =>
-                                                                  resolutionValidator(
-                                                                      newResolution ==
-                                                                              null
-                                                                          ? ""
-                                                                          : newResolution!),
-                                                              onChanged: (val) {
-                                                                setState(() =>
-                                                                    newResolution =
-                                                                        val);
-                                                              },
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(0, 25,
-                                                                    0, 20),
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceEvenly,
-                                                              children: [
-                                                                SizedBox(
-                                                                  width: 135,
-                                                                  height: 40,
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    onPressed:
-                                                                        () {
-                                                                      validateResolution();
-                                                                    },
-                                                                    child: Text(
-                                                                        'Update',
-                                                                        style: Theme.of(context)
-                                                                            .textTheme
-                                                                            .headline5),
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                  width: 135,
-                                                                  height: 40,
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    onPressed: () =>
-                                                                        showMyDialog(),
-                                                                    child: Text(
-                                                                        'Resolve',
-                                                                        style: Theme.of(context)
-                                                                            .textTheme
-                                                                            .headline5),
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          )
-                                                        ]))
-                                                  ])
-                                                : Column(
-                                                    children: [
-                                                      Form(
-                                                          key: _formKey,
-                                                          child: Column(
-                                                            children: [
-                                                              Container(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .fromLTRB(
-                                                                            0,
-                                                                            20,
-                                                                            0,
-                                                                            20),
-                                                                child: Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .centerLeft,
-                                                                    child:
-                                                                        DropdownButtonFormField(
-                                                                      autovalidateMode:
-                                                                          AutovalidateMode
-                                                                              .onUserInteraction,
-                                                                      decoration: InputDecoration(
-                                                                          hintText:
-                                                                              "Delegate Complaint to",
-                                                                          fillColor:
-                                                                              Colors.white),
-                                                                      validator:
-                                                                          (val) =>
-                                                                              dropDownValidator(val),
-                                                                      isExpanded:
-                                                                          false,
-                                                                      value: newDelegate!
-                                                                              .isNotEmpty
-                                                                          ? newDelegate
-                                                                          : null,
-                                                                      onChanged:
-                                                                          (newVal) {
-                                                                        setState(
-                                                                            () {
-                                                                          newDelegate =
-                                                                              newVal.toString();
-                                                                        });
-                                                                      },
-                                                                      items: dictionary
-                                                                          .entries
-                                                                          .map((mapEntry) =>
-                                                                              DropdownMenuItem(
-                                                                                value: mapEntry.key,
-                                                                                child: Text(mapEntry.value),
-                                                                              ))
-                                                                          .toList(),
-                                                                    )),
-                                                              ),
-                                                              Container(
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .fromLTRB(
-                                                                            0,
-                                                                            30,
-                                                                            0,
-                                                                            20),
-                                                                child: SizedBox(
-                                                                  width: 150,
-                                                                  height: 40,
-                                                                  child:
-                                                                      ElevatedButton(
-                                                                    onPressed: () =>
-                                                                        delegateDialog(),
-                                                                    child: Text(
-                                                                        'Delegate',
-                                                                        style: Theme.of(context)
-                                                                            .textTheme
-                                                                            .headline5),
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ))
-                                                    ],
+                                    ? Column(children: [
+                                        Form(
+                                            key: _formKey,
+                                            child: Column(children: [
+                                              Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 25, 0, 20),
+                                                child: TextFormField(
+                                                  autovalidateMode:
+                                                      AutovalidateMode
+                                                          .onUserInteraction,
+                                                  cursorColor: primary_color,
+                                                  initialValue:
+                                                      resolution == null
+                                                          ? ""
+                                                          : newResolution,
+                                                  decoration: InputDecoration(
+                                                    labelText:
+                                                        "Add Resolution...",
                                                   ),
-                                          )
-                                        ],
-                                      )
-                                    : (isResolved == "Pending" &&
-                                            uid == delegatedMembers.last)
-                                        ? Column(children: [
-                                            Form(
-                                                key: _formKey,
-                                                child: Column(children: [
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 25, 0, 20),
-                                                    child: TextFormField(
-                                                      autovalidateMode:
-                                                          AutovalidateMode
-                                                              .onUserInteraction,
-                                                      cursorColor:
-                                                          primary_color,
-                                                      initialValue:
-                                                          resolution == null
+                                                  maxLines: null,
+                                                  keyboardType:
+                                                      TextInputType.multiline,
+                                                  validator: (val) =>
+                                                      resolutionValidator(
+                                                          newResolution == null
                                                               ? ""
-                                                              : newResolution,
-                                                      decoration:
-                                                          InputDecoration(
-                                                        labelText:
-                                                            "Add Resolution...",
-                                                      ),
-                                                      maxLines: null,
-                                                      keyboardType:
-                                                          TextInputType
-                                                              .multiline,
-                                                      validator: (val) =>
-                                                          resolutionValidator(
-                                                              newResolution ==
-                                                                      null
-                                                                  ? ""
-                                                                  : newResolution!),
-                                                      onChanged: (val) {
-                                                        setState(() =>
-                                                            newResolution =
-                                                                val);
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 25, 0, 20),
-                                                    child: Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceEvenly,
-                                                      children: [
-                                                        SizedBox(
-                                                          width: 135,
-                                                          height: 40,
-                                                          child: ElevatedButton(
-                                                            onPressed: () {
-                                                              validateResolution();
-                                                            },
-                                                            child: Text(
-                                                                'Update',
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .headline5),
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 135,
-                                                          height: 40,
-                                                          child: ElevatedButton(
-                                                            onPressed: () =>
-                                                                showMyDialog(),
-                                                            child: Text(
-                                                                'Resolve',
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .headline5),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ]))
-                                          ])
-                                        : (isResolved == "Resolved" ||
-                                                isResolved == "Unresolved")
-                                            ? Column(
-                                                children: [
-                                                  Container(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    child: Text("Resolution",
-                                                        style: GoogleFonts.roboto(
-                                                            textStyle: Theme.of(
+                                                              : newResolution!),
+                                                  onChanged: (val) {
+                                                    setState(() =>
+                                                        newResolution = val);
+                                                  },
+                                                ),
+                                              ),
+                                              Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 25, 0, 20),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 135,
+                                                      height: 40,
+                                                      child: ElevatedButton(
+                                                        onPressed: () {
+                                                          validateResolution();
+                                                        },
+                                                        child: Text('Update',
+                                                            style: Theme.of(
                                                                     context)
                                                                 .textTheme
-                                                                .bodyText1!
-                                                                .copyWith(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold),
-                                                            color:
-                                                                primary_color)),
-                                                  ),
-                                                  Container(
-                                                    alignment:
-                                                        Alignment.centerLeft,
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            20, 15, 0, 0),
-                                                    child: Text("$resolution",
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                          textStyle:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyText1,
-                                                        )),
-                                                  )
-                                                ],
+                                                                .headline5),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 135,
+                                                      height: 40,
+                                                      child: ElevatedButton(
+                                                        onPressed: () =>
+                                                            showMyDialog(),
+                                                        child: Text('Resolve',
+                                                            style: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .headline5),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
                                               )
-                                            : Container(),
-                          ),
-                        ]),
-                  ));
+                                            ]))
+                                      ])
+                                    : (isResolved == "Resolved" ||
+                                            isResolved == "Unresolved")
+                                        ? Column(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                child: Text("Resolution",
+                                                    style: GoogleFonts.roboto(
+                                                        textStyle: Theme.of(
+                                                                context)
+                                                            .textTheme
+                                                            .bodyText1!
+                                                            .copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
+                                                        color: primary_color)),
+                                              ),
+                                              Container(
+                                                alignment: Alignment.centerLeft,
+                                                padding: EdgeInsets.fromLTRB(
+                                                    20, 15, 0, 0),
+                                                child: Text("$resolution",
+                                                    style: GoogleFonts.roboto(
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
+                                                    )),
+                                              )
+                                            ],
+                                          )
+                                        : Container(),
+                      ),
+                    ]),
+              ));
   }
 }

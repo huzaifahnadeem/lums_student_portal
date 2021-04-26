@@ -155,7 +155,7 @@ class _AddComplaintState extends State<AddComplaint> {
                             newComplaint.tag = newVal.toString();
                           });
                         },
-                        items: Complaint.categories1.map((categoryItem) {
+                        items: Post.categories.map((categoryItem) {
                           return DropdownMenuItem(
                             value: categoryItem,
                             child: Text(categoryItem),
