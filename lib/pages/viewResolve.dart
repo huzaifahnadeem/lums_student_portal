@@ -311,14 +311,24 @@ class _ViewResolveState extends State<ViewResolve> {
       builder: (BuildContext context) {
         return AlertDialog(
           // titleTextStyle: ,
-          title: Text('Status', textAlign: TextAlign.center),
+          title: Container(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: Text('Status',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.roboto(
+                    textStyle: Theme.of(context).textTheme.headline4,
+                    color: black)),
+          ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 ListTile(
                     leading: new Icon(Icons.check_circle_outline_rounded,
                         color: Color(0xFF56BF54)),
-                    title: Text('Mark as Resolved'),
+                    title: Text('Mark as Resolved',
+                        style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.bodyText1,
+                        )),
                     onTap: () => {
                           validateResolved(),
                           Navigator.pop(context),
@@ -328,7 +338,10 @@ class _ViewResolveState extends State<ViewResolve> {
                       Icons.highlight_remove_rounded,
                       color: Colors.redAccent,
                     ),
-                    title: Text('Mark as Unresolved'),
+                    title: Text('Mark as Unresolved',
+                        style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.bodyText1,
+                        )),
                     onTap: () => {
                           validateUnresolved(),
                           Navigator.pop(context),
@@ -338,8 +351,11 @@ class _ViewResolveState extends State<ViewResolve> {
           ),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(primary: Colors.redAccent),
-              child: Text('Cancel'),
+              child: Text('Cancel',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(color: Theme.of(context).primaryColorLight)),
               onPressed: () {
                 Navigator.of(context).pop();
                 // setState(() {});
@@ -358,31 +374,47 @@ class _ViewResolveState extends State<ViewResolve> {
       builder: (BuildContext context) {
         return AlertDialog(
           // titleTextStyle: ,
-          title: Text('Confirmation', textAlign: TextAlign.center),
+          // title: Text('Confirmation', textAlign: TextAlign.center),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want to delegate this complaint?',
-                    textAlign: TextAlign.center)
+                Container(
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: Text(
+                        'Are you sure you want to delegate this complaint?',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.bodyText2,
+                        )))
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(primary: Colors.redAccent),
-              child: Text('No'),
+              child: Text(
+                'No',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(color: Theme.of(context).primaryColorLight),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 // setState(() {});
               },
             ),
             TextButton(
-                style: TextButton.styleFrom(primary: Colors.redAccent),
                 onPressed: () {
                   Navigator.of(context).pop();
                   confirmDelegate();
                 },
-                child: Text('Yes'))
+                child: Text(
+                  'Yes',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(color: Theme.of(context).primaryColorLight),
+                ))
           ],
         );
       },
@@ -406,10 +438,7 @@ class _ViewResolveState extends State<ViewResolve> {
                 child: Text(
                   "Resolve",
                   style: GoogleFonts.robotoSlab(
-                    color: Colors.black87,
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      textStyle: Theme.of(context).textTheme.headline6),
                 ),
               ),
               centerTitle: false,
@@ -433,7 +462,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                     color: black)),
                           ),
                           Container(
-                            padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                            padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
                             child: Text(category,
                                 style: Theme.of(context).textTheme.caption),
                           ),
@@ -576,7 +605,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                       : Container(),
                           Container(
                               decoration: BoxDecoration(),
-                              padding: EdgeInsets.fromLTRB(0, 25, 5, 10),
+                              padding: EdgeInsets.fromLTRB(0, 34, 5, 10),
                               child: Column(
                                 children: [
                                   Container(
@@ -604,7 +633,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                 ],
                               )),
                           Container(
-                            padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
+                            padding: EdgeInsets.fromLTRB(0, 15, 10, 10),
                             child: (isResolved == "Pending" &&
                                     senderUid == delegatedMembers.last &&
                                     isCategoryChair)
@@ -715,43 +744,47 @@ class _ViewResolveState extends State<ViewResolve> {
                                                         key: _formKey,
                                                         child:
                                                             Column(children: [
-                                                          TextFormField(
-                                                            autovalidateMode:
-                                                                AutovalidateMode
-                                                                    .onUserInteraction,
-                                                            cursorColor:
-                                                                primary_color,
-                                                            initialValue:
-                                                                resolution ==
-                                                                        null
-                                                                    ? ""
-                                                                    : newResolution,
-                                                            decoration:
-                                                                InputDecoration(
-                                                              labelText:
-                                                                  "Resolution",
-                                                              hintText:
-                                                                  "Add Resolution...",
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 25,
+                                                                    0, 20),
+                                                            child:
+                                                                TextFormField(
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .onUserInteraction,
+                                                              cursorColor:
+                                                                  primary_color,
+                                                              initialValue:
+                                                                  resolution ==
+                                                                          null
+                                                                      ? ""
+                                                                      : newResolution,
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                labelText:
+                                                                    "Add Resolution...",
+                                                              ),
+                                                              maxLines: null,
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .multiline,
+                                                              validator: (val) =>
+                                                                  resolutionValidator(
+                                                                      newResolution ==
+                                                                              null
+                                                                          ? ""
+                                                                          : newResolution!),
+                                                              onChanged: (val) {
+                                                                setState(() =>
+                                                                    newResolution =
+                                                                        val);
+                                                              },
                                                             ),
-                                                            maxLines: 5,
-                                                            keyboardType:
-                                                                TextInputType
-                                                                    .multiline,
-                                                            validator: (val) =>
-                                                                resolutionValidator(
-                                                                    newResolution ==
-                                                                            null
-                                                                        ? ""
-                                                                        : newResolution!),
-                                                            onChanged: (val) {
-                                                              setState(() =>
-                                                                  newResolution =
-                                                                      val);
-                                                            },
                                                           ),
                                                           Container(
                                                             padding: EdgeInsets
-                                                                .fromLTRB(0, 20,
+                                                                .fromLTRB(0, 25,
                                                                     0, 20),
                                                             child: Row(
                                                               mainAxisAlignment:
@@ -884,38 +917,46 @@ class _ViewResolveState extends State<ViewResolve> {
                                             Form(
                                                 key: _formKey,
                                                 child: Column(children: [
-                                                  TextFormField(
-                                                    autovalidateMode:
-                                                        AutovalidateMode
-                                                            .onUserInteraction,
-                                                    cursorColor: primary_color,
-                                                    initialValue:
-                                                        resolution == null
-                                                            ? ""
-                                                            : newResolution,
-                                                    decoration: InputDecoration(
-                                                      labelText: "Resolution",
-                                                      hintText:
-                                                          "Add Resolution...",
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            0, 25, 0, 20),
+                                                    child: TextFormField(
+                                                      autovalidateMode:
+                                                          AutovalidateMode
+                                                              .onUserInteraction,
+                                                      cursorColor:
+                                                          primary_color,
+                                                      initialValue:
+                                                          resolution == null
+                                                              ? ""
+                                                              : newResolution,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText:
+                                                            "Add Resolution...",
+                                                      ),
+                                                      maxLines: null,
+                                                      keyboardType:
+                                                          TextInputType
+                                                              .multiline,
+                                                      validator: (val) =>
+                                                          resolutionValidator(
+                                                              newResolution ==
+                                                                      null
+                                                                  ? ""
+                                                                  : newResolution!),
+                                                      onChanged: (val) {
+                                                        setState(() =>
+                                                            newResolution =
+                                                                val);
+                                                      },
                                                     ),
-                                                    maxLines: 5,
-                                                    keyboardType:
-                                                        TextInputType.multiline,
-                                                    validator: (val) =>
-                                                        resolutionValidator(
-                                                            newResolution ==
-                                                                    null
-                                                                ? ""
-                                                                : newResolution!),
-                                                    onChanged: (val) {
-                                                      setState(() =>
-                                                          newResolution = val);
-                                                    },
                                                   ),
                                                   Container(
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            0, 20, 0, 20),
+                                                            0, 25, 0, 20),
                                                     child: Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment

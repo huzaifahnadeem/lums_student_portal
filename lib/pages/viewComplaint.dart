@@ -84,10 +84,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
             child: Text(
               "View",
               style: GoogleFonts.robotoSlab(
-                color: Colors.black87,
-                fontSize: 30.0,
-                fontWeight: FontWeight.bold,
-              ),
+                  textStyle: Theme.of(context).textTheme.headline6),
             ),
           ),
           centerTitle: false,

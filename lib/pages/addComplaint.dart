@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
@@ -96,31 +97,46 @@ class _AddComplaintState extends State<AddComplaint> {
       builder: (BuildContext context) {
         return AlertDialog(
           // titleTextStyle: ,
-          title: Text('Confirmation', textAlign: TextAlign.center),
+          // title: Text('Confirmation', textAlign: TextAlign.center),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Would you like to lodge this complaint?',
-                    textAlign: TextAlign.center)
+                Container(
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: Text('Would you like to lodge this complaint?',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.bodyText2,
+                        )))
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(primary: Colors.redAccent),
-              child: Text('No'),
+              child: Text(
+                'No',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(color: Theme.of(context).primaryColorLight),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 // setState(() {});
               },
             ),
             TextButton(
-                style: TextButton.styleFrom(primary: Colors.redAccent),
                 onPressed: () {
                   Navigator.of(context).pop();
                   validate();
                 },
-                child: Text('Yes'))
+                child: Text(
+                  'Yes',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(color: Theme.of(context).primaryColorLight),
+                ))
           ],
         );
       },
@@ -143,8 +159,8 @@ class _AddComplaintState extends State<AddComplaint> {
                       child: DropdownButtonFormField(
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
-                            hintText: "Select Category",
-                            fillColor: Colors.white),
+                          hintText: "Select Category",
+                        ),
                         validator: (val) => dropDownValidator(val),
                         isExpanded: false,
                         value: newComplaint.tag,
@@ -171,7 +187,7 @@ class _AddComplaintState extends State<AddComplaint> {
                       cursorColor: primary_color,
                       keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
-                        hintText: "Add Subject...",
+                        labelText: "Add Subject...",
                       ),
                       validator: (val) => subjectValidator(
                           newComplaint.subject), // check subjet lenght
@@ -187,16 +203,16 @@ class _AddComplaintState extends State<AddComplaint> {
                       cursorColor: primary_color,
                       keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
-                        hintText: "Write Complaint...",
+                        labelText: "Write Complaint...",
                       ),
-                      maxLines: 3,
+                      maxLines: null,
                       validator: (val) =>
                           complaintValidator(newComplaint.complaint),
                       onChanged: (val) {
                         setState(() => newComplaint.complaint = val);
                       },
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 40),
                     SizedBox(
                       width: double.infinity,
                       height: 40,

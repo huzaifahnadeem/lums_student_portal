@@ -91,7 +91,7 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                               subtitle: (documentSnaps[index]!["isResolved"] ==
                                       "Unresolved")
                                   ? Text(
-                                      "Unresolved",
+                                      "Unresolved by ${documentSnaps[index]!["resolvedBy"]}",
                                       style:
                                           Theme.of(context).textTheme.caption,
                                     )
