@@ -8,7 +8,7 @@ import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/post.dart';
 import 'package:lums_student_portal/models/profile.dart';
 
-class About extends StatelessWidget {
+/*class About extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,13 +26,13 @@ class About extends StatelessWidget {
             children: [
               Flexible(
                   child: Text(
-                      "\nCS 360 Project: LUMS Student Portal\n\n By: Group 04\n\n For: LUMS Student Council\n\n App Version: v0.2.0",
+                      "\nCS 360 Project: LUMS Student Portal\n\nBy: Group 04\n\nFor: LUMS Student Council\n\n App Version: v0.1.0",
                   style: Theme.of(context).textTheme.bodyText2,)),
             ],
           ),
         ));
   }
-}
+}*/
 
 class EditProfileArgs {
   final bool sc;
@@ -102,14 +102,41 @@ class AppSettings extends StatelessWidget {
                   FirebaseFirestore.instance.collection("Election").doc("events").update({"happening":false});
                 },
               ),
-            ListTile(
+            AboutListTile(
+              icon: Icon(Icons.info_outlined, color: grey),
+              child: Text("About", style: GoogleFonts.roboto(
+                  textStyle: Theme.of(context).textTheme.bodyText1)
+              ),
+              applicationIcon: CircleAvatar(
+                backgroundImage: (AssetImage("assets/sclogo.png")),
+                backgroundColor: secondary_color,
+                radius: 30,
+              ),
+              applicationVersion: "v1.0.0",
+              applicationLegalese: "@ Lums Student Council",
+              aboutBoxChildren: [SizedBox(height: 20,),Text("Made by Group 04 in CS 360",style: Theme.of(context).textTheme.bodyText1,)],
+
+            )
+            /*ListTile(
               leading: Icon(Icons.info_outlined, color: grey),
               title: Text('About', style: GoogleFonts.roboto(
                   textStyle: Theme.of(context).textTheme.bodyText1)),
               onTap: ()  {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => About()));
+                showAboutDialog(
+                  context: context,
+                  applicationName: "Lums Student Portal",
+                  applicationVersion: "1.0.0",
+                  applicationLegalese: "This application is owned by the Lums Student Council\n",
+                  applicationIcon: CircleAvatar(
+                    backgroundImage: AssetImage("assets/sclogo.png"),
+                    backgroundColor: Colors.grey,
+                    radius: 10,
+                  ),
+                  children: [Text("Made by Group 04 in CS 360",style: Theme.of(context).textTheme.bodyText1,)]
+                );
+                //Navigator.push(context, MaterialPageRoute(builder: (context) => About()));
               },
-            ),
+            ),*/,
             ListTile(
               leading: Icon(Icons.logout, color: grey),
               title: Text('Log out', style: GoogleFonts.roboto(
@@ -234,6 +261,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: DropdownButtonFormField<String>(
+                  validator: (val) => dropDownValidator(val),
                   decoration: InputDecoration(labelText: "Select role"),
                   value: role,
                   icon: const Icon(Icons.arrow_drop_down),
@@ -255,6 +283,7 @@ class _UpdateAccountState extends State<UpdateAccount> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: DropdownButtonFormField<String>(
+                  validator: (val) => dropDownValidator(val),
                   decoration: InputDecoration(labelText: "Select Category"),
                   value: category,
                   icon: const Icon(Icons.arrow_drop_down),

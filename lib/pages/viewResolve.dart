@@ -19,7 +19,6 @@ class ViewResolve extends StatefulWidget {
   late final String? resolvedByName;
   late final String? resolution;
   late final List delegatedMembers;
-  late final List scMembers;
   late final String senderUid;
   late final Timestamp time;
 
@@ -33,7 +32,6 @@ class ViewResolve extends StatefulWidget {
     required this.resolvedByName,
     required this.id,
     required this.delegatedMembers,
-    required this.scMembers,
     required this.senderUid,
     required this.time,
   });
@@ -49,7 +47,6 @@ class ViewResolve extends StatefulWidget {
       resolvedByName: resolvedByName,
       id: id,
       delegatedMembers: delegatedMembers,
-      scMembers: scMembers,
       senderUid: senderUid,
       time: time);
 }
@@ -65,7 +62,6 @@ class _ViewResolveState extends State<ViewResolve> {
   late final String? resolution;
   late String? newResolution;
   late final List delegatedMembers;
-  late final List scMembers;
   late final String senderUid;
   late final Timestamp time;
 
@@ -79,6 +75,7 @@ class _ViewResolveState extends State<ViewResolve> {
   late String? newDelegate = "";
 
   String? resolvedBy;
+  List newScMembers = [];
 
   late DateTime date;
   late String formatedDate;
@@ -98,7 +95,6 @@ class _ViewResolveState extends State<ViewResolve> {
     required this.resolution,
     required this.id,
     required this.delegatedMembers,
-    required this.scMembers,
     required this.senderUid,
     required this.time,
   });
@@ -119,6 +115,25 @@ class _ViewResolveState extends State<ViewResolve> {
         });
       }
     });
+    _db.collection("Profiles").get().then((value) {
+      value.docs.forEach((result) {
+        if (result.get("role") == "SC" || result.get("role") == "IT") {
+          newScMembers.add(result.id);
+        }
+      });
+      newScMembers.remove(senderUid);
+      newScMembers.remove(uid);
+      for (var i = 0; i < newScMembers.length; i++) {
+        _db.collection("Profiles").doc(newScMembers[i]).get().then((value) {
+          setState(() {
+            dictionary[newScMembers[i]] = value.get("name");
+          });
+        });
+      }
+      setState(() {
+        loading = false;
+      });
+    });
     _db.collection("Chairs").where("uid", isEqualTo: uid).get().then((value) {
       value.docs.forEach((element) {
         if (element.get("uid") == uid) {
@@ -127,21 +142,9 @@ class _ViewResolveState extends State<ViewResolve> {
           });
         }
       });
-      setState(() {
-        loading = false;
-      });
     });
     newResolution = resolution;
-    scMembers.remove(senderUid);
-    scMembers.remove(uid);
-    for (var i = 0; i < scMembers.length; i++) {
-      _db.collection("Profiles").doc(scMembers[i]).get().then((value) {
-        setState(() {
-          dictionary[scMembers[i]] = value.get("name");
-        });
-      });
-    }
-    _db.collection("Profiles").doc(uid).get().then((value) {
+    _db.collection("Profiles").doc(delegatedMembers.last).get().then((value) {
       setState(() => resolvedBy = value.get("name"));
     });
     super.initState();
@@ -169,7 +172,7 @@ class _ViewResolveState extends State<ViewResolve> {
     return _db
         .collection("Complaints")
         .doc(id)
-        .update({"resolution": null})
+        .update({"resolution": newResolution})
         .then((value) => print("Resolution Updated"))
         .catchError((error) => print("Failed to update user: $error"));
   }
@@ -255,24 +258,27 @@ class _ViewResolveState extends State<ViewResolve> {
   }
 
   void validateUnresolved() async {
-    setState(() {
-      loading = true;
-    });
-    await markUnresolved();
-    await updateUnresolved();
-    setState(() {
-      loading = false;
-    });
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Row(children: <Widget>[
-      Icon(
-        Icons.done_all,
-        color: Colors.white,
-        semanticLabel: "Done",
-      ),
-      Text('  Unresolved')
-    ])));
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        loading = true;
+      });
+      await markUnresolved();
+      await updateUnresolved();
+      await resolvedByUser();
+      setState(() {
+        loading = false;
+      });
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Row(children: <Widget>[
+        Icon(
+          Icons.done_all,
+          color: Colors.white,
+          semanticLabel: "Done",
+        ),
+        Text('  Unresolved')
+      ])));
+    }
   }
 
   void confirmDelegate() async {
@@ -305,14 +311,24 @@ class _ViewResolveState extends State<ViewResolve> {
       builder: (BuildContext context) {
         return AlertDialog(
           // titleTextStyle: ,
-          title: Text('Status', textAlign: TextAlign.center),
+          title: Container(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: Text('Status',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.roboto(
+                    textStyle: Theme.of(context).textTheme.headline4,
+                    color: black)),
+          ),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 ListTile(
                     leading: new Icon(Icons.check_circle_outline_rounded,
                         color: Color(0xFF56BF54)),
-                    title: Text('Mark as Resolved'),
+                    title: Text('Mark as Resolved',
+                        style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.bodyText1,
+                        )),
                     onTap: () => {
                           validateResolved(),
                           Navigator.pop(context),
@@ -322,7 +338,10 @@ class _ViewResolveState extends State<ViewResolve> {
                       Icons.highlight_remove_rounded,
                       color: Colors.redAccent,
                     ),
-                    title: Text('Mark as Unresolved'),
+                    title: Text('Mark as Unresolved',
+                        style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.bodyText1,
+                        )),
                     onTap: () => {
                           validateUnresolved(),
                           Navigator.pop(context),
@@ -332,8 +351,11 @@ class _ViewResolveState extends State<ViewResolve> {
           ),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(primary: Colors.redAccent),
-              child: Text('Cancel'),
+              child: Text('Cancel',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(color: Theme.of(context).primaryColorLight)),
               onPressed: () {
                 Navigator.of(context).pop();
                 // setState(() {});
@@ -352,31 +374,47 @@ class _ViewResolveState extends State<ViewResolve> {
       builder: (BuildContext context) {
         return AlertDialog(
           // titleTextStyle: ,
-          title: Text('Confirmation', textAlign: TextAlign.center),
+          // title: Text('Confirmation', textAlign: TextAlign.center),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Are you sure you want to delegate this complaint?',
-                    textAlign: TextAlign.center)
+                Container(
+                    padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                    child: Text(
+                        'Are you sure you want to delegate this complaint?',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.roboto(
+                          textStyle: Theme.of(context).textTheme.bodyText2,
+                        )))
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              style: TextButton.styleFrom(primary: Colors.redAccent),
-              child: Text('No'),
+              child: Text(
+                'No',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyText1!
+                    .copyWith(color: Theme.of(context).primaryColorLight),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 // setState(() {});
               },
             ),
             TextButton(
-                style: TextButton.styleFrom(primary: Colors.redAccent),
                 onPressed: () {
                   Navigator.of(context).pop();
                   confirmDelegate();
                 },
-                child: Text('Yes'))
+                child: Text(
+                  'Yes',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1!
+                      .copyWith(color: Theme.of(context).primaryColorLight),
+                ))
           ],
         );
       },
@@ -400,10 +438,7 @@ class _ViewResolveState extends State<ViewResolve> {
                 child: Text(
                   "Resolve",
                   style: GoogleFonts.robotoSlab(
-                    color: Colors.black87,
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      textStyle: Theme.of(context).textTheme.headline6),
                 ),
               ),
               centerTitle: false,
@@ -427,7 +462,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                     color: black)),
                           ),
                           Container(
-                            padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                            padding: EdgeInsets.fromLTRB(0, 10, 10, 0),
                             child: Text(category,
                                 style: Theme.of(context).textTheme.caption),
                           ),
@@ -497,10 +532,80 @@ class _ViewResolveState extends State<ViewResolve> {
                                     ],
                                   ),
                                 )
-                              : Container(),
+                              : (isResolved == "Unresolved")
+                                  ? Container(
+                                      alignment: Alignment.topLeft,
+                                      padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
+                                      child: Row(
+                                        children: [
+                                          Text("Unresolved by ",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption),
+                                          InkWell(
+                                            onTap: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return Profile(
+                                                    who: delegatedMembers.last);
+                                              }));
+                                            },
+                                            child: Text(
+                                              '$resolvedByName',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .caption!
+                                                  .copyWith(
+                                                      color: Theme.of(context)
+                                                          .accentColor,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  : (isResolved == "Pending" &&
+                                          uid != delegatedMembers.last)
+                                      ? Container(
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 5, 10, 0),
+                                          child: Row(
+                                            children: [
+                                              Text("Delegated to ",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .caption),
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.push(context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) {
+                                                    return Profile(
+                                                        who: delegatedMembers
+                                                            .last);
+                                                  }));
+                                                },
+                                                child: Text(
+                                                  '$resolvedBy',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .caption!
+                                                      .copyWith(
+                                                          color:
+                                                              Theme.of(context)
+                                                                  .accentColor,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                ),
+                                              )
+                                            ],
+                                          ))
+                                      : Container(),
                           Container(
                               decoration: BoxDecoration(),
-                              padding: EdgeInsets.fromLTRB(0, 25, 5, 10),
+                              padding: EdgeInsets.fromLTRB(0, 34, 5, 10),
                               child: Column(
                                 children: [
                                   Container(
@@ -528,7 +633,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                 ],
                               )),
                           Container(
-                            padding: EdgeInsets.fromLTRB(0, 20, 10, 10),
+                            padding: EdgeInsets.fromLTRB(0, 15, 10, 10),
                             child: (isResolved == "Pending" &&
                                     senderUid == delegatedMembers.last &&
                                     isCategoryChair)
@@ -582,7 +687,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                               ),
                                               Container(
                                                 padding: EdgeInsets.fromLTRB(
-                                                    0, 40, 0, 10),
+                                                    0, 30, 0, 20),
                                                 child: SizedBox(
                                                   width: 150,
                                                   height: 40,
@@ -639,39 +744,48 @@ class _ViewResolveState extends State<ViewResolve> {
                                                         key: _formKey,
                                                         child:
                                                             Column(children: [
-                                                          TextFormField(
-                                                            initialValue:
-                                                                resolution ==
-                                                                        null
-                                                                    ? ""
-                                                                    : newResolution,
-                                                            decoration:
-                                                                InputDecoration(
-                                                              labelText:
-                                                                  "Add Resolution Here...",
-                                                              fillColor:
-                                                                  Colors.white,
+                                                          Container(
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(0, 25,
+                                                                    0, 20),
+                                                            child:
+                                                                TextFormField(
+                                                              autovalidateMode:
+                                                                  AutovalidateMode
+                                                                      .onUserInteraction,
+                                                              cursorColor:
+                                                                  primary_color,
+                                                              initialValue:
+                                                                  resolution ==
+                                                                          null
+                                                                      ? ""
+                                                                      : newResolution,
+                                                              decoration:
+                                                                  InputDecoration(
+                                                                labelText:
+                                                                    "Add Resolution...",
+                                                              ),
+                                                              maxLines: null,
+                                                              keyboardType:
+                                                                  TextInputType
+                                                                      .multiline,
+                                                              validator: (val) =>
+                                                                  resolutionValidator(
+                                                                      newResolution ==
+                                                                              null
+                                                                          ? ""
+                                                                          : newResolution!),
+                                                              onChanged: (val) {
+                                                                setState(() =>
+                                                                    newResolution =
+                                                                        val);
+                                                              },
                                                             ),
-                                                            maxLines: 5,
-                                                            keyboardType:
-                                                                TextInputType
-                                                                    .multiline,
-                                                            validator: (val) =>
-                                                                resolutionValidator(
-                                                                    newResolution ==
-                                                                            null
-                                                                        ? ""
-                                                                        : newResolution!),
-                                                            onChanged: (val) {
-                                                              setState(() =>
-                                                                  newResolution =
-                                                                      val);
-                                                            },
                                                           ),
                                                           Container(
                                                             padding: EdgeInsets
-                                                                .fromLTRB(0, 30,
-                                                                    0, 10),
+                                                                .fromLTRB(0, 25,
+                                                                    0, 20),
                                                             child: Row(
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
@@ -772,9 +886,9 @@ class _ViewResolveState extends State<ViewResolve> {
                                                                     EdgeInsets
                                                                         .fromLTRB(
                                                                             0,
-                                                                            40,
+                                                                            30,
                                                                             0,
-                                                                            10),
+                                                                            20),
                                                                 child: SizedBox(
                                                                   width: 150,
                                                                   height: 40,
@@ -803,34 +917,46 @@ class _ViewResolveState extends State<ViewResolve> {
                                             Form(
                                                 key: _formKey,
                                                 child: Column(children: [
-                                                  TextFormField(
-                                                    initialValue:
-                                                        resolution == null
-                                                            ? ""
-                                                            : newResolution,
-                                                    decoration: InputDecoration(
-                                                      labelText:
-                                                          "Add Resolution Here...",
-                                                      fillColor: Colors.white,
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            0, 25, 0, 20),
+                                                    child: TextFormField(
+                                                      autovalidateMode:
+                                                          AutovalidateMode
+                                                              .onUserInteraction,
+                                                      cursorColor:
+                                                          primary_color,
+                                                      initialValue:
+                                                          resolution == null
+                                                              ? ""
+                                                              : newResolution,
+                                                      decoration:
+                                                          InputDecoration(
+                                                        labelText:
+                                                            "Add Resolution...",
+                                                      ),
+                                                      maxLines: null,
+                                                      keyboardType:
+                                                          TextInputType
+                                                              .multiline,
+                                                      validator: (val) =>
+                                                          resolutionValidator(
+                                                              newResolution ==
+                                                                      null
+                                                                  ? ""
+                                                                  : newResolution!),
+                                                      onChanged: (val) {
+                                                        setState(() =>
+                                                            newResolution =
+                                                                val);
+                                                      },
                                                     ),
-                                                    maxLines: 5,
-                                                    keyboardType:
-                                                        TextInputType.multiline,
-                                                    validator: (val) =>
-                                                        resolutionValidator(
-                                                            newResolution ==
-                                                                    null
-                                                                ? ""
-                                                                : newResolution!),
-                                                    onChanged: (val) {
-                                                      setState(() =>
-                                                          newResolution = val);
-                                                    },
                                                   ),
                                                   Container(
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            0, 30, 0, 10),
+                                                            0, 25, 0, 20),
                                                     child: Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment
@@ -870,7 +996,8 @@ class _ViewResolveState extends State<ViewResolve> {
                                                   )
                                                 ]))
                                           ])
-                                        : (isResolved == "Resolved")
+                                        : (isResolved == "Resolved" ||
+                                                isResolved == "Unresolved")
                                             ? Column(
                                                 children: [
                                                   Container(
@@ -906,23 +1033,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                                   )
                                                 ],
                                               )
-                                            : (isResolved == "Unresolved")
-                                                ? Container(
-                                                    alignment:
-                                                        Alignment.topLeft,
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 5, 10, 10),
-                                                    child: Text("Unresolved",
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                          textStyle:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyText1,
-                                                        )),
-                                                  )
-                                                : Container(),
+                                            : Container(),
                           ),
                         ]),
                   ));

@@ -84,10 +84,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
             child: Text(
               "View",
               style: GoogleFonts.robotoSlab(
-                color: Colors.black87,
-                fontSize: 30.0,
-                fontWeight: FontWeight.bold,
-              ),
+                  textStyle: Theme.of(context).textTheme.headline6),
             ),
           ),
           centerTitle: false,
@@ -122,8 +119,29 @@ class _ViewComplaintState extends State<ViewComplaint> {
               Container(
                 padding: EdgeInsets.fromLTRB(0, 5, 10, 0),
                 child: (isResolved == "Unresolved")
-                    ? Text("Unresolved",
-                        style: Theme.of(context).textTheme.caption)
+                    ? Row(
+                        children: [
+                          Text("Unresolved by ",
+                              style: Theme.of(context).textTheme.caption),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return Profile(who: delegatedMembers.last);
+                              }));
+                            },
+                            child: Text(
+                              '$resolvedBy',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption!
+                                  .copyWith(
+                                      color: Theme.of(context).accentColor,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          )
+                        ],
+                      )
                     : (isResolved == "Resolved")
                         ? Row(
                             children: [
@@ -181,7 +199,8 @@ class _ViewComplaintState extends State<ViewComplaint> {
               Container(
                   decoration: BoxDecoration(),
                   padding: EdgeInsets.fromLTRB(0, 20, 5, 10),
-                  child: (isResolved == "Resolved")
+                  child: (isResolved == "Resolved" ||
+                          isResolved == "Unresolved")
                       ? Column(
                           children: [
                             Container(
