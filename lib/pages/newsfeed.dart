@@ -187,19 +187,24 @@ class _PostItemState extends State<PostItem> {
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
-                              title: Text("Caution" , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.headline6,)),
-                              content: Text("Are you sure you want to delete this post? This action can not be undone." , style: GoogleFonts.roboto(textStyle:Theme.of(context).textTheme.bodyText2,)),
+                              title: Text('Delete Post?',
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.roboto(
+                                      textStyle: Theme.of(context).textTheme.bodyText2)),
+                              content: Text("This post will be permanently deleted."),
                               actions: [
                                 TextButton(
-                                  child: Text('Yes', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
-                                  onPressed: () async {
-                                    deletePost();
+                                  style: TextButton.styleFrom(primary: primary_color),
+                                  child: Text('Cancel', textAlign: TextAlign.left),
+                                  onPressed: () {
                                     Navigator.of(context).pop();
                                   },
                                 ),
                                 TextButton(
-                                  child: Text('No',style: Theme.of(context).textTheme.bodyText1!.copyWith(color: Theme.of(context).primaryColorLight),),
-                                  onPressed: () {
+                                  style: TextButton.styleFrom(primary: black),
+                                  child: Text('Yes'),
+                                  onPressed: () async {
+                                    deletePost();
                                     Navigator.of(context).pop();
                                   },
                                 ),
