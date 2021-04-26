@@ -545,7 +545,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                                   .caption!
                                                   .copyWith(
                                                       color: Theme.of(context)
-                                                          .accentColor,
+                                                          .primaryColor,
                                                       fontWeight:
                                                           FontWeight.bold),
                                             ),
@@ -582,7 +582,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                                       .copyWith(
                                                           color:
                                                               Theme.of(context)
-                                                                  .accentColor,
+                                                                  .primaryColor,
                                                           fontWeight:
                                                               FontWeight.bold),
                                                 ),
@@ -601,7 +601,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                         style: GoogleFonts.roboto(
                                             textStyle: Theme.of(context)
                                                 .textTheme
-                                                .bodyText1!
+                                                .subtitle1!
                                                 .copyWith(
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -705,7 +705,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                                       style: GoogleFonts.roboto(
                                                           textStyle: Theme.of(context)
                                                               .textTheme
-                                                              .bodyText2!
+                                                              .subtitle1!
                                                               .copyWith(
                                                                   fontWeight:
                                                                       FontWeight
@@ -715,7 +715,7 @@ class _ViewResolveState extends State<ViewResolve> {
                                                       style: GoogleFonts.roboto(
                                                           textStyle: Theme.of(context)
                                                               .textTheme
-                                                              .bodyText2!
+                                                              .subtitle1!
                                                               .copyWith(fontWeight: FontWeight.bold),
                                                           color: primary_color)),
                                               value: _toggled,

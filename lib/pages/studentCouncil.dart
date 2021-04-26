@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/pages/profile.dart'; // for profile screen
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
@@ -26,13 +27,13 @@ class _StudentCouncilState extends State<StudentCouncil> {
     super.initState();
   }
 
-  Widget councilProfilesBody(BuildContext context) {
+  Widget councilProfilesBody(BuildContext context1) {
     return MaterialApp(
       home: DefaultTabController(
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Color(0xFFEA5757),
+            backgroundColor: primary_color,
             title: Text(
               'Student Council', // header
               style: GoogleFonts.robotoSlab(
@@ -81,12 +82,11 @@ class _StudentCouncilState extends State<StudentCouncil> {
                       subtitle: Text(' '),                      
                       onTap: () {
                         Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
+                          context1,
+                          MaterialPageRoute(builder: (context1) {
                             return (
                               Profile(
-                                who: (documentSnaps[index]!
-                                    .id))
+                                who: (documentSnaps[index]!.id))
                               ); // function returns a widget
                           }),
                         );
@@ -103,9 +103,9 @@ class _StudentCouncilState extends State<StudentCouncil> {
                   return (ExpansionTile(
                     title: Text(
                       officeHours!.daysOfTheWeek[index],
-                      style: TextStyle(
-                      color: Colors.black,
-                    ),
+                    //   style: TextStyle(
+                    //   color: black,
+                    // ),
                     ),
                     // expand the current day's tab. On Saturday and Sunday expand all.
                     initiallyExpanded: DateTime.now().weekday >= 6 ? true : index == DateTime.now().weekday - 1, // -1 in DateTime.now().weekday because it represents monday as int 1 but my index refers to monday as 0
@@ -141,7 +141,7 @@ class _StudentCouncilState extends State<StudentCouncil> {
           if (snapshot.hasError) {
             print(snapshot.error);
             return Center(
-              child: Text("An Error Occured"),
+              child: Text("An Error Occurred"),
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();

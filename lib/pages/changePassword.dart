@@ -35,6 +35,7 @@ class _ChangePasswordState extends State<ChangePassword> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Change Password", style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6!.copyWith(fontSize: 25))),
+        elevation: 1,
       ),
       body: SafeArea(
         minimum: EdgeInsets.fromLTRB(30,10,30,30),
@@ -47,14 +48,14 @@ class _ChangePasswordState extends State<ChangePassword> {
                   Icon(
                     Icons.enhanced_encryption_outlined,
                     size: 100,
-                    color: grey,
+                    color: black,
                   ),
                   SizedBox(height: 20),
                   Flexible(
                     fit: FlexFit.loose,
                     child: Text(
                       "Please validate your current password and provide a new valid password",
-                      style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.bodyText2),
+                      style: GoogleFonts.roboto(textStyle: Theme.of(context).textTheme.bodyText1),
                     ),
                   ),
                   SizedBox(height: 30, width: 0),

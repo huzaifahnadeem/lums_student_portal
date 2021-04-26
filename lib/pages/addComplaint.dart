@@ -145,7 +145,7 @@ class _AddComplaintState extends State<AddComplaint> {
                       child: DropdownButtonFormField(
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         decoration: InputDecoration(
-                          hintText: "Select Category",
+                          hintText: "Select category",
                         ),
                         validator: (val) => dropDownValidator(val),
                         isExpanded: false,
@@ -169,7 +169,7 @@ class _AddComplaintState extends State<AddComplaint> {
                     TextFormField(
                       cursorColor: primary_color,
                       decoration: InputDecoration(
-                        hintText: "Add Subject...",
+                        hintText: "Add subject...",
                         fillColor: Colors.white,
                       ),
                       validator: (val) => subjectValidator(
@@ -192,7 +192,7 @@ class _AddComplaintState extends State<AddComplaint> {
                         setState(() => newComplaint.complaint = val);
                       },
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 100),
                     SizedBox(
                       width: double.infinity,
                       height: 40,

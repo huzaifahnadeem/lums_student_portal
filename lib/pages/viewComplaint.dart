@@ -124,7 +124,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
                                   .textTheme
                                   .caption!
                                   .copyWith(
-                                      color: Theme.of(context).accentColor,
+                                      color: primary_color,
                                       fontWeight: FontWeight.bold),
                             ),
                           )
@@ -148,7 +148,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
                                       .textTheme
                                       .caption!
                                       .copyWith(
-                                          color: Theme.of(context).accentColor,
+                                          color: primary_color,
                                           fontWeight: FontWeight.bold),
                                 ),
                               )
@@ -170,7 +170,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
                             style: GoogleFonts.roboto(
                                 textStyle: Theme.of(context)
                                     .textTheme
-                                    .bodyText1!
+                                    .subtitle1!
                                     .copyWith(fontWeight: FontWeight.bold),
                                 color: primary_color)),
                       ),
@@ -197,7 +197,7 @@ class _ViewComplaintState extends State<ViewComplaint> {
                                   style: GoogleFonts.roboto(
                                       textStyle: Theme.of(context)
                                           .textTheme
-                                          .bodyText2!
+                                          .subtitle1!
                                           .copyWith(
                                               fontWeight: FontWeight.bold),
                                       color: primary_color)),

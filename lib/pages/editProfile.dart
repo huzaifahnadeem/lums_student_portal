@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lums_student_portal/Backend/validators.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/models/profile.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
@@ -168,7 +169,7 @@ class _EditProfileState extends State<EditProfile> {
           ),
           title: Text('Edit Profile',
               style: GoogleFonts.robotoSlab(textStyle: Theme.of(context).textTheme.headline6)),
-          backgroundColor: Colors.white,
+          elevation: 1,
         ),
         body: FutureBuilder<DocumentSnapshot?>(
           future: _future,
@@ -197,7 +198,7 @@ class _EditProfileState extends State<EditProfile> {
                                 shape: BoxShape.circle,
                                 boxShadow: [
                                   BoxShadow(
-                                      blurRadius: 10,
+                                      blurRadius: 5,
                                       color: Colors.black38,
                                       spreadRadius: 5)
                                 ],
@@ -285,7 +286,7 @@ class _EditProfileState extends State<EditProfile> {
                                                     shape: BoxShape.circle,
                                                     boxShadow: [
                                                       BoxShadow(
-                                                          blurRadius: 15,
+                                                          blurRadius: 5,
                                                           color: Colors.black87,
                                                           spreadRadius: 5)
                                                     ],
@@ -435,7 +436,7 @@ class _EditProfileState extends State<EditProfile> {
                                   selected: selectedOfficeHours!.days == "MW"
                                       ? true
                                       : false,
-                                  selectedColor: Theme.of(context).primaryColor,
+                                  selectedColor: yellow,//Theme.of(context).primaryColor,
                                   onSelected: (bool value) {
                                     setState(() {
                                       selectedOfficeHours!.days == "MW"
@@ -449,7 +450,7 @@ class _EditProfileState extends State<EditProfile> {
                                   selected: selectedOfficeHours!.days == "TT"
                                       ? true
                                       : false,
-                                  selectedColor: Theme.of(context).primaryColor,
+                                  selectedColor: yellow,
                                   onSelected: (bool value) {
                                     setState(() {
                                       selectedOfficeHours!.days == "TT"
@@ -463,7 +464,7 @@ class _EditProfileState extends State<EditProfile> {
                                   selected: selectedOfficeHours!.days == "WF"
                                       ? true
                                       : false,
-                                  selectedColor: Theme.of(context).primaryColor,
+                                  selectedColor: yellow,
                                   onSelected: (bool value) {
                                     setState(() {
                                       selectedOfficeHours!.days == "WF"
@@ -486,7 +487,7 @@ class _EditProfileState extends State<EditProfile> {
                                     shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
                                   ),
                                   child: Text(
-                                    "Office Hours Timeslot: " + (selectedTime != null ? timeObjToString(selectedTime!) : "Not Selected"),
+                                    "Office Hours Time Slot: " + (selectedTime != null ? timeObjToString(selectedTime!) : "Not Selected"),
                                     textAlign: TextAlign.left,
                                     style: TextStyle(color: Colors.black),
                                   ),
@@ -536,7 +537,7 @@ class _EditProfileState extends State<EditProfile> {
                                       },
                                     update(snapshot.data!.id)
                                   },
-                                  child: Text('Update Profile',
+                                  child: Text('Update',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline5),

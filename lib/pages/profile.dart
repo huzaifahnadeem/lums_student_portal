@@ -37,17 +37,18 @@ class _ProfileState extends State<Profile> {
   Widget profileBody(BuildContext context) {
     final double circleRadius = 80;
     return Scaffold(
+      backgroundColor: secondary_color,
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: secondary_color,
+        ),
         title: Text(
           'Profile',
           style: GoogleFonts.robotoSlab(
-              textStyle: Theme.of(context)
-                  .textTheme
-                  .headline6!
-                  .copyWith(color: Colors.white)),
-        ),
-        centerTitle: true,
-        elevation: 0,
+            textStyle: Theme.of(context).textTheme.headline6!.copyWith(
+              color: secondary_color
+            )
+          )),
         backgroundColor: primary_color,
         actions: <Widget>[
           // settings button
@@ -55,7 +56,7 @@ class _ProfileState extends State<Profile> {
             IconButton(
               icon: Icon(
                 Icons.settings,
-                color: Colors.white,
+                color: secondary_color,
               ),
               onPressed: () {
                 Navigator.push(
@@ -74,7 +75,7 @@ class _ProfileState extends State<Profile> {
             // Profile Picture + Name
             children: <Widget>[
               Container(
-                color: Color(0xFFEA5757),
+                color: primary_color,
                 height: 120.0,
               ),
               Container(
@@ -89,7 +90,7 @@ class _ProfileState extends State<Profile> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: secondary_color,
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
@@ -101,12 +102,12 @@ class _ProfileState extends State<Profile> {
                         child: CircleAvatar(
                             radius:
                                 circleRadius + 4, // the profile avatar border
-                            backgroundColor: Colors.white,
+                            backgroundColor: secondary_color,
                             child: _profile.pictureURL == null
                                 ? CircleAvatar(
                                     backgroundImage:
                                         AssetImage("assets/default-avatar.png"),
-                                    backgroundColor: Colors.grey,
+                                    backgroundColor: grey,
                                     radius: circleRadius,
                                   )
                                 : CircleAvatar(
@@ -122,9 +123,9 @@ class _ProfileState extends State<Profile> {
                         // Name
                         _profile.name,
                         style: GoogleFonts.robotoSlab(
-                          color: Colors.black,
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold,
+                            textStyle: Theme.of(context).textTheme.headline4!.copyWith(
+                                color: black
+                            )
                         ),
                       ),
                       SizedBox(
@@ -147,33 +148,29 @@ class _ProfileState extends State<Profile> {
                   Text(
                     _profile.email.substring(
                         0, 8), // using substring to extract roll no from email
-                    style: GoogleFonts.robotoSlab(
-                      color: Color(0xFF808080),
-                      fontSize: 18.0,
-                    ),
+                    style: GoogleFonts.roboto(
+                      textStyle: Theme.of(context).textTheme.subtitle1,
+                      ),
                   ),
                   if (_profile.year != null)
                     Text(
                       _profile.year!,
-                      style: GoogleFonts.robotoSlab(
-                        color: Color(0xFF808080),
-                        fontSize: 18.0,
+                      style: GoogleFonts.roboto(
+                        textStyle: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
                   if (_profile.hostel != null)
                     Text(
                       _profile.hostel!,
-                      style: GoogleFonts.robotoSlab(
-                        color: Color(0xFF808080),
-                        fontSize: 18.0,
+                      style: GoogleFonts.roboto(
+                        textStyle: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
                   if (_profile.school != null && _profile.major != null)
                     Text(
                       _profile.school! + ": " + _profile.major!,
-                      style: GoogleFonts.robotoSlab(
-                        color: Color(0xFF808080),
-                        fontSize: 18.0,
+                      style: GoogleFonts.roboto(
+                        textStyle: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
                   if (_profile.officeHours != null) SizedBox(height: 15.0),
@@ -183,9 +180,9 @@ class _ProfileState extends State<Profile> {
                           _profile.officeHours!['days'] +
                           " at " +
                           _profile.officeHours!['time'],
-                      style: GoogleFonts.robotoSlab(
-                        color: Colors.black,
-                        fontSize: 18.0,
+                      style: GoogleFonts.roboto(
+                        textStyle: Theme.of(context).textTheme.subtitle1,
+                        color: black,
                       ),
                     ),
                   // I think headings like this look nice but not using it currently to make it consistent with the figma screens
@@ -200,9 +197,9 @@ class _ProfileState extends State<Profile> {
                   if (_profile.manifesto != null)
                     Text(
                       "Manifesto:\n" + _profile.manifesto!,
-                      style: GoogleFonts.robotoSlab(
-                        color: Colors.black,
-                        fontSize: 18.0,
+                      style: GoogleFonts.roboto(
+                        textStyle: Theme.of(context).textTheme.subtitle1,
+                        color: black
                       ),
                     ),
                 ],
@@ -224,7 +221,7 @@ class _ProfileState extends State<Profile> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
-              child: Text("An Error Occured"),
+              child: Text("An Error Occurred"),
             );
           } else if (snapshot.connectionState == ConnectionState.waiting) {
             return LoadingScreen();

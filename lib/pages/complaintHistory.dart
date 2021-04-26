@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lums_student_portal/Themes/Theme.dart';
 import 'package:lums_student_portal/pages/viewComplaint.dart';
 import 'package:lums_student_portal/Themes/progessIndicator.dart';
 
@@ -74,9 +76,9 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                             ListTile(
                               dense: true,
                               title: Text(documentSnaps[index]!["subject"],
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400)),
+                                  style: GoogleFonts.roboto(
+                                    textStyle: Theme.of(context).textTheme.headline4!.copyWith(fontWeight: FontWeight.normal),
+                                  )),
                               trailing: Text(
                                 "$timeDaysAgo",
                                 style: Theme.of(context).textTheme.caption,
@@ -117,19 +119,19 @@ class _ComplaintHistoryState extends State<ComplaintHistory> {
                                   ? Icon(
                                       Icons.access_time_rounded,
                                       // Icons.highlight_remove_rounded
-                                      color: Color(0xFFFFB800),
+                                      color: yellow,
                                     )
                                   : (documentSnaps[index]!["isResolved"] ==
                                           "Resolved")
                                       ? Icon(
                                           Icons.check_circle_outline_rounded,
-                                          color: Color(0xFF56BF54),
+                                          color: green,
                                         )
                                       : (documentSnaps[index]!["isResolved"] ==
                                               "Unresolved")
                                           ? Icon(
                                               Icons.highlight_remove_rounded,
-                                              color: Colors.redAccent,
+                                              color: primary_lighter,
                                             )
                                           : null,
                             ),

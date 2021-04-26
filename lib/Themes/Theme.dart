@@ -94,7 +94,7 @@ TextTheme createTextTheme() {
 
     // for Post Headings
     headline4: initial.headline4!.copyWith(
-      color: black,
+      color: grey,
       fontSize: 20,
       //fontWeight: FontWeight.w500,
       fontWeight: FontWeight.bold,
@@ -115,6 +115,12 @@ TextTheme createTextTheme() {
     bodyText2: initial.bodyText2!.copyWith(
       color: Colors.black,
       fontSize: 20,
+      fontWeight: FontWeight.normal,
+    ),
+    // For Profile Text
+    subtitle1: initial.subtitle1!.copyWith(
+      color: grey,
+      fontSize: 17,
       fontWeight: FontWeight.normal,
     ),
     // For Buttons
