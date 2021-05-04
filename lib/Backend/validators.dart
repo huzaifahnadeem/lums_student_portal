@@ -14,7 +14,7 @@ String? emailValidator(String email, bool signUp) {
 
 String? passwordValidator(String password) {
   if (password.isEmpty) {
-    return "Field can not be empty.";
+    return "Field can not be empty Loser.";
   }
   return null;
 }
